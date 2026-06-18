@@ -182,11 +182,23 @@
             line-height: 1.4;
             color: var(--text-primary);
             word-break: break-word;
+            cursor: pointer;
         }
 
         .task-item.completed .task-text {
             text-decoration: line-through;
             color: var(--text-secondary);
+        }
+
+        .task-edit-inline-input {
+            width: 100%;
+            border: 1px solid var(--accent-color);
+            border-radius: 4px;
+            padding: 4px 8px;
+            font-size: 15px;
+            color: var(--text-primary);
+            outline: none;
+            background: var(--bg-main);
         }
 
         .task-meta-clickable-zone {
@@ -479,7 +491,8 @@
             tempProject: 'No project',
             tempTag: '',
             
-            editingTagIndex: null 
+            editingTagIndex: null,
+            editingTaskId: null // Controla qual tarefa está em modo de edição inline
         };
 
         function getTodayISO() {
@@ -578,6 +591,7 @@
                 titleEl.innerText = `🏷️ Tag: ${value}`;
             }
 
+            state.editingTaskId = null; // Reseta edição inline ao mudar de filtro
             render();
         }
 
@@ -620,8 +634,48 @@
 
         function deleteTask(id) {
             state.tasks = state.tasks.filter(item => item.id !== id);
+            if(state.editingTaskId === id) state.editingTaskId = null;
             render();
             pushData();
+        }
+
+        // Ativa o modo de edição inline para uma tarefa específica
+        function startInlineEdit(id) {
+            state.editingTaskId = id;
+            render();
+            const inputEl = document.getElementById(`inline-edit-${id}`);
+            if(inputEl) {
+                inputEl.focus();
+                // Coloca o cursor no final do texto
+                const val = inputEl.value;
+                inputEl.value = '';
+                inputEl.value = val;
+            }
+        }
+
+        // Salva a alteração realizada no input inline
+        function saveInlineEdit(id, val) {
+            const cleanVal = val.trim();
+            const t = state.tasks.find(item => item.id === id);
+            
+            if (t && cleanVal && cleanVal !== t.text) {
+                t.text = cleanVal;
+                state.editingTaskId = null;
+                render();
+                pushData();
+            } else {
+                state.editingTaskId = null;
+                render();
+            }
+        }
+
+        function handleInlineEditKey(e, id) {
+            if (e.key === 'Enter') {
+                saveInlineEdit(id, e.target.value);
+            } else if (e.key === 'Escape') {
+                state.editingTaskId = null;
+                render();
+            }
         }
 
         function render() {
@@ -651,7 +705,7 @@
 
                 let metaHTML = '';
                 if(t.project && t.project !== 'No project') {
-                    metaHTML += `<span class="clickable-pill project-pill" onclick="setFilter('project', '${t.project}')">📋 ${t.project}</span>`;
+                    metaHTML += `<span class="clickable-pill project-pill" onclick="setFilter('projeto', '${t.project}')">📋 ${t.project}</span>`;
                 }
                 if(t.tag) {
                     const foundTag = state.tags.find(tg => tg.nome === t.tag);
@@ -662,10 +716,18 @@
                     metaHTML += `<span class="clickable-pill date-pill">📅 ${formatDisplayDate(t.date)}</span>`;
                 }
 
+                // Renderiza como Input se estiver sendo editado, caso contrário renderiza o texto clicável
+                let textContentHTML = '';
+                if(state.editingTaskId === t.id) {
+                    textContentHTML = `<input type="text" class="task-edit-inline-input" id="inline-edit-${t.id}" value="${t.text}" onkeydown="handleInlineEditKey(event, '${t.id}')" onblur="saveInlineEdit('${t.id}', this.value)">`;
+                } else {
+                    textContentHTML = `<span class="task-text" onclick="startInlineEdit('${t.id}')">${t.text}</span>`;
+                }
+
                 item.innerHTML = `
                     <input type="checkbox" class="task-checkbox" ${t.completed ? 'checked' : ''} onchange="toggleTask('${t.id}')">
                     <div class="task-content">
-                        <span class="task-text">${t.text}</span>
+                        ${textContentHTML}
                         <div class="task-meta-clickable-zone">${metaHTML}</div>
                     </div>
                     <button class="btn-inline-del" onclick="deleteTask('${t.id}')">&times;</button>
@@ -751,7 +813,7 @@
         }
 
         function deleteProject(p) {
-            state.projetos = state.projetos.filter(item !== p);
+            state.projetos = state.projetos.filter(item => item !== p);
             renderProjectsList();
             pushData();
         }
