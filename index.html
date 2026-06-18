@@ -6,484 +6,74 @@
     <title>Portal Corporativo - Intranet</title>
     <style>
         :root {
-            --bg-main: #f8f9fa;
-            --bg-card: #ffffff;
-            --text-primary: #2d3748;
-            --text-secondary: #718096;
-            --accent-color: #4f46e5;
-            --accent-hover: #4338ca;
-            --border-color: #e2e8f0;
-            --success-color: #10b981;
-            --shadow: 0 1px 3px rgba(0,0,0,0.05), 0 1px 2px rgba(0,0,0,0.1);
+            --bg-main: #f8f9fa; --bg-card: #ffffff;
+            --text-primary: #2d3748; --text-secondary: #718096;
+            --accent-color: #4f46e5; --border-color: #e2e8f0;
+            --success-color: #10b981; --shadow: 0 1px 3px rgba(0,0,0,0.1);
         }
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            -webkit-tap-highlight-color: transparent;
-        }
-
-        body {
-            background-color: var(--bg-main);
-            color: var(--text-primary);
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-        }
-
-        #app-container {
-            display: flex;
-            flex-direction: column;
-            width: 100%;
-            max-width: 600px;
-            margin: 0 auto;
-            padding-bottom: 110px;
-        }
-
-        header {
-            background-color: var(--bg-card);
-            padding: 16px;
-            border-bottom: 1px solid var(--border-color);
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
-
-        .header-top {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .header-left {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .app-title {
-            font-size: 20px;
-            font-weight: 700;
-            color: var(--text-primary);
-            letter-spacing: -0.5px;
-        }
-
-        .info-btn {
-            background: none;
-            border: none;
-            font-size: 18px;
-            cursor: pointer;
-            color: var(--text-secondary);
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            padding: 4px;
-            border-radius: 50%;
-            transition: background 0.2s;
-        }
-
-        .info-btn:hover {
-            background: #cbd5e133;
-        }
-
-        .sync-status {
-            font-size: 12px;
-            color: var(--text-secondary);
-            display: flex;
-            align-items: center;
-            gap: 4px;
-        }
-
-        .status-dot {
-            width: 8px;
-            height: 8px;
-            background-color: var(--success-color);
-            border-radius: 50%;
-        }
-
-        .progress-container {
-            width: 100%;
-            background-color: var(--border-color);
-            height: 6px;
-            border-radius: 3px;
-            overflow: hidden;
-        }
-
-        .progress-bar {
-            width: 0%;
-            height: 100%;
-            background-color: var(--accent-color);
-            transition: width 0.3s ease;
-        }
-
-        .date-filters {
-            display: flex;
-            gap: 8px;
-            padding: 12px 16px;
-            overflow-x: auto;
-            white-space: nowrap;
-        }
-
-        .filter-btn {
-            background-color: var(--bg-card);
-            border: 1px solid var(--border-color);
-            padding: 6px 14px;
-            border-radius: 16px;
-            font-size: 13px;
-            font-weight: 500;
-            color: var(--text-secondary);
-            cursor: pointer;
-        }
-
-        .filter-btn.active {
-            background-color: var(--accent-color);
-            color: #ffffff;
-            border-color: var(--accent-color);
-        }
-
-        /* CARDS DE TAREFA */
-        .task-list {
-            padding: 8px 16px;
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
-
-        .task-item {
-            background-color: var(--bg-card);
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            padding: 14px;
-            display: flex;
-            align-items: flex-start;
-            gap: 12px;
-            box-shadow: var(--shadow);
-        }
-
-        .task-checkbox {
-            appearance: none;
-            -webkit-appearance: none;
-            width: 20px;
-            height: 20px;
-            border: 2px solid #cbd5e1;
-            border-radius: 6px;
-            outline: none;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-top: 2px;
-            flex-shrink: 0;
-        }
-
-        .task-checkbox:checked {
-            background-color: var(--success-color);
-            border-color: var(--success-color);
-        }
-
-        .task-checkbox:checked::after {
-            content: "✓";
-            color: white;
-            font-size: 12px;
-            font-weight: bold;
-        }
-
-        .task-content {
-            flex-grow: 1;
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-        }
-
-        .task-text {
-            font-size: 15px;
-            line-height: 1.4;
-            color: var(--text-primary);
-            word-break: break-word;
-            cursor: pointer;
-        }
-
-        .task-item.completed .task-text {
-            text-decoration: line-through;
-            color: var(--text-secondary);
-        }
-
-        .task-edit-inline-input {
-            width: 100%;
-            border: 1px solid var(--accent-color);
-            border-radius: 4px;
-            padding: 4px 8px;
-            font-size: 15px;
-            color: var(--text-primary);
-            outline: none;
-            background: var(--bg-main);
-        }
-
-        .task-meta-clickable-zone {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 6px;
-            align-items: center;
-        }
-
-        .clickable-pill {
-            font-size: 11px;
-            padding: 2px 8px;
-            border-radius: 4px;
-            font-weight: 600;
-            cursor: pointer;
-            display: inline-flex;
-            align-items: center;
-        }
-
-        .clickable-pill.project-pill {
-            background-color: #f1f5f9;
-            color: #475569;
-            border: 1px solid #cbd5e1;
-        }
-
-        .clickable-pill.tag-pill {
-            color: #ffffff;
-        }
-
-        .clickable-pill.date-pill {
-            background-color: #fffbeb;
-            color: #b45309;
-            border: 1px solid #fde68a;
-        }
-
-        /* INPUT FIXO E BOTÕES ADICIONAIS */
-        .input-container {
-            position: fixed;
-            bottom: 0; left: 50%;
-            transform: translateX(-50%);
-            width: 100%; max-width: 600px;
-            background-color: var(--bg-card);
-            padding: 12px 16px;
-            border-top: 1px solid var(--border-color);
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-            box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
-            z-index: 500;
-        }
-
-        .input-row {
-            display: flex;
-            gap: 8px;
-            align-items: center;
-        }
-
-        .task-input {
-            flex-grow: 1;
-            border: 1px solid var(--border-color);
-            background-color: var(--bg-main);
-            padding: 12px 16px;
-            border-radius: 24px;
-            font-size: 15px;
-            outline: none;
-        }
-
-        .meta-selectors-row {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            overflow-x: auto;
-            padding-bottom: 2px;
-            width: 100%;
-        }
-
-        .selector-btn {
-            background: #f1f5f9;
-            border: 1px solid var(--border-color);
-            padding: 6px 12px;
-            border-radius: 14px;
-            font-size: 12px;
-            font-weight: 500;
-            color: var(--text-secondary);
-            cursor: pointer;
-            position: relative;
-            display: inline-flex;
-            align-items: center;
-            height: 30px;
-            white-space: nowrap;
-            z-index: 10;
-        }
-
-        /* ISOLAMENTO DO CALENDÁRIO COM LIMITE DE TAMANHO */
-        .datepicker-wrapper {
-            position: relative;
-            display: inline-flex;
-            align-items: center;
-            background: #f1f5f9;
-            border: 1px solid var(--border-color);
-            border-radius: 14px;
-            padding: 0 12px;
-            height: 30px;
-            max-width: 110px;
-            overflow: hidden;
-            flex-shrink: 0;
-        }
-
-        .datepicker-wrapper span {
-            font-size: 12px;
-            font-weight: 500;
-            color: var(--text-secondary);
-            pointer-events: none;
-            z-index: 2;
-            white-space: nowrap;
-        }
-
-        .datepicker-wrapper input[type="date"] {
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            opacity: 0.01;
-            cursor: pointer;
-            z-index: 3;
-            -webkit-appearance: none;
-        }
-
-        /* GAVETAS DE TOQUE (BOTTOM SHEETS) */
-        .drawer-overlay {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.4);
-            z-index: 1000;
-            display: none;
-        }
-
-        .drawer {
-            position: fixed;
-            bottom: 0; left: 50%;
-            width: 100%; max-width: 600px;
-            background: var(--bg-card);
-            border-top-left-radius: 16px;
-            border-top-right-radius: 16px;
-            padding: 20px 16px;
-            z-index: 1001;
-            transform: translate(-50%, 100%);
-            transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-
-        .drawer.open {
-            transform: translate(-50%, 0);
-        }
-
-        .drawer-handle {
-            width: 40px; height: 4px;
-            background: var(--border-color);
-            border-radius: 2px;
-            margin: 0 auto 16px auto;
-        }
-
-        .drawer-title {
-            font-size: 16px;
-            font-weight: 700;
-            margin-bottom: 14px;
-        }
-
-        .drawer-form-block {
-            background: #f8fafc;
-            padding: 12px;
-            border-radius: 8px;
-            border: 1px solid var(--border-color);
-            margin-bottom: 12px;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-
-        .drawer-input {
-            width: 100%; padding: 10px;
-            border: 1px solid var(--border-color);
-            border-radius: 6px;
-            font-size: 14px;
-            outline: none;
-        }
-
-        .drawer-row-inline {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 13px;
-            color: var(--text-secondary);
-        }
-
-        .action-submit-btn {
-            background-color: var(--accent-color);
-            color: white; border: none; padding: 10px;
-            border-radius: 6px; font-weight: 600; cursor: pointer;
-        }
-
-        .items-list-scroll {
-            max-height: 200px;
-            overflow-y: auto;
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-        }
-
-        .list-item-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 10px;
-            border: 1px solid var(--border-color);
-            border-radius: 6px;
-            background: #fff;
-        }
-
-        .item-label {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            font-size: 14px;
-            cursor: pointer;
-            flex-grow: 1;
-        }
-
-        .btn-inline-del {
-            background: none; border: none; color: #ef4444; font-size: 18px; cursor: pointer; padding: 0 4px;
-        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: system-ui, -apple-system, sans-serif; -webkit-tap-highlight-color: transparent; }
+        body { background: var(--bg-main); color: var(--text-primary); min-height: 100vh; display: flex; flex-direction: column; }
+        #app-container { width: 100%; max-width: 600px; margin: 0 auto; padding-bottom: 120px; }
         
-        .btn-inline-edit {
-            background: none; border: none; color: var(--accent-color); font-size: 14px; cursor: pointer; padding: 0 4px; margin-right: 6px;
-        }
-
-        .footer-nav {
-            display: flex;
-            gap: 8px;
-            margin-top: 4px;
-            justify-content: space-between;
-        }
-
-        .footer-btn {
-            background: none; border: none; font-size: 13px; color: var(--text-secondary); cursor: pointer; padding: 4px; font-weight: 500;
-        }
-
-        /* ESTILO DO MODAL DE CHANGELOG / VERSÃO */
-        .changelog-list {
-            list-style: none;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            margin-top: 10px;
-        }
-        .changelog-item {
-            font-size: 13px;
-            line-height: 1.4;
-            padding-bottom: 8px;
-            border-bottom: 1px dashed var(--border-color);
-        }
-        .changelog-version {
-            font-weight: 700;
-            color: var(--accent-color);
-        }
+        header { background: var(--bg-card); padding: 16px; border-bottom: 1px solid var(--border-color); position: sticky; top: 0; z-index: 100; display: flex; flex-direction: column; gap: 12px; }
+        .header-top, .header-left, .sync-status { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+        .app-title { font-size: 20px; font-weight: 700; }
+        .info-btn { background: none; border: none; font-size: 18px; cursor: pointer; color: var(--text-secondary); }
+        .sync-status { font-size: 12px; color: var(--text-secondary); }
+        .status-dot { width: 8px; height: 8px; background: var(--success-color); border-radius: 50%; }
+        .progress-container { width: 100%; background: var(--border-color); height: 6px; border-radius: 3px; overflow: hidden; }
+        .progress-bar { width: 0%; height: 100%; background: var(--accent-color); transition: width 0.3s; }
+        
+        .date-filters { display: flex; gap: 8px; padding: 12px 16px; overflow-x: auto; white-space: nowrap; }
+        .filter-btn { background: var(--bg-card); border: 1px solid var(--border-color); padding: 6px 14px; border-radius: 16px; font-size: 13px; font-weight: 500; color: var(--text-secondary); cursor: pointer; }
+        .filter-btn.active { background: var(--accent-color); color: #fff; border-color: var(--accent-color); }
+        
+        .task-list { padding: 8px 16px; display: flex; flex-direction: column; gap: 8px; }
+        .task-item { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 8px; padding: 14px; display: flex; align-items: flex-start; gap: 12px; box-shadow: var(--shadow); }
+        .task-checkbox { appearance: none; -webkit-appearance: none; width: 20px; height: 20px; border: 2px solid #cbd5e1; border-radius: 6px; cursor: pointer; flex-shrink: 0; display: inline-flex; align-items: center; justify-content: center; }
+        .task-checkbox:checked { background: var(--success-color); border-color: var(--success-color); }
+        .task-checkbox:checked::after { content: "✓"; color: #fff; font-size: 12px; font-weight: bold; }
+        .task-content { flex-grow: 1; display: flex; flex-direction: column; gap: 6px; }
+        .task-text { font-size: 15px; line-height: 1.4; word-break: break-word; cursor: pointer; }
+        .task-item.completed .task-text { text-decoration: line-through; color: var(--text-secondary); }
+        .task-edit-inline-input { width: 100%; border: 1px solid var(--accent-color); border-radius: 4px; padding: 4px 8px; font-size: 15px; outline: none; background: var(--bg-main); }
+        .task-meta-clickable-zone { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+        
+        .clickable-pill { font-size: 11px; padding: 2px 8px; border-radius: 4px; font-weight: 600; cursor: pointer; border: 1px solid transparent; }
+        .clickable-pill.project-pill { background: #f1f5f9; color: #475569; border-color: #cbd5e1; }
+        .clickable-pill.tag-pill { color: #fff; }
+        .clickable-pill.date-pill { background: #fffbeb; color: #b45309; border-color: #fde68a; }
+        
+        .input-container { position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); width: 100%; max-width: 600px; background: var(--bg-card); padding: 12px 16px; border-top: 1px solid var(--border-color); display: flex; flex-direction: column; gap: 8px; box-shadow: 0 -2px 10px rgba(0,0,0,0.05); z-index: 500; }
+        .input-row { position: relative; display: flex; align-items: center; width: 100%; }
+        .task-input { width: 100%; border: 1px solid var(--border-color); background: var(--bg-main); padding: 12px 48px 12px 16px; border-radius: 24px; font-size: 15px; outline: none; }
+        .meta-selectors-row { display: flex; align-items: center; gap: 6px; overflow-x: auto; padding-bottom: 2px; }
+        .selector-btn { background: #f1f5f9; border: 1px solid var(--border-color); padding: 6px 12px; border-radius: 14px; font-size: 12px; font-weight: 500; color: var(--text-secondary); cursor: pointer; display: inline-flex; align-items: center; height: 30px; white-space: nowrap; }
+        
+        /* BOTÃO DE DATA EMBUTIDO COMO ÍCONE NO INPUT */
+        .datepicker-wrapper { position: absolute; right: 14px; width: 24px; height: 24px; display: inline-flex; align-items: center; justify-content: center; overflow: hidden; cursor: pointer; }
+        .datepicker-wrapper span { font-size: 16px; pointer-events: none; z-index: 2; }
+        .datepicker-wrapper input[type="date"] { position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0.01; cursor: pointer; z-index: 3; -webkit-appearance: none; }
+        
+        .drawer-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); z-index: 1000; display: none; }
+        .drawer { position: fixed; bottom: 0; left: 50%; width: 100%; max-width: 600px; background: var(--bg-card); border-radius: 16px 16px 0 0; padding: 20px 16px; z-index: 1001; transform: translate(-50%, 100%); transition: transform 0.25s ease; }
+        .drawer.open { transform: translate(-50%, 0); }
+        .drawer-handle { width: 40px; height: 4px; background: var(--border-color); border-radius: 2px; margin: 0 auto 16px; }
+        .drawer-title { font-size: 16px; font-weight: 700; margin-bottom: 14px; }
+        .drawer-form-block { background: #f8fafc; padding: 12px; border-radius: 8px; border: 1px solid var(--border-color); margin-bottom: 12px; display: flex; flex-direction: column; gap: 10px; }
+        .drawer-input { width: 100%; padding: 10px; border: 1px solid var(--border-color); border-radius: 6px; font-size: 14px; outline: none; }
+        .action-submit-btn { background: var(--accent-color); color: #fff; border: none; padding: 10px; border-radius: 6px; font-weight: 600; cursor: pointer; }
+        .items-list-scroll { max-height: 200px; overflow-y: auto; display: flex; flex-direction: column; gap: 6px; }
+        .list-item-row { display: flex; justify-content: space-between; align-items: center; padding: 10px; border: 1px solid var(--border-color); border-radius: 6px; background: #fff; font-size: 14px; }
+        .item-label { display: flex; align-items: center; gap: 6px; cursor: pointer; flex-grow: 1; }
+        .btn-inline-del { background: none; border: none; color: #ef4444; font-size: 18px; cursor: pointer; padding: 0 4px; }
+        .btn-inline-edit { background: none; border: none; color: var(--accent-color); font-size: 13px; cursor: pointer; padding: 0 4px; margin-right: 6px; }
+        .footer-nav { display: flex; gap: 8px; margin-top: 4px; justify-content: space-between; }
+        .footer-btn { background: none; border: none; font-size: 13px; color: var(--text-secondary); cursor: pointer; padding: 4px; font-weight: 500; }
+        
+        .changelog-list { list-style: none; display: flex; flex-direction: column; gap: 10px; margin-top: 10px; font-size: 13px; }
+        .changelog-item { padding-bottom: 8px; border-bottom: 1px dashed var(--border-color); line-height: 1.4; }
+        .changelog-version { font-weight: 700; color: var(--accent-color); }
     </style>
 </head>
 <body>
@@ -493,16 +83,14 @@
             <div class="header-top">
                 <div class="header-left">
                     <div class="app-title" id="current-view-title">Hoje</div>
-                    <button class="info-btn" onclick="openInfoDrawer()" title="Informações do Sistema">ℹ️</button>
+                    <button class="info-btn" onclick="openInfoDrawer()">ℹ️</button>
                 </div>
                 <div class="sync-status">
                     <div class="status-dot" id="status-dot"></div>
-                    <span id="status-text">Carregando...</span>
+                    <span id="status-text">A carregar...</span>
                 </div>
             </div>
-            <div class="progress-container">
-                <div class="progress-bar" id="progress-bar"></div>
-            </div>
+            <div class="progress-container"><div class="progress-bar" id="progress-bar"></div></div>
         </header>
 
         <div class="date-filters">
@@ -511,490 +99,198 @@
             <button class="filter-btn" id="f-btn-todos" onclick="setFilter('todos')">Todos os Itens</button>
         </div>
 
-        <main class="task-list" id="task-list-container">
-        </main>
+        <main class="task-list" id="task-list-container"></main>
 
         <div class="input-container">
             <div class="meta-selectors-row">
-                <div class="datepicker-wrapper">
-                    <span id="meta-date-label">📅 Hoje</span>
-                    <input type="date" id="task-date-picker" onchange="updateSelectedDate(this.value)">
-                </div>
                 <button class="selector-btn" onclick="openContextDrawer('projetos')" id="meta-project-label">📋 Sem Projeto</button>
                 <button class="selector-btn" onclick="openContextDrawer('tags')" id="meta-tag-label">🏷️ Sem Tag</button>
             </div>
             <div class="input-row">
                 <input type="text" class="task-input" id="new-task-input" placeholder="Adicionar nova atividade..." onkeypress="handleInputKey(event)">
+                <div class="datepicker-wrapper" id="datepicker-trigger-zone">
+                    <span id="meta-date-label">📅</span>
+                    <input type="date" id="task-date-picker" onchange="updateSelectedDate(this.value)">
+                </div>
             </div>
             <div class="footer-nav">
-                <button class="footer-btn" onclick="openContextDrawer('projetos')">📋 Gerenciar Projetos</button>
-                <button class="footer-btn" onclick="openContextDrawer('tags')">🏷️ Gerenciar Tags</button>
+                <button class="footer-btn" onclick="openContextDrawer('projetos')">📋 Gerir Projetos</button>
+                <button class="footer-btn" onclick="openContextDrawer('tags')">🏷️ Gerir Tags</button>
             </div>
         </div>
     </div>
 
     <div class="drawer-overlay" id="drawer-overlay" onclick="closeDrawer()"></div>
-    
     <div class="drawer" id="context-drawer">
         <div class="drawer-handle"></div>
         <div class="drawer-title" id="drawer-title">Contexto</div>
-        
-        <div class="drawer-form-block" id="drawer-form-area">
-        </div>
-
-        <div class="items-list-scroll" id="drawer-list-items">
-        </div>
+        <div class="drawer-form-block" id="drawer-form-area"></div>
+        <div class="items-list-scroll" id="drawer-list-items"></div>
     </div>
 
     <script>
-        const BIN_ID = '6937666aae596e708f8c6683';
-        const API_KEY = '$2a$10$V0UFHZ8bHEdDdwGEpXjEYeR1.ZL9oIiMUY//5YbHFHc7yjai/WHpy';
+        const BIN_ID = '6937666aae596e708f8c6683', API_KEY = '$2a$10$V0UFHZ8bHEdDdwGEpXjEYeR1.ZL9oIiMUY//5YbHFHc7yjai/WHpy';
         const JSONBIN_URL = `https://api.jsonbin.io/v3/b/${BIN_ID}`;
+        const $ = id => document.getElementById(id);
 
         let state = {
-            version: "1.2.0",
+            version: "1.4.0",
             changelog: [
-                {
-                    v: "1.2.0",
-                    date: "18/06/2026",
-                    desc: "Correção estrutural do tamanho do wrapper do calendário móvel (max-width) para impedir sobreposição invisível e travamento dos botões de contexto (Projetos/Tags) em telas menores."
-                },
-                {
-                    v: "1.1.0",
-                    date: "18/06/2026",
-                    desc: "Implementado o botão de informações de versão (ℹ️) e reconstruída a arquitetura do seletor de datas para um wrapper de clique direto, eliminando falhas de toque nativas em dispositivos móveis e Safari."
-                }
+                { v: "1.4.0", date: "18/06/2026", desc: "Seletor de data movido para dentro do campo de texto como um ícone à direita." },
+                { v: "1.3.0", date: "18/06/2026", desc: "Estruturas simplificadas e otimização geral de funções repetitivas." },
+                { v: "1.2.0", date: "18/06/2026", desc: "Largura máxima e flexibilidade do calendário ajustadas para ecrãs móveis." }
             ],
-            tasks: [],
-            projetos: ["Trabalho", "Estudos"],
-            tags: [
-                { nome: "URGENTE", cor: "#ef4444" },
-                { nome: "FOCO", cor: "#3b82f6" }
-            ],
-            filterType: 'hoje', 
-            selectedFilterValue: '',
-            tempDate: '',
-            tempProject: 'No project',
-            tempTag: '',
-            editingTagIndex: null,
-            editingTaskId: null
+            tasks: [], projetos: ["Trabalho", "Estudos"],
+            tags: [{ nome: "URGENTE", cor: "#ef4444" }, { nome: "FOCO", cor: "#3b82f6" }],
+            filterType: 'hoje', selectedFilterValue: '', tempDate: '', tempProject: 'No project', tempTag: '', editingTagIndex: null, editingTaskId: null
         };
 
-        function getTodayISO() {
-            const d = new Date();
+        const getISO = (offset = 0) => {
+            const d = new Date(); d.setDate(d.getDate() + offset);
             return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
-        }
-
-        function getTomorrowISO() {
-            const d = new Date();
-            d.setDate(d.getDate() + 1);
-            return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
-        }
-
-        function formatDisplayDate(isoStr) {
-            if (!isoStr) return 'Sem Data';
-            const parts = isoStr.split('-');
-            return `${parts[2]}/${parts[1]}`;
-        }
+        };
+        const formatDisplayDate = str => str ? `${str.split('-')[2]}/${str.split('-')[1]}` : 'Sem Data';
 
         function initApp() {
-            state.tempDate = getTodayISO();
-            document.getElementById('task-date-picker').value = state.tempDate;
+            state.tempDate = getISO(0);
+            $('task-date-picker').value = state.tempDate;
             updateSelectedDate(state.tempDate);
             fetchData();
         }
 
+        async function apiCall(method, body = null) {
+            setSyncStatus(method === 'GET' ? 'A sincronizar...' : 'A guardar...', '#eab308');
+            try {
+                const headers = { 'X-Master-Key': API_KEY };
+                if (body) headers['Content-Type'] = 'application/json';
+                const res = await fetch(JSONBIN_URL, { method, headers, body: body ? JSON.stringify(body) : null });
+                const data = await res.json();
+                setSyncStatus('Sincronizado', '#10b981');
+                return data.record;
+            } catch(e) {
+                setSyncStatus(method === 'GET' ? 'Modo Offline' : 'Erro ao Salvar', '#ef4444');
+                return null;
+            }
+        }
+
         async function fetchData() {
-            setSyncStatus('Sincronizando...', '#eab308');
-            try {
-                const res = await fetch(JSONBIN_URL, { method: 'GET', headers: { 'X-Master-Key': API_KEY } });
-                const resData = await res.json();
-                
-                if(resData.record) {
-                    state.tasks = resData.record.tasks || [];
-                    state.projetos = resData.record.projetos || ["Trabalho", "Estudos"];
-                    state.tags = resData.record.tags || [{ nome: "URGENTE", cor: "#ef4444" }, { nome: "FOCO", cor: "#3b82f6" }];
-                }
-                setSyncStatus('Sincronizado', '#10b981');
-                render();
-            } catch(e) {
-                setSyncStatus('Modo Offline', '#ef4444');
-                render();
+            const record = await apiCall('GET');
+            if (record) {
+                state.tasks = record.tasks || []; state.projetos = record.projetos || []; state.tags = record.tags || [];
             }
+            render();
         }
-
-        async function pushData() {
-            setSyncStatus('Salvando...', '#eab308');
-            try {
-                await fetch(JSONBIN_URL, {
-                    method: 'PUT',
-                    headers: { 'Content-Type': 'application/json', 'X-Master-Key': API_KEY },
-                    body: JSON.stringify({ tasks: state.tasks, projetos: state.projetos, tags: state.tags })
-                });
-                setSyncStatus('Sincronizado', '#10b981');
-            } catch(e) {
-                setSyncStatus('Erro ao Salvar', '#ef4444');
-            }
-        }
-
-        function setSyncStatus(text, color) {
-            document.getElementById('status-text').innerText = text;
-            document.getElementById('status-dot').style.backgroundColor = color;
-        }
+        const pushData = () => apiCall('PUT', { tasks: state.tasks, projetos: state.projetos, tags: state.tags });
+        const setSyncStatus = (text, color) => { $('status-text').innerText = text; $('status-dot').style.background = color; };
 
         function updateSelectedDate(val) {
-            if(!val) return;
-            state.tempDate = val;
-            if(val === getTodayISO()) {
-                document.getElementById('meta-date-label').innerText = "📅 Hoje";
-            } else if(val === getTomorrowISO()) {
-                document.getElementById('meta-date-label').innerText = "📅 Amanhã";
-            } else {
-                document.getElementById('meta-date-label').innerText = `📅 ${formatDisplayDate(val)}`;
-            }
+            if(!val) return; state.tempDate = val;
+            // O ícone permanece visualmente limpo, mas adiciona um título acessível ao passar o mouse ou inspecionar
+            $('datepicker-trigger-zone').title = val === getISO(0) ? "Data: Hoje" : val === getISO(1) ? "Data: Amanhã" : `Data: ${formatDisplayDate(val)}`;
         }
 
         function setFilter(type, value = '') {
-            state.filterType = type;
-            state.selectedFilterValue = value;
-
+            state.filterType = type; state.selectedFilterValue = value;
             document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-            
-            const titleEl = document.getElementById('current-view-title');
-            if(type === 'hoje') {
-                document.getElementById('f-btn-hoje').classList.add('active');
-                titleEl.innerText = "Hoje";
-            } else if(type === 'amanha') {
-                document.getElementById('f-btn-amanha').classList.add('active');
-                titleEl.innerText = "Amanhã";
-            } else if(type === 'todos') {
-                document.getElementById('f-btn-todos').classList.add('active');
-                titleEl.innerText = "Todos os Itens";
-            } else if(type === 'projeto') {
-                titleEl.innerText = `📋 Projeto: ${value}`;
-            } else if(type === 'tag') {
-                titleEl.innerText = `🏷️ Tag: ${value}`;
-            }
-
-            state.editingTaskId = null;
-            render();
+            if(['hoje', 'amanha', 'todos'].includes(type)) $(`f-btn-${type}`).classList.add('active');
+            $('current-view-title').innerText = type === 'hoje' ? "Hoje" : type === 'amanha' ? "Amanhã" : type === 'todos' ? "Todos os Itens" : `${type === 'projeto' ? '📋' : '🏷️'} ${value}`;
+            state.editingTaskId = null; render();
         }
 
         function handleInputKey(e) {
-            if(e.key === 'Enter') {
-                const inp = document.getElementById('new-task-input');
-                const val = inp.value.trim();
-                if(!val) return;
-
-                const t = {
-                    id: Date.now().toString(),
-                    text: val,
-                    completed: false,
-                    date: state.tempDate,
-                    project: state.tempProject,
-                    tag: state.tempTag
-                };
-
-                state.tasks.push(t);
-                inp.value = '';
-                
-                state.tempProject = 'No project';
-                state.tempTag = '';
-                document.getElementById('meta-project-label').innerText = '📋 Sem Projeto';
-                document.getElementById('meta-tag-label').innerText = '🏷️ Sem Tag';
-
-                render();
-                pushData();
+            if(e.key === 'Enter' && e.target.value.trim()) {
+                state.tasks.push({ id: Date.now().toString(), text: e.target.value.trim(), completed: false, date: state.tempDate, project: state.tempProject, tag: state.tempTag });
+                e.target.value = ''; state.tempProject = 'No project'; state.tempTag = '';
+                $('meta-project-label').innerText = '📋 Sem Projeto'; $('meta-tag-label').innerText = '🏷️ Sem Tag';
+                render(); pushData();
             }
         }
 
-        function toggleTask(id) {
-            const t = state.tasks.find(item => item.id === id);
-            if(t) {
-                t.completed = !t.completed;
-                render();
-                pushData();
-            }
-        }
-
-        function deleteTask(id) {
-            state.tasks = state.tasks.filter(item => item.id !== id);
-            if(state.editingTaskId === id) state.editingTaskId = null;
-            render();
-            pushData();
-        }
-
-        function startInlineEdit(id) {
-            state.editingTaskId = id;
-            render();
-            const inputEl = document.getElementById(`inline-edit-${id}`);
-            if(inputEl) {
-                inputEl.focus();
-                const val = inputEl.value;
-                inputEl.value = '';
-                inputEl.value = val;
-            }
-        }
-
-        function saveInlineEdit(id, val) {
-            const cleanVal = val.trim();
-            const t = state.tasks.find(item => item.id === id);
-            
-            if (t && cleanVal && cleanVal !== t.text) {
-                t.text = cleanVal;
-                state.editingTaskId = null;
-                render();
-                pushData();
-            } else {
-                state.editingTaskId = null;
-                render();
-            }
-        }
-
-        function handleInlineEditKey(e, id) {
-            if (e.key === 'Enter') {
-                saveInlineEdit(id, e.target.value);
-            } else if (e.key === 'Escape') {
-                state.editingTaskId = null;
-                render();
-            }
+        function opTask(id, type, val = '') {
+            if (type === 'toggle') { const t = state.tasks.find(x => x.id === id); if(t) t.completed = !t.completed; }
+            if (type === 'delete') state.tasks = state.tasks.filter(x => x.id !== id);
+            if (type === 'save') { const t = state.tasks.find(x => x.id === id); if(t && val.trim()) t.text = val.trim(); state.editingTaskId = null; }
+            render(); pushData();
         }
 
         function render() {
-            const container = document.getElementById('task-list-container');
-            container.innerHTML = '';
+            const container = $('task-list-container'); container.innerHTML = '';
+            let filtered = state.tasks.filter(t => 
+                state.filterType === 'hoje' ? t.date === getISO(0) :
+                state.filterType === 'amanha' ? t.date === getISO(1) :
+                state.filterType === 'projeto' ? t.project === state.selectedFilterValue :
+                state.filterType === 'tag' ? t.tag === state.selectedFilterValue : true
+            );
 
-            let filtered = state.tasks;
-            if(state.filterType === 'hoje') {
-                filtered = state.tasks.filter(t => t.date === getTodayISO());
-            } else if(state.filterType === 'amanha') {
-                filtered = state.tasks.filter(t => t.date === getTomorrowISO());
-            } else if(state.filterType === 'projeto') {
-                filtered = state.tasks.filter(t => t.project === state.selectedFilterValue);
-            } else if(state.filterType === 'tag') {
-                filtered = state.tasks.filter(t => t.tag === state.selectedFilterValue);
-            }
-
-            if(filtered.length === 0) {
+            if(!filtered.length) {
                 container.innerHTML = `<div style="text-align:center; color:var(--text-secondary); padding:40px 0; font-size:14px;">Nenhuma atividade localizada.</div>`;
-                document.getElementById('progress-bar').style.width = '0%';
-                return;
+                $('progress-bar').style.width = '0%'; return;
             }
 
             filtered.forEach(t => {
-                const item = document.createElement('div');
-                item.className = `task-item ${t.completed ? 'completed' : ''}`;
-
-                let metaHTML = '';
-                if(t.project && t.project !== 'No project') {
-                    metaHTML += `<span class="clickable-pill project-pill" onclick="setFilter('projeto', '${t.project}')">📋 ${t.project}</span>`;
-                }
-                if(t.tag) {
-                    const foundTag = state.tags.find(tg => tg.nome === t.tag);
-                    const color = foundTag ? foundTag.cor : '#718096';
-                    metaHTML += `<span class="clickable-pill tag-pill" style="background-color:${color}" onclick="setFilter('tag', '${t.tag}')">🏷️ ${t.tag}</span>`;
-                }
-                if(t.date) {
-                    metaHTML += `<span class="clickable-pill date-pill">📅 ${formatDisplayDate(t.date)}</span>`;
-                }
-
-                let textContentHTML = '';
-                if(state.editingTaskId === t.id) {
-                    textContentHTML = `<input type="text" class="task-edit-inline-input" id="inline-edit-${t.id}" value="${t.text}" onkeydown="handleInlineEditKey(event, '${t.id}')" onblur="saveInlineEdit('${t.id}', this.value)">`;
-                } else {
-                    textContentHTML = `<span class="task-text" onclick="startInlineEdit('${t.id}')">${t.text}</span>`;
-                }
-
+                const item = document.createElement('div'); item.className = `task-item ${t.completed ? 'completed' : ''}`;
+                const tTag = state.tags.find(g => g.nome === t.tag);
                 item.innerHTML = `
-                    <input type="checkbox" class="task-checkbox" ${t.completed ? 'checked' : ''} onchange="toggleTask('${t.id}')">
+                    <input type="checkbox" class="task-checkbox" ${t.completed ? 'checked' : ''} onchange="opTask('${t.id}', 'toggle')">
                     <div class="task-content">
-                        ${textContentHTML}
-                        <div class="task-meta-clickable-zone">${metaHTML}</div>
+                        ${state.editingTaskId === t.id ? `<input type="text" class="task-edit-inline-input" id="inline-edit-${t.id}" value="${t.text}" onkeydown="e => e.key==='Enter' && opTask('${t.id}', 'save', this.value)" onblur="opTask('${t.id}', 'save', this.value)">` : `<span class="task-text" onclick="state.editingTaskId='${t.id}'; render(); $('inline-edit-${t.id}').focus();">${t.text}</span>`}
+                        <div class="task-meta-clickable-zone">
+                            ${t.project && t.project !== 'No project' ? `<span class="clickable-pill project-pill" onclick="setFilter('projeto', '${t.project}')">📋 ${t.project}</span>` : ''}
+                            ${t.tag ? `<span class="clickable-pill tag-pill" style="background:${tTag ? tTag.cor : '#718096'}" onclick="setFilter('tag', '${t.tag}')">🏷️ ${t.tag}</span>` : ''}
+                            <span class="clickable-pill date-pill">📅 ${formatDisplayDate(t.date)}</span>
+                        </div>
                     </div>
-                    <button class="btn-inline-del" onclick="deleteTask('${t.id}')">&times;</button>
+                    <button class="btn-inline-del" onclick="opTask('${t.id}', 'delete')">&times;</button>
                 `;
                 container.appendChild(item);
             });
-
-            const done = filtered.filter(t => t.completed).length;
-            const pct = (done / filtered.length) * 100;
-            document.getElementById('progress-bar').style.width = `${pct}%`;
+            $('progress-bar').style.width = `${(filtered.filter(t => t.completed).length / filtered.length) * 100}%`;
         }
 
-        // JANELA DE HISTÓRICO DE MUDANÇAS E INFORMAÇÕES
-        function openInfoDrawer() {
-            document.getElementById('drawer-overlay').style.display = 'block';
-            document.getElementById('context-drawer').classList.add('open');
-            
-            const titleEl = document.getElementById('drawer-title');
-            const formArea = document.getElementById('drawer-form-area');
-            const listArea = document.getElementById('drawer-list-items');
+        function openDrawerCommon(title, formAreaHtml, listRenderFn) {
+            $('drawer-overlay').style.display = 'block'; $('context-drawer').classList.add('open');
+            $('drawer-title').innerText = title; $('drawer-form-area').innerHTML = formAreaHtml;
+            listRenderFn();
+        }
+        const closeDrawer = () => { $('context-drawer').classList.remove('open'); $('drawer-overlay').style.display = 'none'; };
 
-            titleEl.innerText = `Informações do Sistema (v${state.version})`;
-            formArea.innerHTML = `<div style="font-size: 13px; color: var(--text-secondary);">Histórico de versões e modificações do código da aplicação:</div>`;
-            
-            listArea.innerHTML = '';
-            let changelogHTML = '<ul class="changelog-list">';
-            state.changelog.forEach(item => {
-                changelogHTML += `
-                    <li class="changelog-item">
-                        <span class="changelog-version">Versão ${item.v}</span> (${item.date})<br>
-                        ${item.desc}
-                    </li>
-                `;
+        function openInfoDrawer() {
+            openDrawerCommon(`Informações do Sistema (v${state.version})`, `<div style="font-size: 13px; color: var(--text-secondary);">Histórico de modificações:</div>`, () => {
+                $('drawer-list-items').innerHTML = `<ul class="changelog-list">` + state.changelog.map(x => `<li class="changelog-item"><span class="changelog-version">Versão ${x.v}</span> (${x.date})<br>${x.desc}</li>`).join('') + `</ul>`;
             });
-            changelogHTML += '</ul>';
-            listArea.innerHTML = changelogHTML;
         }
 
         function openContextDrawer(mode) {
-            document.getElementById('drawer-overlay').style.display = 'block';
-            document.getElementById('context-drawer').classList.add('open');
-            
-            const formArea = document.getElementById('drawer-form-area');
-            const titleEl = document.getElementById('drawer-title');
-            
-            state.editingTagIndex = null; 
-
+            state.editingTagIndex = null;
             if(mode === 'projetos') {
-                titleEl.innerText = "Gerenciar Projetos";
-                formArea.innerHTML = `
-                    <input type="text" class="drawer-input" id="new-proj-name" placeholder="Nome do Projeto...">
-                    <button class="action-submit-btn" onclick="saveNewProject()">Adicionar Projeto</button>
-                `;
-                renderProjectsList();
-            } else if(mode === 'tags') {
-                titleEl.innerText = "Gerenciar Tags";
-                renderTagForm();
-                renderTagsList();
+                openDrawerCommon("Gerenciar Projetos", `<input type="text" class="drawer-input" id="new-proj-name" placeholder="Nome do Projeto..."><button class="action-submit-btn" onclick="saveProj()">Adicionar</button>`, renderProjectsList);
+            } else {
+                openDrawerCommon("Gerenciar Tags", '', () => { renderTagForm(); renderTagsList(); });
             }
-        }
-
-        function renderTagForm(nome = '', cor = '#4f46e5', labelBtn = 'Adicionar Tag') {
-            const formArea = document.getElementById('drawer-form-area');
-            formArea.innerHTML = `
-                <input type="text" class="drawer-input" id="new-tag-name" placeholder="Nome da Tag..." value="${nome}">
-                <div class="drawer-row-inline">
-                    <span>Cor Visual:</span>
-                    <input type="color" id="new-tag-color" value="${cor}" style="border:none; background:none; width:40px; height:30px; cursor:pointer;">
-                </div>
-                <button class="action-submit-btn" onclick="saveTagAction()">${labelBtn}</button>
-            `;
-        }
-
-        function closeDrawer() {
-            document.getElementById('context-drawer').classList.remove('open');
-            document.getElementById('drawer-overlay').style.display = 'none';
         }
 
         function renderProjectsList() {
-            const list = document.getElementById('drawer-list-items');
-            list.innerHTML = '';
-
-            state.projetos.forEach(p => {
-                const row = document.createElement('div');
-                row.className = 'list-item-row';
-                row.innerHTML = `
-                    <div class="item-label" onclick="selectProjectForTask('${p}')">📋 ${p}</div>
-                    <button class="btn-inline-del" onclick="deleteProject('${p}')">&times;</button>
-                `;
-                list.appendChild(row);
-            });
+            $('drawer-list-items').innerHTML = state.projetos.map(p => `<div class="list-item-row"><div class="item-label" onclick="state.tempProject='${p}'; $('meta-project-label').innerText='📋 ${p}'; closeDrawer()">📋 ${p}</div><button class="btn-inline-del" onclick="state.projetos=state.projetos.filter(x=>x!=='${p}'); renderProjectsList(); pushData()">&times;</button></div>`).join('');
         }
+        function saveProj() { const v = $('new-proj-name').value.trim(); if(v && !state.projetos.includes(v)) { state.projetos.push(v); $('new-proj-name').value=''; renderProjectsList(); pushData(); } }
 
-        function selectProjectForTask(p) {
-            state.tempProject = p;
-            document.getElementById('meta-project-label').innerText = `📋 ${p}`;
-            closeDrawer();
-        }
-
-        function saveNewProject() {
-            const inp = document.getElementById('new-proj-name');
-            const val = inp.value.trim();
-            if(!val || state.projetos.includes(val)) return;
-
-            state.projetos.push(val);
-            inp.value = '';
-            renderProjectsList();
-            pushData();
-        }
-
-        function deleteProject(p) {
-            state.projetos = state.projetos.filter(item => item !== p);
-            renderProjectsList();
-            pushData();
+        function renderTagForm(n='', c='#4f46e5', l='Adicionar Tag') {
+            $('drawer-form-area').innerHTML = `<input type="text" class="drawer-input" id="new-tag-name" placeholder="Nome da Tag..." value="${n}"><div class="drawer-row-inline"><span>Cor:</span><input type="color" id="new-tag-color" value="${c}" style="border:none;background:none;width:40px;height:30px;cursor:pointer;"></div><button class="action-submit-btn" onclick="saveTag()">${l}</button>`;
         }
 
         function renderTagsList() {
-            const list = document.getElementById('drawer-list-items');
-            list.innerHTML = '';
-
-            state.tags.forEach((t, idx) => {
-                const row = document.createElement('div');
-                row.className = 'list-item-row';
-                row.innerHTML = `
-                    <div class="item-label" onclick="selectTagForTask('${t.nome}')">
-                        <span style="width:10px; height:10px; background:${t.cor}; border-radius:50%;"></span>
-                        <strong>${t.nome}</strong>
-                    </div>
-                    <div>
-                        <button class="btn-inline-edit" onclick="startEditTag(${idx})">Editar</button>
-                        <button class="btn-inline-del" onclick="deleteTag('${t.nome}')">&times;</button>
-                    </div>
-                `;
-                list.appendChild(row);
-            });
+            $('drawer-list-items').innerHTML = state.tags.map((t, i) => `<div class="list-item-row"><div class="item-label" onclick="state.tempTag='${t.nome}'; $('meta-tag-label').innerText='🏷️ ${t.nome}'; closeDrawer()"><span style="width:10px;height:10px;background:${t.cor};border-radius:50%;"></span><strong>${t.nome}</strong></div><div><button class="btn-inline-edit" onclick="state.editingTagIndex=${i}; renderTagForm('${t.nome}','${t.cor}','Salvar')">Editar</button><button class="btn-inline-del" onclick="state.tags=state.tags.filter(x=>x.nome!=='${t.nome}'); state.tasks.forEach(x=>x.tag==='text' ? x.tag='' : null); renderTagsList(); render(); pushData()">&times;</button></div></div>`).join('');
         }
 
-        function selectTagForTask(t) {
-            state.tempTag = t;
-            document.getElementById('meta-tag-label').innerText = `🏷️ ${t}`;
-            closeDrawer();
-        }
-
-        function startEditTag(idx) {
-            state.editingTagIndex = idx;
-            const tag = state.tags[idx];
-            renderTagForm(tag.nome, tag.cor, 'Salvar Alterações');
-        }
-
-        function saveTagAction() {
-            const nameInp = document.getElementById('new-tag-name');
-            const colorInp = document.getElementById('new-tag-color');
-            const nameVal = nameInp.value.trim().toUpperCase();
-            const colorVal = colorInp.value;
-
-            if(!nameVal) return;
-
+        function saveTag() {
+            const n = $('new-tag-name').value.trim().toUpperCase(), c = $('new-tag-color').value; if(!n) return;
             if(state.editingTagIndex !== null) {
-                const velhaTagNome = state.tags[state.editingTagIndex].nome;
-                state.tags[state.editingTagIndex] = { nome: nameVal, cor: colorVal };
-                
-                state.tasks.forEach(task => {
-                    if(task.tag === velhaTagNome) task.tag = nameVal;
-                });
-                
-                state.editingTagIndex = null;
+                const old = state.tags[state.editingTagIndex].nome; state.tags[state.editingTagIndex] = {nome:n, cor:c};
+                state.tasks.forEach(x => { if(x.tag === old) x.tag = n; }); state.editingTagIndex = null;
             } else {
-                if(state.tags.some(t => t.nome === nameVal)) return alert('Tag já cadastrada.');
-                state.tags.push({ nome: nameVal, cor: colorVal });
+                if(state.tags.some(x=>x.nome===n)) return; state.tags.push({nome:n, cor:c});
             }
-
-            nameInp.value = '';
-            renderTagForm(); 
-            renderTagsList();
-            render();
-            pushData();
-        }
-
-        function deleteTag(nome) {
-            state.tags = state.tags.filter(t => t.nome !== nome);
-            state.tasks.forEach(task => {
-                if(task.tag === nome) task.tag = '';
-            });
-            renderTagsList();
-            render();
-            pushData();
+            renderTagForm(); renderTagsList(); render(); pushData();
         }
 
         window.addEventListener('DOMContentLoaded', initApp);
