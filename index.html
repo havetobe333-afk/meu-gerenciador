@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Gerenciador de Tarefas</title>
+    <title>Portal Corporativo - Intranet</title>
     <style>
         :root {
             --bg-main: #f8f9fa;
@@ -33,7 +33,7 @@
             flex-direction: column;
         }
 
-        /* APLICATIVO PRINCIPAL - CARREGA VISÍVEL DIRETAMENTE */
+        /* APLICATIVO PRINCIPAL */
         #app-container {
             display: flex;
             flex-direction: column;
@@ -282,7 +282,7 @@
             cursor: pointer;
         }
 
-        /* GAVETAS DE CONTEXTO (BOTTOM SHEETS) */
+        /* GAVETAS DE TOQUE (BOTTOM SHEETS) */
         .drawer-overlay {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
@@ -321,6 +321,7 @@
             margin-bottom: 14px;
         }
 
+        /* Formulários nas Gavetas */
         .drawer-form-block {
             background: #f8fafc;
             padding: 12px;
@@ -389,6 +390,7 @@
             background: none; border: none; color: var(--accent-color); font-size: 14px; cursor: pointer; padding: 0 4px; margin-right: 6px;
         }
 
+        /* FOOTER NAVEGADORES AUXILIARES */
         .footer-nav {
             display: flex;
             gap: 8px;
@@ -470,14 +472,14 @@
                 { nome: "URGENTE", cor: "#ef4444" },
                 { nome: "FOCO", cor: "#3b82f6" }
             ],
-            filterType: 'hoje',
+            filterType: 'hoje', 
             selectedFilterValue: '',
             
             tempDate: '',
             tempProject: 'No project',
             tempTag: '',
             
-            editingTagIndex: null
+            editingTagIndex: null 
         };
 
         function getTodayISO() {
@@ -497,7 +499,13 @@
             return `${parts[2]}/${parts[1]}`;
         }
 
-        // COMUNICAÇÃO ASSÍNCRONA COM NUVEM
+        // INICIALIZAÇÃO DIRETA DO APLICATIVO
+        function initApp() {
+            state.tempDate = getTodayISO();
+            document.getElementById('task-date-picker').value = state.tempDate;
+            fetchData();
+        }
+
         async function fetchData() {
             setSyncStatus('Sincronizando...', '#eab308');
             try {
@@ -677,7 +685,7 @@
             const formArea = document.getElementById('drawer-form-area');
             const titleEl = document.getElementById('drawer-title');
             
-            state.editingTagIndex = null;
+            state.editingTagIndex = null; 
 
             if(mode === 'projetos') {
                 titleEl.innerText = "Gerenciar Projetos";
@@ -743,7 +751,7 @@
         }
 
         function deleteProject(p) {
-            state.projetos = state.projetos.filter(item => item !== p);
+            state.projetos = state.projetos.filter(item !== p);
             renderProjectsList();
             pushData();
         }
@@ -804,7 +812,7 @@
             }
 
             nameInp.value = '';
-            renderTagForm();
+            renderTagForm(); 
             renderTagsList();
             render();
             pushData();
@@ -820,12 +828,8 @@
             pushData();
         }
 
-        // INICIALIZAÇÃO AUTOMÁTICA IMEDIATA AO CARREGAR
-        window.addEventListener('DOMContentLoaded', () => {
-            state.tempDate = getTodayISO();
-            document.getElementById('task-date-picker').value = state.tempDate;
-            fetchData();
-        });
+        // Executa a inicialização ao carregar o script
+        initApp();
     </script>
 </body>
 </html>
