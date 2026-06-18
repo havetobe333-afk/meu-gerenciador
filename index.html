@@ -512,10 +512,11 @@
             return `${parts[2]}/${parts[1]}`;
         }
 
-        // INICIALIZAÇÃO DIRETA DO APLICATIVO
+        // INICIALIZAÇÃO DO APLICATIVO CORRIGIDA
         function initApp() {
             state.tempDate = getTodayISO();
             document.getElementById('task-date-picker').value = state.tempDate;
+            updateSelectedDate(state.tempDate); // Sincroniza o texto inicial do botão
             fetchData();
         }
 
@@ -639,21 +640,18 @@
             pushData();
         }
 
-        // Ativa o modo de edição inline para uma tarefa específica
         function startInlineEdit(id) {
             state.editingTaskId = id;
             render();
             const inputEl = document.getElementById(`inline-edit-${id}`);
             if(inputEl) {
                 inputEl.focus();
-                // Coloca o cursor no final do texto
                 const val = inputEl.value;
                 inputEl.value = '';
                 inputEl.value = val;
             }
         }
 
-        // Salva a alteração realizada no input inline
         function saveInlineEdit(id, val) {
             const cleanVal = val.trim();
             const t = state.tasks.find(item => item.id === id);
@@ -716,7 +714,6 @@
                     metaHTML += `<span class="clickable-pill date-pill">📅 ${formatDisplayDate(t.date)}</span>`;
                 }
 
-                // Renderiza como Input se estiver sendo editado, caso contrário renderiza o texto clicável
                 let textContentHTML = '';
                 if(state.editingTaskId === t.id) {
                     textContentHTML = `<input type="text" class="task-edit-inline-input" id="inline-edit-${t.id}" value="${t.text}" onkeydown="handleInlineEditKey(event, '${t.id}')" onblur="saveInlineEdit('${t.id}', this.value)">`;
@@ -890,8 +887,8 @@
             pushData();
         }
 
-        // Executa a inicialização ao carregar o script
-        initApp();
+        // Executa a inicialização de forma segura após o carregamento da página
+        window.addEventListener('DOMContentLoaded', initApp);
     </script>
 </body>
 </html>
