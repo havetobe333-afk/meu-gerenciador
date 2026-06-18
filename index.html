@@ -33,14 +33,13 @@
             flex-direction: column;
         }
 
-        /* APLICATIVO PRINCIPAL */
         #app-container {
             display: flex;
             flex-direction: column;
             width: 100%;
             max-width: 600px;
             margin: 0 auto;
-            padding-bottom: 90px;
+            padding-bottom: 110px;
         }
 
         header {
@@ -61,11 +60,35 @@
             align-items: center;
         }
 
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
         .app-title {
             font-size: 20px;
             font-weight: 700;
             color: var(--text-primary);
             letter-spacing: -0.5px;
+        }
+
+        .info-btn {
+            background: none;
+            border: none;
+            font-size: 18px;
+            cursor: pointer;
+            color: var(--text-secondary);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 4px;
+            border-radius: 50%;
+            transition: background 0.2s;
+        }
+
+        .info-btn:hover {
+            background: #cbd5e133;
         }
 
         .sync-status {
@@ -287,11 +310,34 @@
             align-items: center;
         }
 
-        .hidden-date-input {
+        /* NOVA ABORDAGEM DE CALENDÁRIO À PROVA DE FALHAS COMPORTAMENTAIS */
+        .datepicker-wrapper {
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+            background: #f1f5f9;
+            border: 1px solid var(--border-color);
+            border-radius: 14px;
+            padding: 0 12px;
+            height: 30px;
+            overflow: hidden;
+        }
+
+        .datepicker-wrapper span {
+            font-size: 12px;
+            font-weight: 500;
+            color: var(--text-secondary);
+            pointer-events: none; /* Deixa o clique passar direto para o input abaixo */
+            z-index: 2;
+            margin-right: 4px;
+        }
+
+        .datepicker-wrapper input[type="date"] {
             position: absolute;
             top: 0; left: 0; width: 100%; height: 100%;
-            opacity: 0;
+            opacity: 0.01; /* Fica invisível mas mantém clique físico 100% nativo e focado */
             cursor: pointer;
+            z-index: 3;
         }
 
         /* GAVETAS DE TOQUE (BOTTOM SHEETS) */
@@ -333,7 +379,6 @@
             margin-bottom: 14px;
         }
 
-        /* Formulários nas Gavetas */
         .drawer-form-block {
             background: #f8fafc;
             padding: 12px;
@@ -402,7 +447,6 @@
             background: none; border: none; color: var(--accent-color); font-size: 14px; cursor: pointer; padding: 0 4px; margin-right: 6px;
         }
 
-        /* FOOTER NAVEGADORES AUXILIARES */
         .footer-nav {
             display: flex;
             gap: 8px;
@@ -413,6 +457,25 @@
         .footer-btn {
             background: none; border: none; font-size: 13px; color: var(--text-secondary); cursor: pointer; padding: 4px; font-weight: 500;
         }
+
+        /* ESTILO DO MODAL DE CHANGELOG / VERSÃO */
+        .changelog-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        .changelog-item {
+            font-size: 13px;
+            line-height: 1.4;
+            padding-bottom: 8px;
+            border-bottom: 1px dashed var(--border-color);
+        }
+        .changelog-version {
+            font-weight: 700;
+            color: var(--accent-color);
+        }
     </style>
 </head>
 <body>
@@ -420,7 +483,10 @@
     <div id="app-container">
         <header>
             <div class="header-top">
-                <div class="app-title" id="current-view-title">Hoje</div>
+                <div class="header-left">
+                    <div class="app-title" id="current-view-title">Hoje</div>
+                    <button class="info-btn" onclick="openInfoDrawer()" title="Informações do Sistema">ℹ️</button>
+                </div>
                 <div class="sync-status">
                     <div class="status-dot" id="status-dot"></div>
                     <span id="status-text">Carregando...</span>
@@ -438,15 +504,14 @@
         </div>
 
         <main class="task-list" id="task-list-container">
-            </main>
+        </main>
 
         <div class="input-container">
             <div class="meta-selectors-row">
-                <!-- Gatilho de clique direto para forçar abertura do calendário -->
-                <button class="selector-btn" id="meta-date-btn" onclick="openDatePicker()">
+                <div class="datepicker-wrapper">
                     <span id="meta-date-label">📅 Hoje</span>
-                    <input type="date" class="hidden-date-input" id="task-date-picker" onchange="updateSelectedDate(this.value)" onclick="event.stopPropagation();">
-                </button>
+                    <input type="date" id="task-date-picker" onchange="updateSelectedDate(this.value)">
+                </div>
                 <button class="selector-btn" onclick="openContextDrawer('projetos')" id="meta-project-label">📋 Sem Projeto</button>
                 <button class="selector-btn" onclick="openContextDrawer('tags')" id="meta-tag-label">🏷️ Sem Tag</button>
             </div>
@@ -467,10 +532,10 @@
         <div class="drawer-title" id="drawer-title">Contexto</div>
         
         <div class="drawer-form-block" id="drawer-form-area">
-            </div>
+        </div>
 
         <div class="items-list-scroll" id="drawer-list-items">
-            </div>
+        </div>
     </div>
 
     <script>
@@ -479,6 +544,14 @@
         const JSONBIN_URL = `https://api.jsonbin.io/v3/b/${BIN_ID}`;
 
         let state = {
+            version: "1.1.0",
+            changelog: [
+                {
+                    v: "1.1.0",
+                    date: "18/06/2026",
+                    desc: "Implementado o botão de informações de versão (ℹ️) e reconstruída a arquitetura do seletor de datas para um wrapper de clique direto, eliminando falhas de toque nativas em dispositivos móveis e Safari."
+                }
+            ],
             tasks: [],
             projetos: ["Trabalho", "Estudos"],
             tags: [
@@ -487,11 +560,9 @@
             ],
             filterType: 'hoje', 
             selectedFilterValue: '',
-            
             tempDate: '',
             tempProject: 'No project',
             tempTag: '',
-            
             editingTagIndex: null,
             editingTaskId: null
         };
@@ -511,17 +582,6 @@
             if (!isoStr) return 'Sem Data';
             const parts = isoStr.split('-');
             return `${parts[2]}/${parts[1]}`;
-        }
-
-        // Função explícita para contornar problemas de foco e toque em dispositivos mobile/Safari
-        function openDatePicker() {
-            const picker = document.getElementById('task-date-picker');
-            if (picker && typeof picker.showPicker === 'function') {
-                picker.showPicker();
-            } else if (picker) {
-                picker.focus();
-                picker.click();
-            }
         }
 
         function initApp() {
@@ -746,6 +806,32 @@
             const done = filtered.filter(t => t.completed).length;
             const pct = (done / filtered.length) * 100;
             document.getElementById('progress-bar').style.width = `${pct}%`;
+        }
+
+        // JANELA DE HISTÓRICO DE MUDANÇAS E INFORMAÇÕES
+        function openInfoDrawer() {
+            document.getElementById('drawer-overlay').style.display = 'block';
+            document.getElementById('context-drawer').classList.add('open');
+            
+            const titleEl = document.getElementById('drawer-title');
+            const formArea = document.getElementById('drawer-form-area');
+            const listArea = document.getElementById('drawer-list-items');
+
+            titleEl.innerText = `Informações do Sistema (v${state.version})`;
+            formArea.innerHTML = `<div style="font-size: 13px; color: var(--text-secondary);">Histórico de versões e modificações do código da aplicação:</div>`;
+            
+            listArea.innerHTML = '';
+            let changelogHTML = '<ul class="changelog-list">';
+            state.changelog.forEach(item => {
+                changelogHTML += `
+                    <li class="changelog-item">
+                        <span class="changelog-version">Versão ${item.v}</span> (${item.date})<br>
+                        ${item.desc}
+                    </li>
+                `;
+            });
+            changelogHTML += '</ul>';
+            listArea.innerHTML = changelogHTML;
         }
 
         function openContextDrawer(mode) {
