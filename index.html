@@ -635,14 +635,14 @@
         ];
         
         // Controle de Calendário Infinito
-        let dataReferenciaInicio = new Date(2026, 5, 15); // Segunda-feira de referência inicial (Junho 15, 2026)
+        let dataReferenciaInicio = new Date(2026, 5, 15); 
         let filtroDiaFormatado = "2026-06-15"; 
         let filtroProjeto = "";
         let filtroTag = "";
         let filtroSemDataAtivo = false;
         let debounceTimer = null;
 
-        let formMetadata = { alerta: false, dataForm: "2026-06-15", projeto: "No project", tagSelecionada: "VITAL ACTIVITIES" };
+        let formMetadata = { alerta: false, dataForm: "2026-06-15", projeto: "No project", tagSelecionada: "" };
 
         const mesesNomes = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
         const diasSemanasNomes = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
@@ -660,10 +660,8 @@
             document.getElementById('loginGate').style.display = 'none';
             document.getElementById('appContent').style.display = 'flex';
             
-            // Define o dia atual real como filtro ao inicializar
             const hoje = new Date();
             filtroDiaFormatado = formatarDataISO(hoje);
-            // Ajusta a semana de referência para iniciar na segunda anterior ao dia de hoje
             const dSemana = hoje.getDay();
             const diferenca = dSemana === 0 ? -6 : 1 - dSemana;
             dataReferenciaInicio = new Date(hoje);
@@ -691,6 +689,10 @@
                 if (dados.record.tagsLista) tagsLista = dados.record.tagsLista;
                 if (dados.record.projetosLista) projetosLista = dados.record.projetosLista;
 
+                if (tagsLista.length > 0 && !formMetadata.tagSelecionada) {
+                    formMetadata.tagSelecionada = tagsLista[0].nome;
+                }
+
                 atualizarStatus('ok');
                 renderizarInterfaceApp();
                 construirCalendarioStrip();
@@ -712,7 +714,6 @@
             }, 1000);
         }
 
-        // Formata objeto Date para YYYY-MM-DD local
         function formatarDataISO(dateObj) {
             const y = dateObj.getFullYear();
             const m = String(dateObj.getMonth() + 1).padStart(2, '0');
@@ -729,13 +730,11 @@
             return `${mesesAbrev[mIdx]} ${parseInt(partes[2], 10)}`;
         }
 
-        // Construção dinâmica da faixa horizontal de 7 dias
         function construirCalendarioStrip() {
             const container = document.getElementById('calendarStripContainer');
             if (!container) return;
             container.innerHTML = '';
 
-            // Atualiza o mês visível no topo baseado no primeiro dia visível da faixa
             document.getElementById('nomeMesVisivel').innerText = mesesNomes[dataReferenciaInicio.getMonth()];
 
             let cursorData = new Date(dataReferenciaInicio);
@@ -824,7 +823,6 @@
             document.getElementById('overlayCriacao').style.display = "block";
             document.getElementById('sheetCriacao').classList.add('open');
             
-            // Reinicia campos e textos
             formMetadata = { alerta: false, dataForm: formatarDataISO(new Date()), projeto: "No project", tagSelecionada: tagsLista[0]?.nome || "" };
             document.getElementById('formBtnAlert').innerText = "🔔 Alerta: Não";
             document.getElementById('formBtnDateText').innerText = "📅 " + formatarExibicaoAmigavel(formMetadata.dataForm);
@@ -845,7 +843,6 @@
             document.getElementById('subListaTags').style.display = "none";
         }
 
-        /* --- LOGICA DE TOQUE PARA CRIAÇÃO --- */
         function toggleFormAlert() {
             formMetadata.alerta = !formMetadata.alerta;
             document.getElementById('formBtnAlert').innerText = formMetadata.alerta ? "🔔 Alerta: Sim" : "🔔 Alerta: Não";
@@ -915,7 +912,7 @@
                 projeto: formMetadata.projeto,
                 feito: false,
                 tag: formMetadata.tagSelecionada,
-                prazoTexto: formMetadata.dataForm, // Salva em formato ISO estruturado
+                prazoTexto: formMetadata.dataForm, 
                 alerta: formMetadata.alerta
             };
 
@@ -1056,7 +1053,7 @@
             const baseRow = document.createElement('div');
             baseRow.className = 'project-item-row';
             baseRow.innerHTML = `
-                <div class="item-clickable-zone" onclick="filtrarPorProjeto('No project')">📋 No project</div>
+                <div class="item-clickable-zone" onclick="filtrarPorProjeto('No project')">📋 Sem projeto associado</div>
                 <div class="project-count-circle">${noProjCount}</div>
             `;
             container.appendChild(baseRow);
