@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Portal Corporativo - Intranet</title>
+    <title>Gerenciador de Tarefas</title>
     <style>
         :root {
             --bg-main: #f8f9fa;
@@ -33,46 +33,9 @@
             flex-direction: column;
         }
 
-        /* TELA DE LOGIN DISFARÇADA */
-        #login-screen {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background-color: #ffffff;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            z-index: 9999;
-            padding: 20px;
-        }
-
-        .corp-header {
-            text-align: center;
-            max-width: 400px;
-        }
-
-        .corp-logo {
-            font-size: 24px;
-            font-weight: 700;
-            color: #1a202c;
-            letter-spacing: -0.5px;
-            margin-bottom: 8px;
-        }
-
-        .secret-trigger {
-            cursor: default;
-            color: inherit;
-        }
-
-        .corp-desc {
-            font-size: 14px;
-            color: var(--text-secondary);
-            line-height: 1.5;
-        }
-
-        /* APLICATIVO PRINCIPAL */
+        /* APLICATIVO PRINCIPAL - CARREGA VISÍVEL DIRETAMENTE */
         #app-container {
-            display: none;
+            display: flex;
             flex-direction: column;
             width: 100%;
             max-width: 600px;
@@ -319,7 +282,7 @@
             cursor: pointer;
         }
 
-        /* GAVETAS DE TOQUE (BOTTOM SHEETS) */
+        /* GAVETAS DE CONTEXTO (BOTTOM SHEETS) */
         .drawer-overlay {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
@@ -358,7 +321,6 @@
             margin-bottom: 14px;
         }
 
-        /* Formulários nas Gavetas */
         .drawer-form-block {
             background: #f8fafc;
             padding: 12px;
@@ -427,7 +389,6 @@
             background: none; border: none; color: var(--accent-color); font-size: 14px; cursor: pointer; padding: 0 4px; margin-right: 6px;
         }
 
-        /* FOOTER NAVEGADORES AUXILIARES */
         .footer-nav {
             display: flex;
             gap: 8px;
@@ -441,13 +402,6 @@
     </style>
 </head>
 <body>
-
-    <div id="login-screen">
-        <div class="corp-header">
-            <div class="corp-logo">Portal Corp<span class="secret-trigger" onclick="unlockApp()">o</span>rativo</div>
-            <div class="corp-desc">Ambiente Interno Corporativo de Homologação de Rede e Atividades de Auditoria.</div>
-        </div>
-    </div>
 
     <div id="app-container">
         <header>
@@ -516,15 +470,14 @@
                 { nome: "URGENTE", cor: "#ef4444" },
                 { nome: "FOCO", cor: "#3b82f6" }
             ],
-            filterType: 'hoje', // 'hoje', 'amanha', 'todos', 'projeto:[nome]', 'tag:[nome]'
+            filterType: 'hoje',
             selectedFilterValue: '',
             
-            // Metadados temporários da nova tarefa sendo criada
             tempDate: '',
             tempProject: 'No project',
             tempTag: '',
             
-            editingTagIndex: null // Controle se está editando uma tag existente
+            editingTagIndex: null
         };
 
         function getTodayISO() {
@@ -542,17 +495,6 @@
             if (!isoStr) return 'Sem Data';
             const parts = isoStr.split('-');
             return `${parts[2]}/${parts[1]}`;
-        }
-
-        // UNLOCK POR GATILHO OCULTO
-        function unlockApp() {
-            document.getElementById('login-screen').style.display = 'none';
-            document.getElementById('app-container').style.display = 'flex';
-            
-            state.tempDate = getTodayISO();
-            document.getElementById('task-date-picker').value = state.tempDate;
-            
-            fetchData();
         }
 
         // COMUNICAÇÃO ASSÍNCRONA COM NUVEM
@@ -594,7 +536,6 @@
             document.getElementById('status-dot').style.backgroundColor = color;
         }
 
-        // UPDATE DATA DE CRIAÇÃO
         function updateSelectedDate(val) {
             if(!val) return;
             state.tempDate = val;
@@ -607,7 +548,6 @@
             }
         }
 
-        // LÓGICA DE FILTRAGEM
         function setFilter(type, value = '') {
             state.filterType = type;
             state.selectedFilterValue = value;
@@ -633,7 +573,6 @@
             render();
         }
 
-        // INPUT DE NOVA TAREFA
         function handleInputKey(e) {
             if(e.key === 'Enter') {
                 const inp = document.getElementById('new-task-input');
@@ -652,7 +591,6 @@
                 state.tasks.push(t);
                 inp.value = '';
                 
-                // Reseta tags e projetos temporários para evitar repetição acidental
                 state.tempProject = 'No project';
                 state.tempTag = '';
                 document.getElementById('meta-project-label').innerText = '📋 Sem Projeto';
@@ -678,7 +616,6 @@
             pushData();
         }
 
-        // MOTOR DE RENDERIZAÇÃO PRINCIPAL
         function render() {
             const container = document.getElementById('task-list-container');
             container.innerHTML = '';
@@ -728,13 +665,11 @@
                 container.appendChild(item);
             });
 
-            // Atualiza Barra de Progresso
             const done = filtered.filter(t => t.completed).length;
             const pct = (done / filtered.length) * 100;
             document.getElementById('progress-bar').style.width = `${pct}%`;
         }
 
-        // GAVETAS CONTROLES E DINÂMICA
         function openContextDrawer(mode) {
             document.getElementById('drawer-overlay').style.display = 'block';
             document.getElementById('context-drawer').classList.add('open');
@@ -742,7 +677,7 @@
             const formArea = document.getElementById('drawer-form-area');
             const titleEl = document.getElementById('drawer-title');
             
-            state.editingTagIndex = null; // Reseta modo de edição
+            state.editingTagIndex = null;
 
             if(mode === 'projetos') {
                 titleEl.innerText = "Gerenciar Projetos";
@@ -775,7 +710,6 @@
             document.getElementById('drawer-overlay').style.display = 'none';
         }
 
-        // CRIAÇÃO E EDICÃO DE PROJETOS E TAGS VIA INTERFACE
         function renderProjectsList() {
             const list = document.getElementById('drawer-list-items');
             list.innerHTML = '';
@@ -814,7 +748,6 @@
             pushData();
         }
 
-        // TAGS FUNCIONALIDADES COMPLETAS DE EDIÇÃO
         function renderTagsList() {
             const list = document.getElementById('drawer-list-items');
             list.innerHTML = '';
@@ -857,24 +790,21 @@
             if(!nameVal) return;
 
             if(state.editingTagIndex !== null) {
-                // Atualiza tag existente
                 const velhaTagNome = state.tags[state.editingTagIndex].nome;
                 state.tags[state.editingTagIndex] = { nome: nameVal, cor: colorVal };
                 
-                // Alinha as tarefas órfãs que usavam o nome antigo
                 state.tasks.forEach(task => {
                     if(task.tag === velhaTagNome) task.tag = nameVal;
                 });
                 
                 state.editingTagIndex = null;
             } else {
-                // Cria uma nova
                 if(state.tags.some(t => t.nome === nameVal)) return alert('Tag já cadastrada.');
                 state.tags.push({ nome: nameVal, cor: colorVal });
             }
 
             nameInp.value = '';
-            renderTagForm(); // Reseta para modo adição
+            renderTagForm();
             renderTagsList();
             render();
             pushData();
@@ -889,6 +819,13 @@
             render();
             pushData();
         }
+
+        // INICIALIZAÇÃO AUTOMÁTICA IMEDIATA AO CARREGAR
+        window.addEventListener('DOMContentLoaded', () => {
+            state.tempDate = getTodayISO();
+            document.getElementById('task-date-picker').value = state.tempDate;
+            fetchData();
+        });
     </script>
 </body>
 </html>
