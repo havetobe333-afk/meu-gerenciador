@@ -1,0 +1,894 @@
+<!DOCTYPE html>
+<html lang="pt-BR"><head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Gerenciador Pro - Custom Edition</title>
+    <style>
+        :root {
+            --bg-app: #f2f2f2;
+            --text-main: #000000;
+            --text-muted: #666666;
+            --accent-blue: #3b5998;
+            --app-blue: #44619d;
+            --border-light: #e5e5e5;
+        }
+
+        * { 
+            box-sizing: border-box; 
+            margin: 0; 
+            padding: 0;
+            word-wrap: break-word;
+            word-break: break-word;
+            white-space: normal;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-app);
+            color: var(--text-main);
+            -webkit-tap-highlight-color: transparent;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+        }
+
+        /* --- TELA DE LOGIN SEGRETO --- */
+        #loginGate {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100vw; height: 100vh;
+            background: #0f172a;
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .login-box {
+            background: #ffffff;
+            padding: 32px;
+            border-radius: 16px;
+            width: 100%;
+            max-width: 400px;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3);
+            text-align: center;
+        }
+
+        .login-box h2 {
+            font-size: 1.4rem;
+            margin-bottom: 24px;
+            color: #0f172a;
+            font-weight: 800;
+            text-transform: uppercase;
+        }
+
+        .login-field {
+            width: 100%;
+            padding: 12px 16px;
+            margin-bottom: 16px;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            font-family: inherit;
+            font-size: 0.95rem;
+            outline: none;
+        }
+        .login-field:focus { border-color: #3b82f6; }
+
+        .btn-login {
+            width: 100%;
+            background: #0f172a;
+            color: white;
+            padding: 12px;
+            font-size: 0.95rem;
+            border-radius: 8px;
+            font-weight: 700;
+            border: none;
+            cursor: pointer;
+        }
+
+        .error-screen {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            text-align: center;
+        }
+
+        .error-title {
+            font-size: 1.2rem;
+            font-weight: 800;
+            color: #ef4444;
+            margin-bottom: 12px;
+            text-transform: uppercase;
+        }
+
+        .error-subtitle {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #ffffff;
+            margin-bottom: 20px;
+            cursor: default;
+            user-select: none;
+        }
+
+        .secret-trigger { cursor: pointer; color: inherit; display: inline-block; }
+        .error-desc { font-size: 0.85rem; color: #94a3b8; max-width: 320px; }
+
+        /* --- CONTAINER PRINCIPAL --- */
+        #appContent {
+            display: none;
+            flex-direction: column;
+            width: 100%;
+            min-height: 100vh;
+            padding-bottom: 80px;
+            background-color: #ffffff;
+        }
+
+        /* --- BARRA SUPERIOR E CALENDÁRIO --- */
+        header {
+            background-color: #f2f2f2;
+            width: 100%;
+            border-bottom: 1px solid var(--border-light);
+            padding-top: 10px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-top-row {
+            display: flex;
+            justify-between: space-between;
+            align-items: center;
+            padding: 0 16px;
+            height: 32px;
+        }
+
+        .header-icon {
+            font-size: 1rem;
+            background: #ddd;
+            border: none;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-weight: bold;
+            cursor: pointer;
+            color: #333;
+        }
+
+        .month-title {
+            font-size: 1.1rem;
+            color: #222;
+            font-weight: 500;
+        }
+
+        .status-badge {
+            font-size: 0.65rem;
+            padding: 2px 6px;
+            border-radius: 4px;
+            background: #ddd;
+            font-weight: bold;
+            margin-left: 6px;
+        }
+
+        .calendar-strip {
+            display: flex;
+            justify-content: space-around;
+            padding: 12px 6px;
+            text-align: center;
+        }
+
+        .calendar-day {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+            width: 14%;
+            cursor: pointer;
+        }
+
+        .day-name {
+            font-size: 0.75rem;
+            color: #888;
+            text-transform: uppercase;
+            font-weight: 600;
+        }
+
+        .day-number {
+            font-size: 1.05rem;
+            color: #222;
+            font-weight: 500;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+        }
+
+        .calendar-day.active .day-number {
+            background-color: #3b5998;
+            color: #ffffff;
+            font-weight: bold;
+        }
+
+        /* --- CORPO DA LISTA DE TAREFAS --- */
+        main { flex-grow: 1; width: 100%; }
+
+        .task-list-container { display: flex; flex-direction: column; background-color: #ffffff; }
+
+        .task-row {
+            display: flex;
+            align-items: flex-start;
+            padding: 16px;
+            border-bottom: 1px solid #f5f5f5;
+            gap: 14px;
+        }
+
+        .task-checkbox-wrapper { padding-top: 2px; }
+
+        .task-checkbox {
+            width: 22px;
+            height: 22px;
+            border: 2px solid #a3a3a3;
+            border-radius: 4px;
+            appearance: none;
+            -webkit-appearance: none;
+            outline: none;
+            cursor: pointer;
+            background: #fff;
+            position: relative;
+        }
+        .task-checkbox:checked {
+            background-color: #555555;
+            border-color: #555555;
+        }
+        .task-checkbox:checked::after {
+            content: "✓";
+            color: #fff;
+            position: absolute;
+            font-size: 14px;
+            font-weight: bold;
+            left: 50%; top: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .task-content-area { flex-grow: 1; display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+
+        .task-title-input {
+            font-size: 1.15rem;
+            font-weight: 400;
+            color: #000000;
+            outline: none;
+            border: none;
+            background: transparent;
+            width: 100%;
+        }
+
+        .task-row.completed .task-title-input {
+            text-decoration: line-through;
+            color: #888888;
+        }
+
+        .task-project-link-label {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 0.9rem;
+            color: #666666;
+            margin-top: 2px;
+        }
+
+        .task-meta-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 4px;
+            width: 100%;
+        }
+
+        .task-pill-tag {
+            font-size: 0.7rem;
+            font-weight: bold;
+            color: #ffffff;
+            padding: 4px 10px;
+            border-radius: 12px;
+            text-transform: uppercase;
+        }
+
+        .task-deadline-zone {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.85rem;
+            color: #ff5252;
+            font-weight: 500;
+        }
+
+        .btn-delete-item {
+            background: transparent;
+            border: none;
+            color: #ddd;
+            font-size: 1.2rem;
+            cursor: pointer;
+            padding: 4px;
+        }
+        .btn-delete-item:hover { color: #ff5252; }
+
+        /* --- GAVETAS INFERIORES (BOTTOM SHEETS) --- */
+        .bottom-sheet-overlay {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100vw; height: 100vh;
+            background: rgba(0,0,0,0.4);
+            z-index: 1000;
+            display: none;
+        }
+
+        .bottom-sheet-container {
+            position: fixed;
+            bottom: 0; left: 0;
+            width: 100vw;
+            background: #ffffff;
+            border-top-left-radius: 20px;
+            border-top-right-radius: 20px;
+            z-index: 1001;
+            transform: translateY(100%);
+            transition: transform 0.3s ease-out;
+            padding: 20px;
+            box-shadow: 0 -5px 15px rgba(0,0,0,0.1);
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .bottom-sheet-container.open { transform: translateY(0); }
+
+        .sheet-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+        .sheet-title { font-size: 1.2rem; font-weight: bold; color: #111; }
+        .sheet-subtitle { font-size: 0.85rem; color: #666; margin-bottom: 16px; }
+        .sheet-close-btn { background: none; border: none; font-size: 1.3rem; color: #666; cursor: pointer; }
+
+        /* Listas de Itens dentro das Gavetas */
+        .project-item-row, .tag-item-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 14px 0;
+            border-bottom: 1px solid #eee;
+        }
+        .item-clickable-zone { display: flex; align-items: center; gap: 10px; font-size: 1.05rem; cursor: pointer; flex-grow: 1; }
+        
+        .project-count-circle {
+            width: 24px; height: 24px; border: 2px solid #44619d; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 0.8rem; font-weight: bold; color: #44619d;
+        }
+
+        /* Formulários de Criação Dinâmica */
+        .creator-form-block {
+            background: #f9f9f9;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .inline-input {
+            width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 6px; outline: none; font-family: inherit;
+        }
+        .color-row { display: flex; align-items: center; gap: 8px; font-size: 0.9rem; }
+        .color-picker-input { border: none; width: 40px; height: 30px; cursor: pointer; background: transparent; }
+        
+        .btn-sub-action {
+            background: #44619d; color: white; padding: 8px; border: none; border-radius: 6px; font-weight: bold; cursor: pointer;
+        }
+
+        /* --- CAMPOS DA GAVETA DE NOVA TAREFA --- */
+        .new-task-input {
+            width: 100%; font-size: 1.2rem; border: none; outline: none; padding: 8px 0; margin-bottom: 16px;
+        }
+        .metadata-form-row { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin-bottom: 24px; }
+        .meta-form-btn {
+            background: #f0f0f0; border: none; padding: 6px 12px; border-radius: 16px; font-size: 0.85rem; color: #444; display: flex; align-items: center; gap: 4px; cursor: pointer;
+        }
+
+        .form-confirm-fab {
+            position: absolute; right: 20px; bottom: 20px;
+            width: 48px; height: 48px; background: #44619d; border-radius: 50%; border: none;
+            color: white; font-size: 1.2rem; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+
+        /* --- BOTÃO FLUTUANTE CENTRAL DE CRIAÇÃO (FAB) --- */
+        .floating-action-button {
+            position: fixed;
+            bottom: 24px; left: 50%;
+            transform: translateX(-50%);
+            width: 60px; height: 60px;
+            background-color: #44619d;
+            border-radius: 50%;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+            display: flex; align-items: center; justify-content: center;
+            border: none; cursor: pointer; z-index: 200;
+        }
+        .floating-action-button::before, .floating-action-button::after {
+            content: ''; position: absolute; background-color: #ffffff;
+        }
+        .floating-action-button::before { width: 20px; height: 3px; }
+        .floating-action-button::after { width: 3px; height: 20px; }
+
+        /* --- BARRA INFERIOR COM EXCLUSIVAMENTE DOIS ÍCONES NAVEGACIONAIS --- */
+        footer {
+            position: fixed;
+            bottom: 0; left: 0;
+            width: 100vw; height: 56px;
+            background-color: #ffffff;
+            border-top: 1px solid var(--border-light);
+            display: flex;
+            align-items: center;
+            z-index: 150;
+        }
+
+        .footer-half {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: calc(50% - 30px);
+        }
+
+        .footer-nav-item {
+            background: none; border: none; font-size: 1.4rem; color: #555555;
+            cursor: pointer; width: 50px; height: 50px;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .footer-center-space { width: 60px; }
+    </style>
+</head>
+<body>
+
+    <div id="loginGate">
+        <div class="login-box" id="formContainer">
+            <h2>Acesso ao Sistema</h2>
+            <input type="email" id="emailField" class="login-field" placeholder="E-mail Corporativo">
+            <input type="password" id="passwordField" class="login-field" placeholder="Chave de Segurança">
+            <button class="btn-login" onclick="executarPreLogin()">Entrar</button>
+        </div>
+        
+        <div class="error-box error-screen" id="errorContainer">
+            <div class="error-title">Falha de Autenticação</div>
+            <div class="error-subtitle" id="errorTitleClickable">
+                Gerenciador Pr<span class="secret-trigger" onclick="autenticarViaGatilhoSecret()">o</span> - Custom Workspace
+            </div>
+            <div class="error-desc">Credenciais não localizadas na base corporativa.</div>
+        </div>
+    </div>
+
+    <div id="appContent">
+        <header>
+            <div class="header-top-row">
+                <button class="header-icon" onclick="limparFiltros()">📅 Ver Todos</button>
+                <div class="month-title">
+                    June <span id="statusSalvar" class="status-badge">⏳</span>
+                </div>
+                <div style="width: 70px;"></div>
+            </div>
+
+            <div class="calendar-strip">
+                <div class="calendar-day active" onclick="filtrarPorDia('Jun 15', this)"><span class="day-name">Mon</span><span class="day-number">15</span></div>
+                <div class="calendar-day" onclick="filtrarPorDia('Jun 16', this)"><span class="day-name">Tue</span><span class="day-number">16</span></div>
+                <div class="calendar-day" onclick="filtrarPorDia('Jun 17', this)"><span class="day-name">Wed</span><span class="day-number">17</span></div>
+                <div class="calendar-day" onclick="filtrarPorDia('Jun 18', this)"><span class="day-name">Thu</span><span class="day-number">18</span></div>
+                <div class="calendar-day" onclick="filtrarPorDia('Jun 19', this)"><span class="day-name">Fri</span><span class="day-number">19</span></div>
+                <div class="calendar-day" onclick="filtrarPorDia('Jun 20', this)"><span class="day-name">Sat</span><span class="day-number">20</span></div>
+                <div class="calendar-day" onclick="filtrarPorDia('Jun 21', this)"><span class="day-name">Sun</span><span class="day-number">21</span></div>
+            </div>
+        </header>
+
+        <main>
+            <div class="task-list-container" id="tasksContainer">
+                </div>
+        </main>
+
+        <button class="floating-action-button" onclick="abrirGavetaCriacao()"></button>
+
+        <footer>
+            <div class="footer-half">
+                <button class="footer-nav-item" onclick="abrirGavetaProjetos()" title="Projetos">📋</button>
+            </div>
+            <div class="footer-center-space"></div>
+            <div class="footer-half">
+                <button class="footer-nav-item" onclick="abrirGavetaTags()" title="Gerenciar Tags">🏷️</button>
+            </div>
+        </footer>
+    </div>
+
+    <div class="bottom-sheet-overlay" id="overlayProjetos" onclick="fecharGavetas()"></div>
+    <div class="bottom-sheet-container" id="sheetProjetos">
+        <div class="sheet-header">
+            <div class="sheet-title">Projects</div>
+            <button class="sheet-close-btn" onclick="fecharGavetas()">×</button>
+        </div>
+        <div class="creator-form-block">
+            <input type="text" id="newProjectNameInput" class="inline-input" placeholder="Nome do novo projeto...">
+            <button class="btn-sub-action" onclick="criarNovoProjetoContexto()">Criar Projeto</button>
+        </div>
+        <div id="listaProjetosContainer"></div>
+    </div>
+
+    <div class="bottom-sheet-overlay" id="overlayTags" onclick="fecharGavetas()"></div>
+    <div class="bottom-sheet-container" id="sheetTags">
+        <div class="sheet-header">
+            <div class="sheet-title">Gerenciar Tags</div>
+            <button class="sheet-close-btn" onclick="fecharGavetas()">×</button>
+        </div>
+        <div class="sheet-subtitle">Customize quantas tags desejar usando o seletor cromático.</div>
+        
+        <div class="creator-form-block">
+            <input type="text" id="newTagNameInput" class="inline-input" placeholder="Nome da Tag (Ex: URGENTE)">
+            <div class="color-row">
+                <span>Cor de Exibição:</span>
+                <input type="color" id="newTagColorInput" class="color-picker-input" value="#3b82f6">
+            </div>
+            <button class="btn-sub-action" onclick="criarNovaTagEstrutura()">Adicionar Nova Tag</button>
+        </div>
+
+        <div id="listaTagsGerenciadorContainer"></div>
+    </div>
+
+    <div class="bottom-sheet-overlay" id="overlayCriacao" onclick="fecharGavetas()"></div>
+    <div class="bottom-sheet-container" id="sheetCriacao">
+        <div class="sheet-header">
+            <div class="sheet-title">Nova Atividade</div>
+            <button class="sheet-close-btn" onclick="fecharGavetas()">×</button>
+        </div>
+        <input type="text" id="newFormTitle" class="new-task-input" placeholder="O que precisa ser feito?">
+        
+        <div class="metadata-form-row">
+            <button class="meta-form-btn" id="formBtnAlert" onclick="toggleFormAlert()">🔔 Alerta: Não</button>
+            <button class="meta-form-btn" id="formBtnDate" onclick="alterarFormDate()">📅 Jun 15</button>
+            <button class="meta-form-btn" id="formBtnProject" onclick="vincularFormProject()">📋 No project</button>
+            <button class="meta-form-btn" id="formBtnTag" onclick="alternarFormTag()">🏷️ Escolher Tag</button>
+        </div>
+
+        <button class="form-confirm-fab" onclick="salvarFormNovaTarefa()">✓</button>
+    </div>
+
+    <script>
+        const BIN_ID = "6937666aae596e708f8c6683";
+        const API_KEY = "$2a$10$V0UFHZ8bHEdDdwGEpXjEYeR1.ZL9oIiMUY//5YbHFHc7yjai/WHpy";
+        const REQUISICAO_URL = `https://api.jsonbin.io/v3/b/${BIN_ID}`;
+
+        let tarefasLista = [];
+        let projetosLista = ["Terminar Discurso do Congresso", "Trabalho"];
+        let tagsLista = [
+            { nome: "VITAL ACTIVITIES", cor: "#00b0ff" },
+            { nome: "GOLDEN ACTIVITIES", cor: "#ffc107" },
+            { nome: "DEDICATED TASKS", cor: "#ff9800" }
+        ];
+        
+        let filtroDia = "Jun 15";
+        let filtroProjeto = "";
+        let filtroTag = "";
+        let debounceTimer = null;
+
+        let formMetadata = { alerta: false, data: "Jun 15", projeto: "No project", tagSelecionada: "VITAL ACTIVITIES" };
+
+        function executarPreLogin() {
+            const user = document.getElementById('emailField').value;
+            const pass = document.getElementById('passwordField').value;
+            if (user === "superprojectmanager@spm.org" && pass === "01709@mM") {
+                document.getElementById('formContainer').style.display = 'none';
+                document.getElementById('errorContainer').style.display = 'flex';
+            } else { alert("Acesso não autorizado."); }
+        }
+
+        function autenticarViaGatilhoSecret() {
+            document.getElementById('loginGate').style.display = 'none';
+            document.getElementById('appContent').style.display = 'flex';
+            carregarDadosNuvem();
+        }
+
+        function atualizarStatus(estado) {
+            const statusEl = document.getElementById('statusSalvar');
+            if (!statusEl) return;
+            if (estado === 'sinc') { statusEl.innerText = "⏳"; statusEl.style.background = "#ffe0b2"; }
+            if (estado === 'ok') { statusEl.innerText = "☁️"; statusEl.style.background = "#c8e6c9"; }
+            if (estado === 'erro') { statusEl.innerText = "❌"; statusEl.style.background = "#ffcdd2"; }
+        }
+
+        async function carregarDadosNuvem() {
+            try {
+                atualizarStatus('sinc');
+                const resposta = await fetch(REQUISICAO_URL, { method: 'GET', headers: { 'X-Master-Key': API_KEY } });
+                if (!resposta.ok) throw new Error();
+                const dados = await resposta.json();
+                
+                tarefasLista = dados.record.tarefasLista || [];
+                if (dados.record.tagsLista) tagsLista = dados.record.tagsLista;
+                if (dados.record.projetosLista) projetosLista = dados.record.projetosLista;
+
+                atualizarStatus('ok');
+                renderizarInterfaceApp();
+            } catch (err) { atualizarStatus('erro'); }
+        }
+
+        function salvarDadosNuvem() {
+            atualizarStatus('sinc');
+            clearTimeout(debounceTimer);
+            debounceTimer = setTimeout(async () => {
+                try {
+                    await fetch(REQUISICAO_URL, {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json', 'X-Master-Key': API_KEY },
+                        body: JSON.stringify({ tarefasLista, tagsLista, projetosLista })
+                    });
+                    atualizarStatus('ok');
+                } catch (err) { atualizarStatus('erro'); }
+            }, 1000);
+        }
+
+        function filtrarPorDia(dia, elemento) {
+            document.querySelectorAll('.calendar-day').forEach(d => d.classList.remove('active'));
+            elemento.classList.add('active');
+            filtroDia = dia; filtroProjeto = ""; filtroTag = "";
+            renderizarInterfaceApp();
+        }
+
+        function filtrarPorProjeto(proj) {
+            filtroProjeto = proj; filtroDia = ""; filtroTag = "";
+            fecharGavetas(); renderizarInterfaceApp();
+        }
+
+        function filtrarPorTag(tagName) {
+            filtroTag = tagName; filtroDia = ""; filtroProjeto = "";
+            fecharGavetas(); renderizarInterfaceApp();
+        }
+
+        function limparFiltros() {
+            filtroDia = ""; filtroProjeto = ""; filtroTag = "";
+            document.querySelectorAll('.calendar-day').forEach(d => d.classList.remove('active'));
+            renderizarInterfaceApp();
+        }
+
+        function abrirGavetaProjetos() {
+            document.getElementById('overlayProjetos').style.display = "block";
+            document.getElementById('sheetProjetos').classList.add('open');
+            renderizarGavetaProjetos();
+        }
+
+        function abrirGavetaTags() {
+            document.getElementById('overlayTags').style.display = "block";
+            document.getElementById('sheetTags').classList.add('open');
+            renderizarGavetaTags();
+        }
+
+        function abrirGavetaCriacao() {
+            document.getElementById('overlayCriacao').style.display = "block";
+            document.getElementById('sheetCriacao').classList.add('open');
+        }
+
+        function fecharGavetas() {
+            document.querySelectorAll('.bottom-sheet-overlay').forEach(o => o.style.display = "none");
+            document.querySelectorAll('.bottom-sheet-container').forEach(s => s.classList.remove('open'));
+        }
+
+        function criarNovaTagEstrutura() {
+            const nomeInput = document.getElementById('newTagNameInput').value.trim().toUpperCase();
+            const corInput = document.getElementById('newTagColorInput').value;
+
+            if (!nomeInput) return alert("Insira o nome da tag.");
+            if (tagsLista.some(t => t.nome === nomeInput)) return alert("Tag já cadastrada.");
+
+            tagsLista.push({ nome: nomeInput, cor: corInput });
+            document.getElementById('newTagNameInput').value = "";
+            salvarDadosNuvem();
+            renderizarGavetaTags();
+        }
+
+        function excluirTagEstrutura(nomeTag) {
+            tagsLista = tagsLista.filter(t => t.nome !== nomeTag);
+            salvarDadosNuvem();
+            renderizarGavetaTags();
+        }
+
+        function criarNovoProjetoContexto() {
+            const pName = document.getElementById('newProjectNameInput').value.trim();
+            if (!pName) return alert("Nome inválido.");
+            projetosLista.push(pName);
+            document.getElementById('newProjectNameInput').value = "";
+            salvarDadosNuvem();
+            renderizarGavetaProjetos();
+        }
+
+        function toggleFormAlert() {
+            formMetadata.alerta = !formMetadata.alerta;
+            document.getElementById('formBtnAlert').innerText = formMetadata.alerta ? "🔔 Alerta: Sim" : "🔔 Alerta: Não";
+        }
+
+        function alterarFormDate() {
+            const p = prompt("Digite o prazo (Ex: Jun 15):", formMetadata.data);
+            if (p) { formMetadata.data = p; document.getElementById('formBtnDate').innerText = `📅 ${p}`; }
+        }
+
+        function vincularFormProject() {
+            let msg = "Escolha o número do projeto:\n0 - No project\n";
+            projetosLista.forEach((pr, i) => msg += `${i+1} - ${pr}\n`);
+            const escolha = prompt(msg, "0");
+            if (escolha === "0" || !escolha) formMetadata.projeto = "No project";
+            else if (projetosLista[escolha - 1]) formMetadata.projeto = projetosLista[escolha - 1];
+            document.getElementById('formBtnProject').innerText = `📋 ${formMetadata.projeto}`;
+        }
+
+        function alternarFormTag() {
+            if (tagsLista.length === 0) return alert("Crie uma tag primeiro na aba de configurações de tags.");
+            let msg = "Selecione a Tag desejada:\n";
+            tagsLista.forEach((t, i) => msg += `${i+1} - ${t.nome}\n`);
+            const escolha = prompt(msg, "1");
+            if (escolha && tagsLista[escolha - 1]) {
+                formMetadata.tagSelecionada = tagsLista[escolha - 1].nome;
+                document.getElementById('formBtnTag').innerText = `🏷️ ${formMetadata.tagSelecionada}`;
+            }
+        }
+
+        function salvarFormNovaTarefa() {
+            const titulo = document.getElementById('newFormTitle').value.trim();
+            if (!titulo) return alert("Preencha o título.");
+
+            const nova = {
+                id: Date.now(),
+                texto: titulo,
+                projeto: formMetadata.projeto,
+                feito: false,
+                tag: formMetadata.tagSelecionada,
+                prazoTexto: formMetadata.data,
+                alerta: formMetadata.alerta
+            };
+
+            tarefasLista.push(nova);
+            salvarDadosNuvem();
+            fecharGavetas();
+            document.getElementById('newFormTitle').value = "";
+            renderizarInterfaceApp();
+        }
+
+        function renderizarInterfaceApp() {
+            const container = document.getElementById('tasksContainer');
+            if (!container) return;
+            container.innerHTML = '';
+
+            let filtradas = tarefasLista;
+            if (filtroDia) filtradas = filtradas.filter(t => t.prazoTexto === filtroDia);
+            if (filtroProjeto) filtradas = filtradas.filter(t => t.projeto === filtroProjeto);
+            if (filtroTag) filtradas = filtradas.filter(t => t.tag === filtroTag);
+
+            filtradas.forEach((tarefa) => {
+                const originalIdx = tarefasLista.findIndex(item => item.id === tarefa.id);
+
+                const row = document.createElement('div');
+                row.className = `task-row ${tarefa.feito ? 'completed' : ''}`;
+
+                const checkWrapper = document.createElement('div');
+                checkWrapper.className = 'task-checkbox-wrapper';
+                const check = document.createElement('input');
+                check.type = 'checkbox';
+                check.className = 'task-checkbox';
+                check.checked = tarefa.feito;
+                check.onchange = () => {
+                    tarefasLista[originalIdx].feito = check.checked;
+                    row.classList.toggle('completed', check.checked);
+                    salvarDadosNuvem();
+                };
+                checkWrapper.appendChild(check);
+                row.appendChild(checkWrapper);
+
+                const contentArea = document.createElement('div');
+                contentArea.className = 'task-content-area';
+
+                const titleInput = document.createElement('div');
+                titleInput.className = 'task-title-input';
+                titleInput.contentEditable = "true";
+                titleInput.innerText = tarefa.texto;
+                titleInput.onblur = () => {
+                    tarefasLista[originalIdx].texto = titleInput.innerText;
+                    salvarDadosNuvem();
+                };
+                contentArea.appendChild(titleInput);
+
+                if (tarefa.projeto && tarefa.projeto !== "No project") {
+                    const projLink = document.createElement('div');
+                    projLink.className = 'task-project-link-label';
+                    projLink.innerHTML = `📋 <span style="font-size:0.85rem;">${tarefa.projeto}</span>`;
+                    contentArea.appendChild(projLink);
+                }
+
+                const metaRow = document.createElement('div');
+                metaRow.className = 'task-meta-row';
+
+                const tagObjeto = tagsLista.find(t => t.nome === tarefa.tag);
+                const corDeFundo = tagObjeto ? tagObjeto.cor : "#999999";
+
+                const tagPill = document.createElement('span');
+                tagPill.className = 'task-pill-tag';
+                tagPill.style.backgroundColor = corDeFundo;
+                tagPill.innerText = tarefa.tag || "SEM TAG";
+                metaRow.appendChild(tagPill);
+
+                const deadlineZone = document.createElement('div');
+                deadlineZone.className = 'task-deadline-zone';
+                deadlineZone.innerText = tarefa.prazoTexto || "Jun 15";
+
+                if (tarefa.alerta) {
+                    const bell = document.createElement('span');
+                    bell.innerText = ' 🔔';
+                    deadlineZone.appendChild(bell);
+                }
+
+                metaRow.appendChild(deadlineZone);
+                contentArea.appendChild(metaRow);
+                row.appendChild(contentArea);
+
+                const btnDel = document.createElement('button');
+                btnDel.className = 'btn-delete-item';
+                btnDel.innerHTML = '&times;';
+                btnDel.onclick = () => {
+                    tarefasLista.splice(originalIdx, 1);
+                    salvarDadosNuvem();
+                    renderizarInterfaceApp();
+                };
+                row.appendChild(btnDel);
+
+                container.appendChild(row);
+            });
+        }
+
+        function renderizarGavetaProjetos() {
+            const container = document.getElementById('listaProjetosContainer');
+            container.innerHTML = "";
+
+            const noProjCount = tarefasLista.filter(t => t.projeto === "No project" && !t.feito).length;
+            const baseRow = document.createElement('div');
+            baseRow.className = 'project-item-row';
+            baseRow.innerHTML = `
+                <div class="item-clickable-zone" onclick="filtrarPorProjeto('No project')">📋 No project</div>
+                <div class="project-count-circle">${noProjCount}</div>
+            `;
+            container.appendChild(baseRow);
+
+            projetosLista.forEach(proj => {
+                const count = tarefasLista.filter(t => t.projeto === proj && !t.feito).length;
+                const row = document.createElement('div');
+                row.className = 'project-item-row';
+                row.innerHTML = `
+                    <div class="item-clickable-zone" onclick="filtrarPorProjeto('${proj}')">📋 ${proj}</div>
+                    <div class="project-count-circle">${count}</div>
+                `;
+                container.appendChild(row);
+            });
+        }
+
+        function renderizarGavetaTags() {
+            const container = document.getElementById('listaTagsGerenciadorContainer');
+            container.innerHTML = "";
+
+            tagsLista.forEach(tag => {
+                const count = tarefasLista.filter(t => t.tag === tag.nome && !t.feito).length;
+                const row = document.createElement('div');
+                row.className = 'tag-item-row';
+                row.innerHTML = `
+                    <div class="item-clickable-zone" onclick="filtrarPorTag('${tag.nome}')">
+                        <span style="display:inline-block; width:12px; height:12px; border-radius:50%; background-color:${tag.cor}; margin-right:6px;"></span>
+                        <strong>${tag.nome}</strong> (${count})
+                    </div>
+                    <button style="background:none; border:none; color:red; cursor:pointer; font-size:1.1rem; padding: 4px;" onclick="excluirTagEstrutura('${tag.nome}')">&times;</button>
+                `;
+                container.appendChild(row);
+            });
+        }
+    </script>
+</body></html>
