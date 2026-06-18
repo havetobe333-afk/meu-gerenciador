@@ -1,16 +1,23 @@
 <!DOCTYPE html>
-<html lang="pt-BR"><head>
+<html lang="pt-BR">
+<head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Gerenciador Pro - Custom Edition</title>
     <style>
         :root {
-            --bg-app: #f2f2f2;
-            --text-main: #000000;
-            --text-muted: #666666;
-            --accent-blue: #3b5998;
-            --app-blue: #44619d;
-            --border-light: #e5e5e5;
+            --bg-app: #f8fafc;
+            --bg-card: #ffffff;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --accent-blue: #3b82f6;
+            --app-slate: #1e293b;
+            --border-light: #e2e8f0;
+            --radius-lg: 16px;
+            --radius-md: 12px;
+            --radius-sm: 8px;
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
         }
 
         * { 
@@ -20,6 +27,7 @@
             word-wrap: break-word;
             word-break: break-word;
             white-space: normal;
+            transition: background-color 0.2s ease, transform 0.1s ease;
         }
 
         body {
@@ -47,42 +55,44 @@
         }
 
         .login-box {
-            background: #ffffff;
-            padding: 32px;
-            border-radius: 16px;
+            background: var(--bg-card);
+            padding: 36px;
+            border-radius: var(--radius-lg);
             width: 100%;
             max-width: 400px;
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
             text-align: center;
         }
 
         .login-box h2 {
-            font-size: 1.4rem;
+            font-size: 1.3rem;
             margin-bottom: 24px;
             color: #0f172a;
             font-weight: 800;
             text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
         .login-field {
             width: 100%;
-            padding: 12px 16px;
+            padding: 14px 16px;
             margin-bottom: 16px;
-            border: 1px solid #cbd5e1;
-            border-radius: 8px;
+            border: 1px solid var(--border-light);
+            border-radius: var(--radius-md);
             font-family: inherit;
             font-size: 0.95rem;
             outline: none;
+            background-color: #f8fafc;
         }
-        .login-field:focus { border-color: #3b82f6; }
+        .login-field:focus { border-color: var(--accent-blue); background-color: #fff; }
 
         .btn-login {
             width: 100%;
             background: #0f172a;
             color: white;
-            padding: 12px;
+            padding: 14px;
             font-size: 0.95rem;
-            border-radius: 8px;
+            border-radius: var(--radius-md);
             font-weight: 700;
             border: none;
             cursor: pointer;
@@ -103,6 +113,7 @@
             color: #ef4444;
             margin-bottom: 12px;
             text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
         .error-subtitle {
@@ -114,8 +125,8 @@
             user-select: none;
         }
 
-        .secret-trigger { cursor: pointer; color: inherit; display: inline-block; }
-        .error-desc { font-size: 0.85rem; color: #94a3b8; max-width: 320px; }
+        .secret-trigger { cursor: pointer; color: inherit; display: inline-block; font-weight: inherit; }
+        .error-desc { font-size: 0.85rem; color: #94a3b8; max-width: 320px; line-height: 1.4; }
 
         /* --- CONTAINER PRINCIPAL --- */
         #appContent {
@@ -123,19 +134,20 @@
             flex-direction: column;
             width: 100%;
             min-height: 100vh;
-            padding-bottom: 80px;
-            background-color: #ffffff;
+            padding-bottom: 90px;
+            background-color: var(--bg-app);
         }
 
         /* --- BARRA SUPERIOR E CONTROLES --- */
         header {
-            background-color: #f2f2f2;
+            background-color: var(--bg-card);
             width: 100%;
             border-bottom: 1px solid var(--border-light);
-            padding-top: 10px;
+            padding-top: 14px;
             position: sticky;
             top: 0;
             z-index: 100;
+            box-shadow: var(--shadow-sm);
         }
 
         .header-top-row {
@@ -143,7 +155,7 @@
             justify-content: space-between;
             align-items: center;
             padding: 0 16px;
-            height: 36px;
+            margin-bottom: 12px;
         }
 
         .header-controls-left {
@@ -153,40 +165,44 @@
         }
 
         .header-icon {
-            font-size: 0.85rem;
-            background: #ddd;
-            border: none;
-            padding: 6px 10px;
-            border-radius: 6px;
-            font-weight: bold;
+            font-size: 0.8rem;
+            background: #f1f5f9;
+            border: 1px solid var(--border-light);
+            padding: 8px 12px;
+            border-radius: var(--radius-sm);
+            font-weight: 600;
             cursor: pointer;
-            color: #333;
+            color: var(--text-main);
             display: flex;
             align-items: center;
-            gap: 2px;
+            gap: 4px;
         }
+        .header-icon:active { background: #e2e8f0; }
 
         .month-title {
-            font-size: 1.1rem;
-            color: #222;
-            font-weight: 600;
+            font-size: 1.05rem;
+            color: var(--text-main);
+            font-weight: 700;
             text-transform: capitalize;
+            display: flex;
+            align-items: center;
         }
 
         .status-badge {
-            font-size: 0.65rem;
-            padding: 2px 6px;
-            border-radius: 4px;
-            background: #ddd;
+            font-size: 0.7rem;
+            padding: 3px 6px;
+            border-radius: var(--radius-sm);
+            background: #f1f5f9;
             font-weight: bold;
-            margin-left: 4px;
+            margin-left: 6px;
+            border: 1px solid var(--border-light);
         }
 
-        /* Calendário Deslizante */
+        /* Calendário Deslizante Estilo Strip */
         .calendar-nav-wrapper {
             display: flex;
             align-items: center;
-            padding: 4px 6px;
+            padding: 4px 8px 10px 8px;
         }
 
         .nav-arrow {
@@ -194,16 +210,18 @@
             border: none;
             font-size: 1.2rem;
             font-weight: bold;
-            padding: 0 10px;
+            padding: 10px;
             cursor: pointer;
-            color: #44619d;
+            color: var(--text-muted);
         }
+        .nav-arrow:active { color: var(--accent-blue); }
 
         .calendar-strip {
             display: flex;
             justify-content: space-around;
             flex-grow: 1;
             text-align: center;
+            gap: 4px;
         }
 
         .calendar-day {
@@ -213,53 +231,80 @@
             gap: 4px;
             width: 14%;
             cursor: pointer;
+            padding: 6px 0;
+            border-radius: var(--radius-md);
         }
 
         .day-name {
-            font-size: 0.7rem;
-            color: #888;
+            font-size: 0.65rem;
+            color: var(--text-muted);
             text-transform: uppercase;
-            font-weight: 600;
+            font-weight: 700;
+            letter-spacing: 0.5px;
         }
 
         .day-number {
-            font-size: 1rem;
-            color: #222;
-            font-weight: 500;
-            width: 30px;
-            height: 30px;
+            font-size: 0.95rem;
+            color: var(--text-main);
+            font-weight: 600;
+            width: 32px;
+            height: 32px;
             display: flex;
             align-items: center;
             justify-content: center;
             border-radius: 50%;
         }
 
+        .calendar-day.active { background-color: #f1f5f9; }
         .calendar-day.active .day-number {
-            background-color: #3b5998;
+            background-color: var(--app-slate);
             color: #ffffff;
-            font-weight: bold;
+            font-weight: 700;
+            box-shadow: var(--shadow-sm);
         }
 
         /* --- CORPO DA LISTA DE TAREFAS --- */
-        main { flex-grow: 1; width: 100%; }
+        main { flex-grow: 1; width: 100%; padding: 12px; }
 
-        .task-list-container { display: flex; flex-direction: column; background-color: #ffffff; }
+        .task-list-container { 
+            display: flex; 
+            flex-direction: column; 
+            background-color: var(--bg-card); 
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--border-light);
+            overflow: hidden;
+        }
+
+        /* Estado Vazio */
+        .empty-state {
+            padding: 40px 20px;
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+        }
+        .empty-state-icon { font-size: 1.8rem; opacity: 0.7; }
 
         .task-row {
             display: flex;
             align-items: flex-start;
             padding: 16px;
-            border-bottom: 1px solid #f5f5f5;
+            border-bottom: 1px solid var(--border-light);
             gap: 14px;
         }
+        .task-row:last-child { border-bottom: none; }
 
         .task-checkbox-wrapper { padding-top: 2px; }
 
         .task-checkbox {
             width: 22px;
             height: 22px;
-            border: 2px solid #a3a3a3;
-            border-radius: 4px;
+            border: 2px solid #cbd5e1;
+            border-radius: 6px;
             appearance: none;
             -webkit-appearance: none;
             outline: none;
@@ -268,8 +313,8 @@
             position: relative;
         }
         .task-checkbox:checked {
-            background-color: #555555;
-            border-color: #555555;
+            background-color: var(--text-muted);
+            border-color: var(--text-muted);
         }
         .task-checkbox:checked::after {
             content: "✓";
@@ -281,30 +326,36 @@
             transform: translate(-50%, -50%);
         }
 
-        .task-content-area { flex-grow: 1; display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+        .task-content-area { flex-grow: 1; display: flex; flex-direction: column; gap: 6px; min-width: 0; }
 
         .task-title-input {
-            font-size: 1.15rem;
-            font-weight: 400;
-            color: #000000;
+            font-size: 1.05rem;
+            font-weight: 500;
+            color: var(--text-main);
             outline: none;
             border: none;
             background: transparent;
             width: 100%;
+            line-height: 1.3;
         }
 
         .task-row.completed .task-title-input {
             text-decoration: line-through;
-            color: #888888;
+            color: var(--text-muted);
+            opacity: 0.7;
         }
 
         .task-project-link-label {
-            display: flex;
+            display: inline-flex;
             align-items: center;
             gap: 4px;
-            font-size: 0.9rem;
-            color: #666666;
-            margin-top: 2px;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            background: #f1f5f9;
+            padding: 2px 8px;
+            border-radius: var(--radius-sm);
+            align-self: flex-start;
+            font-weight: 500;
         }
 
         .task-meta-row {
@@ -316,39 +367,43 @@
         }
 
         .task-pill-tag {
-            font-size: 0.7rem;
-            font-weight: bold;
+            font-size: 0.65rem;
+            font-weight: 700;
             color: #ffffff;
-            padding: 4px 10px;
-            border-radius: 12px;
+            padding: 3px 8px;
+            border-radius: var(--radius-sm);
             text-transform: uppercase;
+            letter-spacing: 0.3px;
         }
 
         .task-deadline-zone {
             display: flex;
             align-items: center;
-            gap: 6px;
-            font-size: 0.85rem;
-            color: #ff5252;
-            font-weight: 500;
+            gap: 4px;
+            font-size: 0.8rem;
+            color: #ef4444;
+            font-weight: 600;
         }
+        .task-deadline-zone.no-date { color: var(--text-muted); font-weight: 500; }
 
         .btn-delete-item {
             background: transparent;
             border: none;
-            color: #ddd;
-            font-size: 1.2rem;
+            color: #cbd5e1;
+            font-size: 1.4rem;
             cursor: pointer;
-            padding: 4px;
+            padding: 0 4px;
+            line-height: 1;
         }
-        .btn-delete-item:hover { color: #ff5252; }
+        .btn-delete-item:active { color: #ef4444; }
 
         /* --- GAVETAS INFERIORES (BOTTOM SHEETS) --- */
         .bottom-sheet-overlay {
             position: fixed;
             top: 0; left: 0;
             width: 100vw; height: 100vh;
-            background: rgba(0,0,0,0.4);
+            background: rgba(15, 23, 42, 0.3);
+            backdrop-filter: blur(2px);
             z-index: 1000;
             display: none;
         }
@@ -357,15 +412,15 @@
             position: fixed;
             bottom: 0; left: 0;
             width: 100vw;
-            background: #ffffff;
-            border-top-left-radius: 20px;
-            border-top-right-radius: 20px;
+            background: var(--bg-card);
+            border-top-left-radius: 24px;
+            border-top-right-radius: 24px;
             z-index: 1001;
             transform: translateY(100%);
-            transition: transform 0.3s ease-out;
-            padding: 20px;
-            box-shadow: 0 -5px 15px rgba(0,0,0,0.1);
-            max-height: 80vh;
+            transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+            padding: 24px;
+            box-shadow: 0 -10px 25px -5px rgba(0,0,0,0.1);
+            max-height: 85vh;
             overflow-y: auto;
         }
 
@@ -375,11 +430,11 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 16px;
+            margin-bottom: 20px;
         }
-        .sheet-title { font-size: 1.2rem; font-weight: bold; color: #111; }
-        .sheet-subtitle { font-size: 0.85rem; color: #666; margin-bottom: 16px; }
-        .sheet-close-btn { background: none; border: none; font-size: 1.3rem; color: #666; cursor: pointer; }
+        .sheet-title { font-size: 1.15rem; font-weight: 700; color: var(--text-main); }
+        .sheet-subtitle { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 16px; line-height: 1.4; }
+        .sheet-close-btn { background: #f1f5f9; border: none; width: 32px; height: 32px; border-radius: 50%; font-size: 1.2rem; color: var(--text-muted); cursor: pointer; display: flex; align-items: center; justify-content: center;}
 
         /* Listas de Itens dentro das Gavetas */
         .project-item-row, .tag-item-row {
@@ -387,121 +442,136 @@
             justify-content: space-between;
             align-items: center;
             padding: 14px 0;
-            border-bottom: 1px solid #eee;
+            border-bottom: 1px solid var(--border-light);
         }
-        .item-clickable-zone { display: flex; align-items: center; gap: 10px; font-size: 1.05rem; cursor: pointer; flex-grow: 1; }
+        .item-clickable-zone { display: flex; align-items: center; gap: 10px; font-size: 0.95rem; font-weight: 500; cursor: pointer; flex-grow: 1; color: var(--text-main); }
         
         .project-count-circle {
-            width: 24px; height: 24px; border: 2px solid #44619d; border-radius: 50%;
+            width: 22px; height: 22px; border: 1.5px solid var(--border-light); border-radius: 50%;
             display: flex; align-items: center; justify-content: center;
-            font-size: 0.8rem; font-weight: bold; color: #44619d;
+            font-size: 0.75rem; font-weight: 700; color: var(--text-muted); background-color: #f8fafc;
         }
 
         /* Formulários de Criação Dinâmica */
         .creator-form-block {
-            background: #f9f9f9;
-            padding: 12px;
-            border-radius: 8px;
-            margin-bottom: 16px;
+            background: #f8fafc;
+            padding: 14px;
+            border-radius: var(--radius-md);
+            margin-bottom: 18px;
             display: flex;
             flex-direction: column;
-            gap: 10px;
+            gap: 12px;
+            border: 1px solid var(--border-light);
         }
         .inline-input {
-            width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 6px; outline: none; font-family: inherit;
+            width: 100%; padding: 10px 12px; border: 1px solid var(--border-light); border-radius: var(--radius-sm); outline: none; font-family: inherit; font-size: 0.9rem; background-color: #fff;
         }
-        .color-row { display: flex; align-items: center; gap: 8px; font-size: 0.9rem; }
-        .color-picker-input { border: none; width: 40px; height: 30px; cursor: pointer; background: transparent; }
+        .inline-input:focus { border-color: var(--accent-blue); }
+        .color-row { display: flex; align-items: center; gap: 8px; font-size: 0.85rem; color: var(--text-muted); font-weight: 500; }
+        .color-picker-input { border: none; width: 36px; height: 28px; cursor: pointer; background: transparent; }
         
         .btn-sub-action {
-            background: #44619d; color: white; padding: 8px; border: none; border-radius: 6px; font-weight: bold; cursor: pointer;
+            background: var(--app-slate); color: white; padding: 10px; border: none; border-radius: var(--radius-sm); font-weight: 600; font-size: 0.9rem; cursor: pointer;
         }
+        .btn-sub-action:active { opacity: 0.9; }
 
         /* --- SUB-SELETORES INTERNOS POR TOQUE --- */
         .inline-selection-list {
             background: #f8fafc;
-            border: 1px solid #e2e8f0;
-            border-radius: 8px;
+            border: 1px solid var(--border-light);
+            border-radius: var(--radius-md);
             margin-top: 8px;
-            max-height: 160px;
+            max-height: 180px;
             overflow-y: auto;
             display: none;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.02);
         }
         .inline-select-item {
-            padding: 10px 14px;
-            border-bottom: 1px solid #edf2f7;
-            font-size: 0.95rem;
+            padding: 12px 16px;
+            border-bottom: 1px solid var(--border-light);
+            font-size: 0.9rem;
+            font-weight: 500;
             cursor: pointer;
             display: flex;
             align-items: center;
             gap: 8px;
+            color: var(--text-main);
         }
         .inline-select-item:last-child { border-bottom: none; }
         .inline-select-item:active { background: #e2e8f0; }
 
         /* --- CAMPOS DA GAVETA DE NOVA TAREFA --- */
         .new-task-input {
-            width: 100%; font-size: 1.2rem; border: none; outline: none; padding: 8px 0; margin-bottom: 16px;
+            width: 100%; font-size: 1.15rem; font-weight: 500; border: none; border-bottom: 1px solid var(--border-light); outline: none; padding: 12px 0; margin-bottom: 20px; color: var(--text-main);
         }
-        .metadata-form-row { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin-bottom: 16px; }
+        .new-task-input::placeholder { color: #cbd5e1; }
+        
+        .metadata-form-row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 20px; }
         
         .meta-form-btn {
-            background: #f0f0f0; border: none; padding: 6px 12px; border-radius: 16px; font-size: 0.85rem; color: #444; display: flex; align-items: center; gap: 4px; cursor: pointer;
+            background: #f1f5f9; border: 1px solid var(--border-light); padding: 8px 14px; border-radius: 20px; font-size: 0.8rem; font-weight: 600; color: var(--text-main); display: inline-flex; align-items: center; gap: 4px; cursor: pointer;
             position: relative;
         }
+        .meta-form-btn:active { background-color: #e2e8f0; }
+        
         .hidden-date-picker {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer;
         }
 
         .form-confirm-fab {
-            margin-top: 20px;
-            width: 100%; background: #44619d; border-radius: 8px; border: none;
-            color: white; font-size: 1.1rem; padding: 12px; font-weight: bold; cursor: pointer; box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            margin-top: 10px;
+            width: 100%; background: var(--app-slate); border-radius: var(--radius-md); border: none;
+            color: white; font-size: 1rem; padding: 14px; font-weight: 700; cursor: pointer; box-shadow: var(--shadow-md);
         }
+        .form-confirm-fab:active { opacity: 0.95; }
 
         /* --- BOTÃO FLUTUANTE CENTRAL DE CRIAÇÃO (FAB) --- */
         .floating-action-button {
             position: fixed;
-            bottom: 24px; left: 50%;
+            bottom: 28px; left: 50%;
             transform: translateX(-50%);
-            width: 60px; height: 60px;
-            background-color: #44619d;
+            width: 56px; height: 56px;
+            background-color: var(--app-slate);
             border-radius: 50%;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
             display: flex; align-items: center; justify-content: center;
             border: none; cursor: pointer; z-index: 200;
         }
+        .floating-action-button:active { transform: translateX(-50%) scale(0.95); opacity: 0.95; }
         .floating-action-button::before, .floating-action-button::after {
-            content: ''; position: absolute; background-color: #ffffff;
+            content: ''; position: absolute; background-color: #ffffff; border-radius: 2px;
         }
-        .floating-action-button::before { width: 20px; height: 3px; }
-        .floating-action-button::after { width: 3px; height: 20px; }
+        .floating-action-button::before { width: 18px; height: 3px; }
+        .floating-action-button::after { width: 3px; height: 18px; }
 
-        /* --- BARRA INFERIOR --- */
+        /* --- BARRA INFERIOR DE NAVEGAÇÃO --- */
         footer {
             position: fixed;
             bottom: 0; left: 0;
-            width: 100vw; height: 56px;
-            background-color: #ffffff;
+            width: 100vw; height: 64px;
+            background-color: var(--bg-card);
             border-top: 1px solid var(--border-light);
             display: flex;
             align-items: center;
             z-index: 150;
+            box-shadow: 0 -4px 6px -1px rgba(0, 0, 0, 0.02);
         }
 
         .footer-half {
             display: flex;
             justify-content: center;
             align-items: center;
-            width: calc(50% - 30px);
+            width: calc(50% - 28px);
         }
 
         .footer-nav-item {
-            background: none; border: none; font-size: 1.4rem; color: #555555;
-            cursor: pointer; width: 50px; height: 50px;
+            background: none; border: none; font-size: 1.3rem; color: var(--text-muted);
+            cursor: pointer; width: 48px; height: 48px;
             display: flex; align-items: center; justify-content: center;
+            border-radius: var(--radius-md);
         }
-        .footer-center-space { width: 60px; }
+        .footer-nav-item:active { background-color: #f1f5f9; color: var(--text-main); }
+        .footer-center-space { width: 56px; }
     </style>
 </head>
 <body>
@@ -565,7 +635,7 @@
     <div class="bottom-sheet-overlay" id="overlayProjetos" onclick="fecharGavetas()"></div>
     <div class="bottom-sheet-container" id="sheetProjetos">
         <div class="sheet-header">
-            <div class="sheet-title">Projects</div>
+            <div class="sheet-title">Projetos</div>
             <button class="sheet-close-btn" onclick="fecharGavetas()">×</button>
         </div>
         <div class="creator-form-block">
@@ -645,7 +715,7 @@
         let formMetadata = { alerta: false, dataForm: "2026-06-15", projeto: "No project", tagSelecionada: "" };
 
         const mesesNomes = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
-        const diasSemanasNomes = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+        const diasSemanasNomes = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"];
 
         function executarPreLogin() {
             const user = document.getElementById('emailField').value;
@@ -673,9 +743,9 @@
         function atualizarStatus(estado) {
             const statusEl = document.getElementById('statusSalvar');
             if (!statusEl) return;
-            if (estado === 'sinc') { statusEl.innerText = "⏳"; statusEl.style.background = "#ffe0b2"; }
-            if (estado === 'ok') { statusEl.innerText = "☁️"; statusEl.style.background = "#c8e6c9"; }
-            if (estado === 'erro') { statusEl.innerText = "❌"; statusEl.style.background = "#ffcdd2"; }
+            if (estado === 'sinc') { statusEl.innerText = "⏳"; statusEl.style.background = "#ffedd5"; statusEl.style.borderColor = "#fed7aa"; }
+            if (estado === 'ok') { statusEl.innerText = "☁️"; statusEl.style.background = "#f0fdf4"; statusEl.style.borderColor = "#bbf7d0"; }
+            if (estado === 'erro') { statusEl.innerText = "❌"; statusEl.style.background = "#fef2f2"; statusEl.style.borderColor = "#fecaca"; }
         }
 
         async function carregarDadosNuvem() {
@@ -725,9 +795,9 @@
             if (!isoString) return "Sem data";
             const partes = isoString.split('-');
             if (partes.length !== 3) return isoString;
-            const mesesAbrev = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+            const mesesAbrev = ["Jan", "Fev", "Mar", "Abr", "Mai", "Jun", "Jul", "Ago", "Set", "Out", "Nov", "Dez"];
             const mIdx = parseInt(partes[1], 10) - 1;
-            return `${mesesAbrev[mIdx]} ${parseInt(partes[2], 10)}`;
+            return `${parseInt(partes[2], 10)} de ${mesesAbrev[mIdx]}`;
         }
 
         function construirCalendarioStrip() {
@@ -965,6 +1035,16 @@
                 if (filtroTag) filtradas = filtradas.filter(t => t.tag === filtroTag);
             }
 
+            if (filtradas.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">⚡</div>
+                        <div>Nenhuma atividade por aqui</div>
+                    </div>
+                `;
+                return;
+            }
+
             filtradas.forEach((tarefa) => {
                 const originalIdx = tarefasLista.findIndex(item => item.id === tarefa.id);
 
@@ -1001,7 +1081,7 @@
                 if (tarefa.projeto && tarefa.projeto !== "No project") {
                     const projLink = document.createElement('div');
                     projLink.className = 'task-project-link-label';
-                    projLink.innerHTML = `📋 <span style="font-size:0.85rem;">${tarefa.projeto}</span>`;
+                    projLink.innerHTML = `📋 <span>${tarefa.projeto}</span>`;
                     contentArea.appendChild(projLink);
                 }
 
@@ -1009,7 +1089,7 @@
                 metaRow.className = 'task-meta-row';
 
                 const tagObjeto = tagsLista.find(t => t.nome === tarefa.tag);
-                const corDeFundo = tagObjeto ? tagObjeto.cor : "#999999";
+                const corDeFundo = tagObjeto ? tagObjeto.cor : "#94a3b8";
 
                 const tagPill = document.createElement('span');
                 tagPill.className = 'task-pill-tag';
@@ -1018,7 +1098,7 @@
                 metaRow.appendChild(tagPill);
 
                 const deadlineZone = document.createElement('div');
-                deadlineZone.className = 'task-deadline-zone';
+                deadlineZone.className = `task-deadline-zone ${tarefa.prazoTexto ? '' : 'no-date'}`;
                 deadlineZone.innerText = tarefa.prazoTexto ? formatarExibicaoAmigavel(tarefa.prazoTexto) : "Sem Data";
 
                 if (tarefa.alerta) {
@@ -1081,12 +1161,16 @@
                 row.innerHTML = `
                     <div class="item-clickable-zone" onclick="filtrarPorTag('${tag.nome}')">
                         <span style="display:inline-block; width:12px; height:12px; border-radius:50%; background-color:${tag.cor}; margin-right:6px;"></span>
-                        <strong>${tag.nome}</strong> (${count})
+                        <strong>${tag.nome}</strong>
                     </div>
-                    <button style="background:none; border:none; color:red; cursor:pointer; font-size:1.1rem; padding: 4px;" onclick="excluirTagEstrutura('${tag.nome}')">&times;</button>
+                    <div style="display: flex; align-items: center; gap: 12px;">
+                        <div class="project-count-circle" style="border: none; background: #f1f5f9;">${count}</div>
+                        <button style="background:none; border:none; color:#cbd5e1; cursor:pointer; font-size:1.4rem; padding: 4px;" onclick="excluirTagEstrutura('${tag.nome}')">&times;</button>
+                    </div>
                 `;
                 container.appendChild(row);
             });
         }
     </script>
-</body></html>
+</body>
+</html>
