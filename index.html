@@ -290,11 +290,12 @@
         }
 
         .meta-selectors-row {
-            display: flex;
+            display: inline-flex;
+            align-items: center;
             gap: 6px;
             overflow-x: auto;
             padding-bottom: 2px;
-            align-items: center;
+            width: 100%;
         }
 
         .selector-btn {
@@ -311,9 +312,10 @@
             align-items: center;
             height: 30px;
             white-space: nowrap;
+            z-index: 10;
         }
 
-        /* AJUSTE SIMÉTRICO E ABSORÇÃO TOTAL DO TOQUE NATIVO */
+        /* ISOLAMENTO DO CALENDÁRIO COM LIMITE DE TAMANHO */
         .datepicker-wrapper {
             position: relative;
             display: inline-flex;
@@ -321,25 +323,26 @@
             background: #f1f5f9;
             border: 1px solid var(--border-color);
             border-radius: 14px;
-            padding: 6px 12px;
+            padding: 0 12px;
             height: 30px;
+            max-width: 110px;
             overflow: hidden;
-            cursor: pointer;
-            white-space: nowrap;
+            flex-shrink: 0;
         }
 
         .datepicker-wrapper span {
             font-size: 12px;
             font-weight: 500;
             color: var(--text-secondary);
-            pointer-events: none; 
+            pointer-events: none;
             z-index: 2;
+            white-space: nowrap;
         }
 
         .datepicker-wrapper input[type="date"] {
             position: absolute;
             top: 0; left: 0; width: 100%; height: 100%;
-            opacity: 0; 
+            opacity: 0.01;
             cursor: pointer;
             z-index: 3;
             -webkit-appearance: none;
@@ -554,7 +557,7 @@
                 {
                     v: "1.2.0",
                     date: "18/06/2026",
-                    desc: "Correção de simetria do wrapper de calendário. Esclarecimento técnico de arquitetura sobre os motivos de restrições de toque do input nativo de data frente aos botões puros baseados em JS (Projetos/Tags)."
+                    desc: "Correção estrutural do tamanho do wrapper do calendário móvel (max-width) para impedir sobreposição invisível e travamento dos botões de contexto (Projetos/Tags) em telas menores."
                 },
                 {
                     v: "1.1.0",
@@ -924,4 +927,77 @@
 
         function renderTagsList() {
             const list = document.getElementById('drawer-list-items');
-            list.innerHTML
+            list.innerHTML = '';
+
+            state.tags.forEach((t, idx) => {
+                const row = document.createElement('div');
+                row.className = 'list-item-row';
+                row.innerHTML = `
+                    <div class="item-label" onclick="selectTagForTask('${t.nome}')">
+                        <span style="width:10px; height:10px; background:${t.cor}; border-radius:50%;"></span>
+                        <strong>${t.nome}</strong>
+                    </div>
+                    <div>
+                        <button class="btn-inline-edit" onclick="startEditTag(${idx})">Editar</button>
+                        <button class="btn-inline-del" onclick="deleteTag('${t.nome}')">&times;</button>
+                    </div>
+                `;
+                list.appendChild(row);
+            });
+        }
+
+        function selectTagForTask(t) {
+            state.tempTag = t;
+            document.getElementById('meta-tag-label').innerText = `🏷️ ${t}`;
+            closeDrawer();
+        }
+
+        function startEditTag(idx) {
+            state.editingTagIndex = idx;
+            const tag = state.tags[idx];
+            renderTagForm(tag.nome, tag.cor, 'Salvar Alterações');
+        }
+
+        function saveTagAction() {
+            const nameInp = document.getElementById('new-tag-name');
+            const colorInp = document.getElementById('new-tag-color');
+            const nameVal = nameInp.value.trim().toUpperCase();
+            const colorVal = colorInp.value;
+
+            if(!nameVal) return;
+
+            if(state.editingTagIndex !== null) {
+                const velhaTagNome = state.tags[state.editingTagIndex].nome;
+                state.tags[state.editingTagIndex] = { nome: nameVal, cor: colorVal };
+                
+                state.tasks.forEach(task => {
+                    if(task.tag === velhaTagNome) task.tag = nameVal;
+                });
+                
+                state.editingTagIndex = null;
+            } else {
+                if(state.tags.some(t => t.nome === nameVal)) return alert('Tag já cadastrada.');
+                state.tags.push({ nome: nameVal, cor: colorVal });
+            }
+
+            nameInp.value = '';
+            renderTagForm(); 
+            renderTagsList();
+            render();
+            pushData();
+        }
+
+        function deleteTag(nome) {
+            state.tags = state.tags.filter(t => t.nome !== nome);
+            state.tasks.forEach(task => {
+                if(task.tag === nome) task.tag = '';
+            });
+            renderTagsList();
+            render();
+            pushData();
+        }
+
+        window.addEventListener('DOMContentLoaded', initApp);
+    </script>
+</body>
+</html>
