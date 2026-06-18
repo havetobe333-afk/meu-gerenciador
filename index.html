@@ -127,7 +127,7 @@
             background-color: #ffffff;
         }
 
-        /* --- BARRA SUPERIOR E CALENDÁRIO --- */
+        /* --- BARRA SUPERIOR E CONTROLES --- */
         header {
             background-color: #f2f2f2;
             width: 100%;
@@ -140,27 +140,37 @@
 
         .header-top-row {
             display: flex;
-            justify-between: space-between;
+            justify-content: space-between;
             align-items: center;
             padding: 0 16px;
-            height: 32px;
+            height: 36px;
+        }
+
+        .header-controls-left {
+            display: flex;
+            gap: 6px;
+            align-items: center;
         }
 
         .header-icon {
-            font-size: 1rem;
+            font-size: 0.85rem;
             background: #ddd;
             border: none;
-            padding: 4px 10px;
+            padding: 6px 10px;
             border-radius: 6px;
             font-weight: bold;
             cursor: pointer;
             color: #333;
+            display: flex;
+            align-items: center;
+            gap: 2px;
         }
 
         .month-title {
             font-size: 1.1rem;
             color: #222;
-            font-weight: 500;
+            font-weight: 600;
+            text-transform: capitalize;
         }
 
         .status-badge {
@@ -169,13 +179,30 @@
             border-radius: 4px;
             background: #ddd;
             font-weight: bold;
-            margin-left: 6px;
+            margin-left: 4px;
+        }
+
+        /* Calendário Deslizante */
+        .calendar-nav-wrapper {
+            display: flex;
+            align-items: center;
+            padding: 4px 6px;
+        }
+
+        .nav-arrow {
+            background: none;
+            border: none;
+            font-size: 1.2rem;
+            font-weight: bold;
+            padding: 0 10px;
+            cursor: pointer;
+            color: #44619d;
         }
 
         .calendar-strip {
             display: flex;
             justify-content: space-around;
-            padding: 12px 6px;
+            flex-grow: 1;
             text-align: center;
         }
 
@@ -183,24 +210,24 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 6px;
+            gap: 4px;
             width: 14%;
             cursor: pointer;
         }
 
         .day-name {
-            font-size: 0.75rem;
+            font-size: 0.7rem;
             color: #888;
             text-transform: uppercase;
             font-weight: 600;
         }
 
         .day-number {
-            font-size: 1.05rem;
+            font-size: 1rem;
             color: #222;
             font-weight: 500;
-            width: 32px;
-            height: 32px;
+            width: 30px;
+            height: 30px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -390,19 +417,46 @@
             background: #44619d; color: white; padding: 8px; border: none; border-radius: 6px; font-weight: bold; cursor: pointer;
         }
 
+        /* --- SUB-SELETORES INTERNOS POR TOQUE --- */
+        .inline-selection-list {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            margin-top: 8px;
+            max-height: 160px;
+            overflow-y: auto;
+            display: none;
+        }
+        .inline-select-item {
+            padding: 10px 14px;
+            border-bottom: 1px solid #edf2f7;
+            font-size: 0.95rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .inline-select-item:last-child { border-bottom: none; }
+        .inline-select-item:active { background: #e2e8f0; }
+
         /* --- CAMPOS DA GAVETA DE NOVA TAREFA --- */
         .new-task-input {
             width: 100%; font-size: 1.2rem; border: none; outline: none; padding: 8px 0; margin-bottom: 16px;
         }
-        .metadata-form-row { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin-bottom: 24px; }
+        .metadata-form-row { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin-bottom: 16px; }
+        
         .meta-form-btn {
             background: #f0f0f0; border: none; padding: 6px 12px; border-radius: 16px; font-size: 0.85rem; color: #444; display: flex; align-items: center; gap: 4px; cursor: pointer;
+            position: relative;
+        }
+        .hidden-date-picker {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer;
         }
 
         .form-confirm-fab {
-            position: absolute; right: 20px; bottom: 20px;
-            width: 48px; height: 48px; background: #44619d; border-radius: 50%; border: none;
-            color: white; font-size: 1.2rem; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            margin-top: 20px;
+            width: 100%; background: #44619d; border-radius: 8px; border: none;
+            color: white; font-size: 1.1rem; padding: 12px; font-weight: bold; cursor: pointer; box-shadow: 0 4px 8px rgba(0,0,0,0.1);
         }
 
         /* --- BOTÃO FLUTUANTE CENTRAL DE CRIAÇÃO (FAB) --- */
@@ -423,7 +477,7 @@
         .floating-action-button::before { width: 20px; height: 3px; }
         .floating-action-button::after { width: 3px; height: 20px; }
 
-        /* --- BARRA INFERIOR COM EXCLUSIVAMENTE DOIS ÍCONES NAVEGACIONAIS --- */
+        /* --- BARRA INFERIOR --- */
         footer {
             position: fixed;
             bottom: 0; left: 0;
@@ -472,21 +526,21 @@
     <div id="appContent">
         <header>
             <div class="header-top-row">
-                <button class="header-icon" onclick="limparFiltros()">📅 Ver Todos</button>
-                <div class="month-title">
-                    June <span id="statusSalvar" class="status-badge">⏳</span>
+                <div class="header-controls-left">
+                    <button class="header-icon" onclick="limparFiltros()">📅 Todos</button>
+                    <button class="header-icon" onclick="irParaHoje()" title="Ir para Hoje">📍 Hoje</button>
+                    <button class="header-icon" onclick="filtrarSemData()" title="Sem Data">🚫 S/ Data</button>
                 </div>
-                <div style="width: 70px;"></div>
+                <div class="month-title">
+                    <span id="nomeMesVisivel">Junho</span><span id="statusSalvar" class="status-badge">⏳</span>
+                </div>
             </div>
 
-            <div class="calendar-strip">
-                <div class="calendar-day active" onclick="filtrarPorDia('Jun 15', this)"><span class="day-name">Mon</span><span class="day-number">15</span></div>
-                <div class="calendar-day" onclick="filtrarPorDia('Jun 16', this)"><span class="day-name">Tue</span><span class="day-number">16</span></div>
-                <div class="calendar-day" onclick="filtrarPorDia('Jun 17', this)"><span class="day-name">Wed</span><span class="day-number">17</span></div>
-                <div class="calendar-day" onclick="filtrarPorDia('Jun 18', this)"><span class="day-name">Thu</span><span class="day-number">18</span></div>
-                <div class="calendar-day" onclick="filtrarPorDia('Jun 19', this)"><span class="day-name">Fri</span><span class="day-number">19</span></div>
-                <div class="calendar-day" onclick="filtrarPorDia('Jun 20', this)"><span class="day-name">Sat</span><span class="day-number">20</span></div>
-                <div class="calendar-day" onclick="filtrarPorDia('Jun 21', this)"><span class="day-name">Sun</span><span class="day-number">21</span></div>
+            <div class="calendar-nav-wrapper">
+                <button class="nav-arrow" onclick="deslocarSemana(-7)">&lt;</button>
+                <div class="calendar-strip" id="calendarStripContainer">
+                    </div>
+                <button class="nav-arrow" onclick="deslocarSemana(7)">&gt;</button>
             </div>
         </header>
 
@@ -551,12 +605,20 @@
         
         <div class="metadata-form-row">
             <button class="meta-form-btn" id="formBtnAlert" onclick="toggleFormAlert()">🔔 Alerta: Não</button>
-            <button class="meta-form-btn" id="formBtnDate" onclick="alterarFormDate()">📅 Jun 15</button>
-            <button class="meta-form-btn" id="formBtnProject" onclick="vincularFormProject()">📋 No project</button>
-            <button class="meta-form-btn" id="formBtnTag" onclick="alternarFormTag()">🏷️ Escolher Tag</button>
+            
+            <button class="meta-form-btn" id="formBtnDate">
+                <span id="formBtnDateText">📅 Definir Data</span>
+                <input type="date" id="formDateNativeInput" class="hidden-date-picker" onchange="capturarDataNativa(this.value)">
+            </button>
+
+            <button class="meta-form-btn" id="formBtnProject" onclick="toggleSubListaProjetos()">📋 Sem projeto</button>
+            <button class="meta-form-btn" id="formBtnTag" onclick="toggleSubListaTags()">🏷️ Escolher Tag</button>
         </div>
 
-        <button class="form-confirm-fab" onclick="salvarFormNovaTarefa()">✓</button>
+        <div class="inline-selection-list" id="subListaProjetos"></div>
+        <div class="inline-selection-list" id="subListaTags"></div>
+
+        <button class="form-confirm-fab" onclick="salvarFormNovaTarefa()">Salvar Atividade</button>
     </div>
 
     <script>
@@ -572,12 +634,18 @@
             { nome: "DEDICATED TASKS", cor: "#ff9800" }
         ];
         
-        let filtroDia = "Jun 15";
+        // Controle de Calendário Infinito
+        let dataReferenciaInicio = new Date(2026, 5, 15); // Segunda-feira de referência inicial (Junho 15, 2026)
+        let filtroDiaFormatado = "2026-06-15"; 
         let filtroProjeto = "";
         let filtroTag = "";
+        let filtroSemDataAtivo = false;
         let debounceTimer = null;
 
-        let formMetadata = { alerta: false, data: "Jun 15", projeto: "No project", tagSelecionada: "VITAL ACTIVITIES" };
+        let formMetadata = { alerta: false, dataForm: "2026-06-15", projeto: "No project", tagSelecionada: "VITAL ACTIVITIES" };
+
+        const mesesNomes = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
+        const diasSemanasNomes = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
         function executarPreLogin() {
             const user = document.getElementById('emailField').value;
@@ -591,6 +659,16 @@
         function autenticarViaGatilhoSecret() {
             document.getElementById('loginGate').style.display = 'none';
             document.getElementById('appContent').style.display = 'flex';
+            
+            // Define o dia atual real como filtro ao inicializar
+            const hoje = new Date();
+            filtroDiaFormatado = formatarDataISO(hoje);
+            // Ajusta a semana de referência para iniciar na segunda anterior ao dia de hoje
+            const dSemana = hoje.getDay();
+            const diferenca = dSemana === 0 ? -6 : 1 - dSemana;
+            dataReferenciaInicio = new Date(hoje);
+            dataReferenciaInicio.setDate(hoje.getDate() + diferenca);
+
             carregarDadosNuvem();
         }
 
@@ -615,6 +693,7 @@
 
                 atualizarStatus('ok');
                 renderizarInterfaceApp();
+                construirCalendarioStrip();
             } catch (err) { atualizarStatus('erro'); }
         }
 
@@ -633,26 +712,99 @@
             }, 1000);
         }
 
-        function filtrarPorDia(dia, elemento) {
-            document.querySelectorAll('.calendar-day').forEach(d => d.classList.remove('active'));
-            elemento.classList.add('active');
-            filtroDia = dia; filtroProjeto = ""; filtroTag = "";
+        // Formata objeto Date para YYYY-MM-DD local
+        function formatarDataISO(dateObj) {
+            const y = dateObj.getFullYear();
+            const m = String(dateObj.getMonth() + 1).padStart(2, '0');
+            const d = String(dateObj.getDate()).padStart(2, '0');
+            return `${y}-${m}-${d}`;
+        }
+
+        function formatarExibicaoAmigavel(isoString) {
+            if (!isoString) return "Sem data";
+            const partes = isoString.split('-');
+            if (partes.length !== 3) return isoString;
+            const mesesAbrev = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+            const mIdx = parseInt(partes[1], 10) - 1;
+            return `${mesesAbrev[mIdx]} ${parseInt(partes[2], 10)}`;
+        }
+
+        // Construção dinâmica da faixa horizontal de 7 dias
+        function construirCalendarioStrip() {
+            const container = document.getElementById('calendarStripContainer');
+            if (!container) return;
+            container.innerHTML = '';
+
+            // Atualiza o mês visível no topo baseado no primeiro dia visível da faixa
+            document.getElementById('nomeMesVisivel').innerText = mesesNomes[dataReferenciaInicio.getMonth()];
+
+            let cursorData = new Date(dataReferenciaInicio);
+
+            for (let i = 0; i < 7; i++) {
+                const dataStringCorrente = formatarDataISO(cursorData);
+                const nDia = cursorData.getDate();
+                const nomeSemana = diasSemanasNomes[cursorData.getDay()];
+
+                const dayBox = document.createElement('div');
+                dayBox.className = 'calendar-day';
+                if (!filtroSemDataAtivo && !filtroProjeto && !filtroTag && filtroDiaFormatado === dataStringCorrente) {
+                    dayBox.classList.add('active');
+                }
+
+                dayBox.onclick = () => {
+                    filtroDiaFormatado = dataStringCorrente;
+                    filtroProjeto = ""; filtroTag = ""; filtroSemDataAtivo = false;
+                    document.querySelectorAll('.calendar-day').forEach(d => d.classList.remove('active'));
+                    dayBox.classList.add('active');
+                    renderizarInterfaceApp();
+                };
+
+                dayBox.innerHTML = `<span class="day-name">${nomeSemana}</span><span class="day-number">${nDia}</span>`;
+                container.appendChild(dayBox);
+
+                cursorData.setDate(cursorData.getDate() + 1);
+            }
+        }
+
+        function deslocarSemana(dias) {
+            dataReferenciaInicio.setDate(dataReferenciaInicio.getDate() + dias);
+            construirCalendarioStrip();
+        }
+
+        function irParaHoje() {
+            const hoje = new Date();
+            filtroDiaFormatado = formatarDataISO(hoje);
+            filtroProjeto = ""; filtroTag = ""; filtroSemDataAtivo = false;
+
+            const dSemana = hoje.getDay();
+            const diferenca = dSemana === 0 ? -6 : 1 - dSemana;
+            dataReferenciaInicio = new Date(hoje);
+            dataReferenciaInicio.setDate(hoje.getDate() + diferenca);
+
+            construirCalendarioStrip();
+            renderizarInterfaceApp();
+        }
+
+        function filtrarSemData() {
+            filtroSemDataAtivo = true;
+            filtroDiaFormatado = ""; filtroProjeto = ""; filtroTag = "";
+            construirCalendarioStrip();
             renderizarInterfaceApp();
         }
 
         function filtrarPorProjeto(proj) {
-            filtroProjeto = proj; filtroDia = ""; filtroTag = "";
-            fecharGavetas(); renderizarInterfaceApp();
+            filtroProjeto = proj; filtroDiaFormatado = ""; filtroTag = ""; filtroSemDataAtivo = false;
+            construirCalendarioStrip(); fecharGavetas(); renderizarInterfaceApp();
         }
 
         function filtrarPorTag(tagName) {
-            filtroTag = tagName; filtroDia = ""; filtroProjeto = "";
-            fecharGavetas(); renderizarInterfaceApp();
+            filtroTag = tagName; filtroDiaFormatado = ""; filtroProjeto = ""; filtroSemDataAtivo = false;
+            construirCalendarioStrip(); fecharGavetas(); renderizarInterfaceApp();
         }
 
         function limparFiltros() {
-            filtroDia = ""; filtroProjeto = ""; filtroTag = "";
-            document.querySelectorAll('.calendar-day').forEach(d => d.classList.remove('active'));
+            filtroDiaFormatado = ""; filtroProjeto = ""; filtroTag = ""; filtroSemDataAtivo = false;
+            construirCalendarioStrip();
             renderizarInterfaceApp();
         }
 
@@ -671,11 +823,107 @@
         function abrirGavetaCriacao() {
             document.getElementById('overlayCriacao').style.display = "block";
             document.getElementById('sheetCriacao').classList.add('open');
+            
+            // Reinicia campos e textos
+            formMetadata = { alerta: false, dataForm: formatarDataISO(new Date()), projeto: "No project", tagSelecionada: tagsLista[0]?.nome || "" };
+            document.getElementById('formBtnAlert').innerText = "🔔 Alerta: Não";
+            document.getElementById('formBtnDateText').innerText = "📅 " + formatarExibicaoAmigavel(formMetadata.dataForm);
+            document.getElementById('formBtnProject').innerText = "📋 Sem projeto";
+            document.getElementById('formBtnTag').innerText = formMetadata.tagSelecionada ? `🏷️ ${formMetadata.tagSelecionada}` : "🏷️ Escolher Tag";
+            
+            fecharSubListasForm();
         }
 
         function fecharGavetas() {
             document.querySelectorAll('.bottom-sheet-overlay').forEach(o => o.style.display = "none");
             document.querySelectorAll('.bottom-sheet-container').forEach(s => s.classList.remove('open'));
+            fecharSubListasForm();
+        }
+
+        function fecharSubListasForm() {
+            document.getElementById('subListaProjetos').style.display = "none";
+            document.getElementById('subListaTags').style.display = "none";
+        }
+
+        /* --- LOGICA DE TOQUE PARA CRIAÇÃO --- */
+        function toggleFormAlert() {
+            formMetadata.alerta = !formMetadata.alerta;
+            document.getElementById('formBtnAlert').innerText = formMetadata.alerta ? "🔔 Alerta: Sim" : "🔔 Alerta: Não";
+        }
+
+        function capturarDataNativa(valorData) {
+            if (valorData) {
+                formMetadata.dataForm = valorData;
+                document.getElementById('formBtnDateText').innerText = "📅 " + formatarExibicaoAmigavel(valorData);
+            }
+        }
+
+        function toggleSubListaProjetos() {
+            const listaDiv = document.getElementById('subListaProjetos');
+            if (listaDiv.style.display === "block") {
+                listaDiv.style.display = "none";
+                return;
+            }
+            fecharSubListasForm();
+            listaDiv.innerHTML = `<div class="inline-select-item" onclick="selecionarProjetoPorToque('No project')">📋 Sem projeto vinculado</div>`;
+            projetosLista.forEach(proj => {
+                listaDiv.innerHTML += `<div class="inline-select-item" onclick="selecionarProjetoPorToque('${proj}')">📋 ${proj}</div>`;
+            });
+            listaDiv.style.display = "block";
+        }
+
+        function selecionarProjetoPorToque(nomeProj) {
+            formMetadata.projeto = nomeProj;
+            document.getElementById('formBtnProject').innerText = nomeProj === "No project" ? "📋 Sem projeto" : `📋 ${nomeProj}`;
+            document.getElementById('subListaProjetos').style.display = "none";
+        }
+
+        function toggleSubListaTags() {
+            const listaDiv = document.getElementById('subListaTags');
+            if (listaDiv.style.display === "block") {
+                listaDiv.style.display = "none";
+                return;
+            }
+            fecharSubListasForm();
+            if (tagsLista.length === 0) {
+                listaDiv.innerHTML = `<div class="inline-select-item" style="color:#888;">Nenhuma tag cadastrada</div>`;
+            } else {
+                tagsLista.forEach(tag => {
+                    listaDiv.innerHTML += `
+                        <div class="inline-select-item" onclick="selecionarTagPorToque('${tag.nome}')">
+                            <span style="display:inline-block; width:10px; height:10px; border-radius:50%; background-color:${tag.cor};"></span>
+                            ${tag.nome}
+                        </div>`;
+                });
+            }
+            listaDiv.style.display = "block";
+        }
+
+        function selecionarTagPorToque(nomeTag) {
+            formMetadata.tagSelecionada = nomeTag;
+            document.getElementById('formBtnTag').innerText = `🏷️ ${nomeTag}`;
+            document.getElementById('subListaTags').style.display = "none";
+        }
+
+        function salvarFormNovaTarefa() {
+            const titulo = document.getElementById('newFormTitle').value.trim();
+            if (!titulo) return alert("Preencha o título.");
+
+            const nova = {
+                id: Date.now(),
+                texto: titulo,
+                projeto: formMetadata.projeto,
+                feito: false,
+                tag: formMetadata.tagSelecionada,
+                prazoTexto: formMetadata.dataForm, // Salva em formato ISO estruturado
+                alerta: formMetadata.alerta
+            };
+
+            tarefasLista.push(nova);
+            salvarDadosNuvem();
+            fecharGavetas();
+            document.getElementById('newFormTitle').value = "";
+            renderizarInterfaceApp();
         }
 
         function criarNovaTagEstrutura() {
@@ -706,66 +954,19 @@
             renderizarGavetaProjetos();
         }
 
-        function toggleFormAlert() {
-            formMetadata.alerta = !formMetadata.alerta;
-            document.getElementById('formBtnAlert').innerText = formMetadata.alerta ? "🔔 Alerta: Sim" : "🔔 Alerta: Não";
-        }
-
-        function alterarFormDate() {
-            const p = prompt("Digite o prazo (Ex: Jun 15):", formMetadata.data);
-            if (p) { formMetadata.data = p; document.getElementById('formBtnDate').innerText = `📅 ${p}`; }
-        }
-
-        function vincularFormProject() {
-            let msg = "Escolha o número do projeto:\n0 - No project\n";
-            projetosLista.forEach((pr, i) => msg += `${i+1} - ${pr}\n`);
-            const escolha = prompt(msg, "0");
-            if (escolha === "0" || !escolha) formMetadata.projeto = "No project";
-            else if (projetosLista[escolha - 1]) formMetadata.projeto = projetosLista[escolha - 1];
-            document.getElementById('formBtnProject').innerText = `📋 ${formMetadata.projeto}`;
-        }
-
-        function alternarFormTag() {
-            if (tagsLista.length === 0) return alert("Crie uma tag primeiro na aba de configurações de tags.");
-            let msg = "Selecione a Tag desejada:\n";
-            tagsLista.forEach((t, i) => msg += `${i+1} - ${t.nome}\n`);
-            const escolha = prompt(msg, "1");
-            if (escolha && tagsLista[escolha - 1]) {
-                formMetadata.tagSelecionada = tagsLista[escolha - 1].nome;
-                document.getElementById('formBtnTag').innerText = `🏷️ ${formMetadata.tagSelecionada}`;
-            }
-        }
-
-        function salvarFormNovaTarefa() {
-            const titulo = document.getElementById('newFormTitle').value.trim();
-            if (!titulo) return alert("Preencha o título.");
-
-            const nova = {
-                id: Date.now(),
-                texto: titulo,
-                projeto: formMetadata.projeto,
-                feito: false,
-                tag: formMetadata.tagSelecionada,
-                prazoTexto: formMetadata.data,
-                alerta: formMetadata.alerta
-            };
-
-            tarefasLista.push(nova);
-            salvarDadosNuvem();
-            fecharGavetas();
-            document.getElementById('newFormTitle').value = "";
-            renderizarInterfaceApp();
-        }
-
         function renderizarInterfaceApp() {
             const container = document.getElementById('tasksContainer');
             if (!container) return;
             container.innerHTML = '';
 
             let filtradas = tarefasLista;
-            if (filtroDia) filtradas = filtradas.filter(t => t.prazoTexto === filtroDia);
-            if (filtroProjeto) filtradas = filtradas.filter(t => t.projeto === filtroProjeto);
-            if (filtroTag) filtradas = filtradas.filter(t => t.tag === filtroTag);
+            if (filtroSemDataAtivo) {
+                filtradas = filtradas.filter(t => !t.prazoTexto);
+            } else {
+                if (filtroDiaFormatado) filtradas = filtradas.filter(t => t.prazoTexto === filtroDiaFormatado);
+                if (filtroProjeto) filtradas = filtradas.filter(t => t.projeto === filtroProjeto);
+                if (filtroTag) filtradas = filtradas.filter(t => t.tag === filtroTag);
+            }
 
             filtradas.forEach((tarefa) => {
                 const originalIdx = tarefasLista.findIndex(item => item.id === tarefa.id);
@@ -821,7 +1022,7 @@
 
                 const deadlineZone = document.createElement('div');
                 deadlineZone.className = 'task-deadline-zone';
-                deadlineZone.innerText = tarefa.prazoTexto || "Jun 15";
+                deadlineZone.innerText = tarefa.prazoTexto ? formatarExibicaoAmigavel(tarefa.prazoTexto) : "Sem Data";
 
                 if (tarefa.alerta) {
                     const bell = document.createElement('span');
