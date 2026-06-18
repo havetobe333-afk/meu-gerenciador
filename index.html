@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Portal Corporativo - Intranet</title>
     <style>
-        /* Variáveis de Cores Inspiradas no Blitz */
         :root {
             --bg-main: #f8f9fa;
             --bg-card: #ffffff;
@@ -60,7 +59,6 @@
             margin-bottom: 8px;
         }
 
-        /* O gatilho secreto na letra "o" de "Corporativo" */
         .secret-trigger {
             cursor: default;
             color: inherit;
@@ -72,17 +70,16 @@
             line-height: 1.5;
         }
 
-        /* APLICATIVO PRINCIPAL (BLITZ STYLE) */
+        /* APLICATIVO PRINCIPAL */
         #app-container {
-            display: none; /* Oculto inicialmente */
+            display: none;
             flex-direction: column;
             width: 100%;
             max-width: 600px;
             margin: 0 auto;
-            padding-bottom: 80px; /* Espaço para o input fixo */
+            padding-bottom: 90px;
         }
 
-        /* Header Superior Estilo Blitz */
         header {
             background-color: var(--bg-card);
             padding: 16px;
@@ -123,7 +120,6 @@
             border-radius: 50%;
         }
 
-        /* Barra de Progresso do Dia */
         .progress-container {
             width: 100%;
             background-color: var(--border-color);
@@ -139,18 +135,12 @@
             transition: width 0.3s ease;
         }
 
-        /* Filtros Rápidos de Data (Baixo Atrito) */
         .date-filters {
             display: flex;
             gap: 8px;
             padding: 12px 16px;
             overflow-x: auto;
             white-space: nowrap;
-            -webkit-overflow-scrolling: touch;
-        }
-
-        .date-filters::-webkit-scrollbar {
-            display: none;
         }
 
         .filter-btn {
@@ -162,7 +152,6 @@
             font-weight: 500;
             color: var(--text-secondary);
             cursor: pointer;
-            transition: all 0.2s ease;
         }
 
         .filter-btn.active {
@@ -171,7 +160,7 @@
             border-color: var(--accent-color);
         }
 
-        /* Lista de Tarefas (Cards Blitz) */
+        /* CARDS DE TAREFA */
         .task-list {
             padding: 8px 16px;
             display: flex;
@@ -188,12 +177,6 @@
             align-items: flex-start;
             gap: 12px;
             box-shadow: var(--shadow);
-            transition: transform 0.2s ease, opacity 0.2s ease;
-        }
-
-        /* Toque/Swipe Mobile-First para abrir a Gaveta/Ações rápidos */
-        .task-item:active {
-            transform: scale(0.99);
         }
 
         .task-checkbox {
@@ -210,7 +193,6 @@
             justify-content: center;
             margin-top: 2px;
             flex-shrink: 0;
-            transition: all 0.2s ease;
         }
 
         .task-checkbox:checked {
@@ -229,7 +211,7 @@
             flex-grow: 1;
             display: flex;
             flex-direction: column;
-            gap: 4px;
+            gap: 6px;
         }
 
         .task-text {
@@ -244,27 +226,59 @@
             color: var(--text-secondary);
         }
 
-        .task-meta {
+        .task-meta-clickable-zone {
             display: flex;
-            gap: 8px;
-            font-size: 11px;
-            color: var(--text-secondary);
+            flex-wrap: wrap;
+            gap: 6px;
+            align-items: center;
         }
 
-        /* Entrada de Dados Fixa Inferior (Zero Fricção) */
+        .clickable-pill {
+            font-size: 11px;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-weight: 600;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+        }
+
+        .clickable-pill.project-pill {
+            background-color: #f1f5f9;
+            color: #475569;
+            border: 1px solid #cbd5e1;
+        }
+
+        .clickable-pill.tag-pill {
+            color: #ffffff;
+        }
+
+        .clickable-pill.date-pill {
+            background-color: #fffbeb;
+            color: #b45309;
+            border: 1px solid #fde68a;
+        }
+
+        /* INPUT FIXO E BOTÕES ADICIONAIS */
         .input-container {
             position: fixed;
-            bottom: 0;
-            left: 50%;
+            bottom: 0; left: 50%;
             transform: translateX(-50%);
-            width: 100%;
-            max-width: 600px;
+            width: 100%; max-width: 600px;
             background-color: var(--bg-card);
             padding: 12px 16px;
             border-top: 1px solid var(--border-color);
             display: flex;
+            flex-direction: column;
             gap: 8px;
             box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
+            z-index: 500;
+        }
+
+        .input-row {
+            display: flex;
+            gap: 8px;
+            align-items: center;
         }
 
         .task-input {
@@ -275,37 +289,56 @@
             border-radius: 24px;
             font-size: 15px;
             outline: none;
-            transition: border-color 0.2s;
         }
 
-        .task-input:focus {
-            border-color: var(--accent-color);
+        .meta-selectors-row {
+            display: flex;
+            gap: 6px;
+            overflow-x: auto;
+            padding-bottom: 2px;
         }
 
-        /* GAVETA DE DETALHES / CONTEXTO (TOUCH) */
+        .selector-btn {
+            background: #f1f5f9;
+            border: 1px solid var(--border-color);
+            padding: 6px 12px;
+            border-radius: 14px;
+            font-size: 12px;
+            font-weight: 500;
+            color: var(--text-secondary);
+            cursor: pointer;
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+        }
+
+        .hidden-date-input {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            opacity: 0;
+            cursor: pointer;
+        }
+
+        /* GAVETAS DE TOQUE (BOTTOM SHEETS) */
         .drawer-overlay {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0,0,0,0.4);
             z-index: 1000;
             display: none;
-            opacity: 0;
-            transition: opacity 0.3s ease;
         }
 
         .drawer {
             position: fixed;
-            bottom: 0; left: 0; width: 100%;
+            bottom: 0; left: 50%;
+            width: 100%; max-width: 600px;
             background: var(--bg-card);
             border-top-left-radius: 16px;
             border-top-right-radius: 16px;
-            padding: 24px 16px;
+            padding: 20px 16px;
             z-index: 1001;
-            transform: translateY(100%);
-            transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-            max-width: 600px;
-            left: 50%;
             transform: translate(-50%, 100%);
+            transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
         .drawer.open {
@@ -313,56 +346,116 @@
         }
 
         .drawer-handle {
-            width: 40px;
-            height: 4px;
+            width: 40px; height: 4px;
             background: var(--border-color);
             border-radius: 2px;
             margin: 0 auto 16px auto;
         }
 
-        .drawer-actions {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
+        .drawer-title {
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: 14px;
         }
 
-        .drawer-btn {
-            width: 100%;
-            padding: 14px;
+        /* Formulários nas Gavetas */
+        .drawer-form-block {
+            background: #f8fafc;
+            padding: 12px;
             border-radius: 8px;
             border: 1px solid var(--border-color);
-            background: var(--bg-card);
-            font-size: 16px;
-            font-weight: 500;
-            text-align: left;
-            cursor: pointer;
+            margin-bottom: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
         }
 
-        .drawer-btn.delete {
-            color: #ef4444;
-            border-color: #fee2e2;
-            background: #fef2f2;
+        .drawer-input {
+            width: 100%; padding: 10px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            font-size: 14px;
+            outline: none;
+        }
+
+        .drawer-row-inline {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        .action-submit-btn {
+            background-color: var(--accent-color);
+            color: white; border: none; padding: 10px;
+            border-radius: 6px; font-weight: 600; cursor: pointer;
+        }
+
+        .items-list-scroll {
+            max-height: 200px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .list-item-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            background: #fff;
+        }
+
+        .item-label {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 14px;
+            cursor: pointer;
+            flex-grow: 1;
+        }
+
+        .btn-inline-del {
+            background: none; border: none; color: #ef4444; font-size: 18px; cursor: pointer; padding: 0 4px;
+        }
+        
+        .btn-inline-edit {
+            background: none; border: none; color: var(--accent-color); font-size: 14px; cursor: pointer; padding: 0 4px; margin-right: 6px;
+        }
+
+        /* FOOTER NAVEGADORES AUXILIARES */
+        .footer-nav {
+            display: flex;
+            gap: 8px;
+            margin-top: 4px;
+            justify-content: space-between;
+        }
+
+        .footer-btn {
+            background: none; border: none; font-size: 13px; color: var(--text-secondary); cursor: pointer; padding: 4px; font-weight: 500;
         }
     </style>
 </head>
 <body>
 
-    <!-- 1. TELA DE LOGIN DISFARÇADA -->
     <div id="login-screen">
         <div class="corp-header">
             <div class="corp-logo">Portal Corp<span class="secret-trigger" onclick="unlockApp()">o</span>rativo</div>
-            <div class="corp-desc">Ambiente Interno de Homologação e Monitoramento de Sistemas de Rede.</div>
+            <div class="corp-desc">Ambiente Interno Corporativo de Homologação de Rede e Atividades de Auditoria.</div>
         </div>
     </div>
 
-    <!-- 2. PAINEL PRINCIPAL (ESTILO BLITZ) -->
     <div id="app-container">
         <header>
             <div class="header-top">
-                <div class="app-title">Hoje</div>
+                <div class="app-title" id="current-view-title">Hoje</div>
                 <div class="sync-status">
                     <div class="status-dot" id="status-dot"></div>
-                    <span id="status-text">Sincronizado</span>
+                    <span id="status-text">Carregando...</span>
                 </div>
             </div>
             <div class="progress-container">
@@ -370,213 +463,431 @@
             </div>
         </header>
 
-        <!-- Filtros rápidos para navegação sem fricção -->
         <div class="date-filters">
-            <button class="filter-btn active" onclick="filterTasks('hoje')">Hoje</button>
-            <button class="filter-btn" onclick="filterTasks('amanha')">Amanhã</button>
-            <button class="filter-btn" onclick="filterTasks('foco')">Foco Principal</button>
+            <button class="filter-btn active" id="f-btn-hoje" onclick="setFilter('hoje')">Hoje</button>
+            <button class="filter-btn" id="f-btn-amanha" onclick="setFilter('amanha')">Amanhã</button>
+            <button class="filter-btn" id="f-btn-todos" onclick="setFilter('todos')">Todos os Itens</button>
         </div>
 
-        <!-- Lista Dinâmica de Tarefas -->
         <main class="task-list" id="task-list-container">
-            <!-- Gerado via JavaScript -->
-        </main>
+            </main>
 
-        <!-- Barra Fixo de Entrada de Dados -->
         <div class="input-container">
-            <input type="text" class="task-input" id="new-task-input" placeholder="Adicionar nova tarefa..." onkeypress="handleKeyPress(event)">
+            <div class="meta-selectors-row">
+                <button class="selector-btn" id="meta-date-btn">
+                    <span id="meta-date-label">📅 Hoje</span>
+                    <input type="date" class="hidden-date-input" id="task-date-picker" onchange="updateSelectedDate(this.value)">
+                </button>
+                <button class="selector-btn" onclick="openContextDrawer('projetos')" id="meta-project-label">📋 Sem Projeto</button>
+                <button class="selector-btn" onclick="openContextDrawer('tags')" id="meta-tag-label">🏷️ Sem Tag</button>
+            </div>
+            <div class="input-row">
+                <input type="text" class="task-input" id="new-task-input" placeholder="Adicionar nova atividade..." onkeypress="handleInputKey(event)">
+            </div>
+            <div class="footer-nav">
+                <button class="footer-btn" onclick="openContextDrawer('projetos')">📋 Gerenciar Projetos</button>
+                <button class="footer-btn" onclick="openContextDrawer('tags')">🏷️ Gerenciar Tags</button>
+            </div>
         </div>
     </div>
 
-    <!-- 3. GAVETA DE TOQUE (MODAL INFERIOR) -->
     <div class="drawer-overlay" id="drawer-overlay" onclick="closeDrawer()"></div>
-    <div class="drawer" id="drawer">
+    
+    <div class="drawer" id="context-drawer">
         <div class="drawer-handle"></div>
-        <div class="drawer-actions">
-            <button class="drawer-btn" onclick="moveTaskAction()">Mudar Data/Foco</button>
-            <button class="drawer-btn delete" onclick="deleteTaskAction()">Excluir Tarefa</button>
-        </div>
+        <div class="drawer-title" id="drawer-title">Contexto</div>
+        
+        <div class="drawer-form-block" id="drawer-form-area">
+            </div>
+
+        <div class="items-list-scroll" id="drawer-list-items">
+            </div>
     </div>
 
     <script>
-        // CONFIGURAÇÕES DO JSONBIN (PERSISTÊNCIA SEM LOGIN COMPLEXO)
-        const BIN_ID = 'SEU_BIN_ID_AQUI'; // Substitua pelo seu ID do JSONBin
-        const API_KEY = 'SUA_API_KEY_AQUI'; // Substitua pelo seu X-Master-Key ou Access Key
-        const URL = `https://api.jsonbin.io/v3/b/${BIN_ID}`;
+        const BIN_ID = '6937666aae596e708f8c6683';
+        const API_KEY = '$2a$10$V0UFHZ8bHEdDdwGEpXjEYeR1.ZL9oIiMUY//5YbHFHc7yjai/WHpy';
+        const JSONBIN_URL = `https://api.jsonbin.io/v3/b/${BIN_ID}`;
 
         let state = {
             tasks: [],
-            currentFilter: 'hoje',
-            selectedTaskId: null
+            projetos: ["Trabalho", "Estudos"],
+            tags: [
+                { nome: "URGENTE", cor: "#ef4444" },
+                { nome: "FOCO", cor: "#3b82f6" }
+            ],
+            filterType: 'hoje', // 'hoje', 'amanha', 'todos', 'projeto:[nome]', 'tag:[nome]'
+            selectedFilterValue: '',
+            
+            // Metadados temporários da nova tarefa sendo criada
+            tempDate: '',
+            tempProject: 'No project',
+            tempTag: '',
+            
+            editingTagIndex: null // Controle se está editando uma tag existente
         };
 
-        // 1. SISTEMA DE LOGIN SECRETO
+        function getTodayISO() {
+            const d = new Date();
+            return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+        }
+
+        function getTomorrowISO() {
+            const d = new Date();
+            d.setDate(d.getDate() + 1);
+            return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+        }
+
+        function formatDisplayDate(isoStr) {
+            if (!isoStr) return 'Sem Data';
+            const parts = isoStr.split('-');
+            return `${parts[2]}/${parts[1]}`;
+        }
+
+        // UNLOCK POR GATILHO OCULTO
         function unlockApp() {
             document.getElementById('login-screen').style.display = 'none';
             document.getElementById('app-container').style.display = 'flex';
-            loadTasks(); // Baixa os dados imediatamente ao abrir
+            
+            state.tempDate = getTodayISO();
+            document.getElementById('task-date-picker').value = state.tempDate;
+            
+            fetchData();
         }
 
-        // 2. COMUNICAÇÃO COM O JSONBIN
-        async function loadTasks() {
-            updateSyncStatus('Sincronizando...', '#eab308');
+        // COMUNICAÇÃO ASSÍNCRONA COM NUVEM
+        async function fetchData() {
+            setSyncStatus('Sincronizando...', '#eab308');
             try {
-                const response = await fetch(URL, {
-                    method: 'GET',
-                    headers: { 'X-Master-Key': API_KEY }
-                });
-                const data = await response.json();
-                state.tasks = data.record.tasks || [];
+                const res = await fetch(JSONBIN_URL, { method: 'GET', headers: { 'X-Master-Key': API_KEY } });
+                const resData = await res.json();
+                
+                if(resData.record) {
+                    state.tasks = resData.record.tasks || [];
+                    state.projetos = resData.record.projetos || ["Trabalho", "Estudos"];
+                    state.tags = resData.record.tags || [{ nome: "URGENTE", cor: "#ef4444" }, { nome: "FOCO", cor: "#3b82f6" }];
+                }
+                setSyncStatus('Sincronizado', '#10b981');
                 render();
-                updateSyncStatus('Sincronizado', '#10b981');
-            } catch (error) {
-                console.error(error);
-                updateSyncStatus('Erro ao carregar', '#ef4444');
-                // Fallback local caso esteja sem internet
-                state.tasks = JSON.parse(localStorage.getItem('blitz_fallback') || '[]');
+            } catch(e) {
+                setSyncStatus('Modo Offline', '#ef4444');
                 render();
             }
         }
 
-        async function saveTasks() {
-            updateSyncStatus('Salvando...', '#eab308');
-            localStorage.setItem('blitz_fallback', JSON.stringify(state.tasks));
+        async function pushData() {
+            setSyncStatus('Salvando...', '#eab308');
             try {
-                await fetch(URL, {
+                await fetch(JSONBIN_URL, {
                     method: 'PUT',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-Master-Key': API_KEY
-                    },
-                    body: JSON.stringify({ tasks: state.tasks })
+                    headers: { 'Content-Type': 'application/json', 'X-Master-Key': API_KEY },
+                    body: JSON.stringify({ tasks: state.tasks, projetos: state.projetos, tags: state.tags })
                 });
-                updateSyncStatus('Sincronizado', '#10b981');
-            } catch (error) {
-                console.error(error);
-                updateSyncStatus('Erro ao salvar (Salvo Local)', '#ef4444');
+                setSyncStatus('Sincronizado', '#10b981');
+            } catch(e) {
+                setSyncStatus('Erro ao Salvar', '#ef4444');
             }
         }
 
-        function updateSyncStatus(text, color) {
+        function setSyncStatus(text, color) {
             document.getElementById('status-text').innerText = text;
             document.getElementById('status-dot').style.backgroundColor = color;
         }
 
-        // 3. LÓGICA E REGRAS DE NEGÓCIO DO APP
-        function handleKeyPress(e) {
-            if (e.key === 'Enter') {
-                const input = document.getElementById('new-task-input');
-                const text = input.value.trim();
-                if (!text) return;
+        // UPDATE DATA DE CRIAÇÃO
+        function updateSelectedDate(val) {
+            if(!val) return;
+            state.tempDate = val;
+            if(val === getTodayISO()) {
+                document.getElementById('meta-date-label').innerText = "📅 Hoje";
+            } else if(val === getTomorrowISO()) {
+                document.getElementById('meta-date-label').innerText = "📅 Amanhã";
+            } else {
+                document.getElementById('meta-date-label').innerText = `📅 ${formatDisplayDate(val)}`;
+            }
+        }
 
-                const newTask = {
+        // LÓGICA DE FILTRAGEM
+        function setFilter(type, value = '') {
+            state.filterType = type;
+            state.selectedFilterValue = value;
+
+            document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+            
+            const titleEl = document.getElementById('current-view-title');
+            if(type === 'hoje') {
+                document.getElementById('f-btn-hoje').classList.add('active');
+                titleEl.innerText = "Hoje";
+            } else if(type === 'amanha') {
+                document.getElementById('f-btn-amanha').classList.add('active');
+                titleEl.innerText = "Amanhã";
+            } else if(type === 'todos') {
+                document.getElementById('f-btn-todos').classList.add('active');
+                titleEl.innerText = "Todos os Itens";
+            } else if(type === 'projeto') {
+                titleEl.innerText = `📋 Projeto: ${value}`;
+            } else if(type === 'tag') {
+                titleEl.innerText = `🏷️ Tag: ${value}`;
+            }
+
+            render();
+        }
+
+        // INPUT DE NOVA TAREFA
+        function handleInputKey(e) {
+            if(e.key === 'Enter') {
+                const inp = document.getElementById('new-task-input');
+                const val = inp.value.trim();
+                if(!val) return;
+
+                const t = {
                     id: Date.now().toString(),
-                    text: text,
+                    text: val,
                     completed: false,
-                    category: state.currentFilter // Joga direto no filtro de data visualizado
+                    date: state.tempDate,
+                    project: state.tempProject,
+                    tag: state.tempTag
                 };
 
-                state.tasks.push(newTask);
-                input.value = '';
+                state.tasks.push(t);
+                inp.value = '';
+                
+                // Reseta tags e projetos temporários para evitar repetição acidental
+                state.tempProject = 'No project';
+                state.tempTag = '';
+                document.getElementById('meta-project-label').innerText = '📋 Sem Projeto';
+                document.getElementById('meta-tag-label').innerText = '🏷️ Sem Tag';
+
                 render();
-                saveTasks();
+                pushData();
             }
         }
 
         function toggleTask(id) {
-            const task = state.tasks.find(t => t.id === id);
-            if (task) {
-                task.completed = !task.completed;
+            const t = state.tasks.find(item => item.id === id);
+            if(t) {
+                t.completed = !t.completed;
                 render();
-                saveTasks();
+                pushData();
             }
         }
 
-        function filterTasks(filterType) {
-            state.currentFilter = filterType;
-            document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
-            event.target.classList.add('active');
-            
-            // Muda o título superior dinamicamente
-            const titles = { 'hoje': 'Hoje', 'amanha': 'Amanhã', 'foco': 'Foco Principal' };
-            document.querySelector('.app-title').innerText = titles[filterType];
-            
+        function deleteTask(id) {
+            state.tasks = state.tasks.filter(item => item.id !== id);
             render();
+            pushData();
         }
 
-        // 4. MOTOR DE RENDERIZAÇÃO INTERNA
+        // MOTOR DE RENDERIZAÇÃO PRINCIPAL
         function render() {
             const container = document.getElementById('task-list-container');
             container.innerHTML = '';
 
-            const filtered = state.tasks.filter(t => t.category === state.currentFilter);
+            let filtered = state.tasks;
+            if(state.filterType === 'hoje') {
+                filtered = state.tasks.filter(t => t.date === getTodayISO());
+            } else if(state.filterType === 'amanha') {
+                filtered = state.tasks.filter(t => t.date === getTomorrowISO());
+            } else if(state.filterType === 'projeto') {
+                filtered = state.tasks.filter(t => t.project === state.selectedFilterValue);
+            } else if(state.filterType === 'tag') {
+                filtered = state.tasks.filter(t => t.tag === state.selectedFilterValue);
+            }
 
-            filtered.forEach(task => {
+            if(filtered.length === 0) {
+                container.innerHTML = `<div style="text-align:center; color:var(--text-secondary); padding:40px 0; font-size:14px;">Nenhuma atividade localizada.</div>`;
+                document.getElementById('progress-bar').style.width = '0%';
+                return;
+            }
+
+            filtered.forEach(t => {
                 const item = document.createElement('div');
-                item.className = `task-item ${task.completed ? 'completed' : ''}`;
-                
-                // Segurar ou clicar no corpo do card ativa a gaveta de toque (mobile-first)
+                item.className = `task-item ${t.completed ? 'completed' : ''}`;
+
+                let metaHTML = '';
+                if(t.project && t.project !== 'No project') {
+                    metaHTML += `<span class="clickable-pill project-pill" onclick="setFilter('project', '${t.project}')">📋 ${t.project}</span>`;
+                }
+                if(t.tag) {
+                    const foundTag = state.tags.find(tg => tg.nome === t.tag);
+                    const color = foundTag ? foundTag.cor : '#718096';
+                    metaHTML += `<span class="clickable-pill tag-pill" style="background-color:${color}" onclick="setFilter('tag', '${t.tag}')">🏷️ ${t.tag}</span>`;
+                }
+                if(t.date) {
+                    metaHTML += `<span class="clickable-pill date-pill">📅 ${formatDisplayDate(t.date)}</span>`;
+                }
+
                 item.innerHTML = `
-                    <input type="checkbox" class="task-checkbox" ${task.completed ? 'checked' : ''} onclick="event.stopPropagation(); toggleTask('${task.id}')">
-                    <div class="task-content" onclick="openDrawer('${task.id}')">
-                        <span class="task-text">${task.text}</span>
+                    <input type="checkbox" class="task-checkbox" ${t.completed ? 'checked' : ''} onchange="toggleTask('${t.id}')">
+                    <div class="task-content">
+                        <span class="task-text">${t.text}</span>
+                        <div class="task-meta-clickable-zone">${metaHTML}</div>
                     </div>
+                    <button class="btn-inline-del" onclick="deleteTask('${t.id}')">&times;</button>
                 `;
                 container.appendChild(item);
             });
 
-            updateProgressBar();
+            // Atualiza Barra de Progresso
+            const done = filtered.filter(t => t.completed).length;
+            const pct = (done / filtered.length) * 100;
+            document.getElementById('progress-bar').style.width = `${pct}%`;
         }
 
-        function updateProgressBar() {
-            const currentTasks = state.tasks.filter(t => t.category === state.currentFilter);
-            if (currentTasks.length === 0) {
-                document.getElementById('progress-bar').style.width = '0%';
-                return;
-            }
-            const completed = currentTasks.filter(t => t.completed).length;
-            const percentage = (completed / currentTasks.length) * 100;
-            document.getElementById('progress-bar').style.width = `${percentage}%`;
-        }
-
-        // 5. EVENTOS DA GAVETA (DRAWER CONTROLS)
-        function openDrawer(id) {
-            state.selectedTaskId = id;
+        // GAVETAS CONTROLES E DINÂMICA
+        function openContextDrawer(mode) {
             document.getElementById('drawer-overlay').style.display = 'block';
-            setTimeout(() => {
-                document.getElementById('drawer-overlay').style.opacity = '1';
-                document.getElementById('drawer').classList.add('open');
-            }, 10);
+            document.getElementById('context-drawer').classList.add('open');
+            
+            const formArea = document.getElementById('drawer-form-area');
+            const titleEl = document.getElementById('drawer-title');
+            
+            state.editingTagIndex = null; // Reseta modo de edição
+
+            if(mode === 'projetos') {
+                titleEl.innerText = "Gerenciar Projetos";
+                formArea.innerHTML = `
+                    <input type="text" class="drawer-input" id="new-proj-name" placeholder="Nome do Projeto...">
+                    <button class="action-submit-btn" onclick="saveNewProject()">Adicionar Projeto</button>
+                `;
+                renderProjectsList();
+            } else if(mode === 'tags') {
+                titleEl.innerText = "Gerenciar Tags";
+                renderTagForm();
+                renderTagsList();
+            }
+        }
+
+        function renderTagForm(nome = '', cor = '#4f46e5', labelBtn = 'Adicionar Tag') {
+            const formArea = document.getElementById('drawer-form-area');
+            formArea.innerHTML = `
+                <input type="text" class="drawer-input" id="new-tag-name" placeholder="Nome da Tag..." value="${nome}">
+                <div class="drawer-row-inline">
+                    <span>Cor Visual:</span>
+                    <input type="color" id="new-tag-color" value="${cor}" style="border:none; background:none; width:40px; height:30px; cursor:pointer;">
+                </div>
+                <button class="action-submit-btn" onclick="saveTagAction()">${labelBtn}</button>
+            `;
         }
 
         function closeDrawer() {
-            document.getElementById('drawer-overlay').style.opacity = '0';
-            document.getElementById('drawer').classList.remove('open');
-            setTimeout(() => {
-                document.getElementById('drawer-overlay').style.display = 'none';
-                state.selectedTaskId = null;
-            }, 300);
+            document.getElementById('context-drawer').classList.remove('open');
+            document.getElementById('drawer-overlay').style.display = 'none';
         }
 
-        function deleteTaskAction() {
-            if (!state.selectedTaskId) return;
-            state.tasks = state.tasks.filter(t => t.id !== state.selectedTaskId);
+        // CRIAÇÃO E EDICÃO DE PROJETOS E TAGS VIA INTERFACE
+        function renderProjectsList() {
+            const list = document.getElementById('drawer-list-items');
+            list.innerHTML = '';
+
+            state.projetos.forEach(p => {
+                const row = document.createElement('div');
+                row.className = 'list-item-row';
+                row.innerHTML = `
+                    <div class="item-label" onclick="selectProjectForTask('${p}')">📋 ${p}</div>
+                    <button class="btn-inline-del" onclick="deleteProject('${p}')">&times;</button>
+                `;
+                list.appendChild(row);
+            });
+        }
+
+        function selectProjectForTask(p) {
+            state.tempProject = p;
+            document.getElementById('meta-project-label').innerText = `📋 ${p}`;
             closeDrawer();
-            render();
-            saveTasks();
         }
 
-        function moveTaskAction() {
-            if (!state.selectedTaskId) return;
-            const task = state.tasks.find(t => t.id === state.selectedTaskId);
-            if (task) {
-                // Cicla entre as categorias de baixo atrito de forma sequencial
-                const flows = { 'hoje': 'amanha', 'amanha': 'foco', 'foco': 'hoje' };
-                task.category = flows[task.category] || 'hoje';
-                closeDrawer();
-                render();
-                saveTasks();
+        function saveNewProject() {
+            const inp = document.getElementById('new-proj-name');
+            const val = inp.value.trim();
+            if(!val || state.projetos.includes(val)) return;
+
+            state.projetos.push(val);
+            inp.value = '';
+            renderProjectsList();
+            pushData();
+        }
+
+        function deleteProject(p) {
+            state.projetos = state.projetos.filter(item => item !== p);
+            renderProjectsList();
+            pushData();
+        }
+
+        // TAGS FUNCIONALIDADES COMPLETAS DE EDIÇÃO
+        function renderTagsList() {
+            const list = document.getElementById('drawer-list-items');
+            list.innerHTML = '';
+
+            state.tags.forEach((t, idx) => {
+                const row = document.createElement('div');
+                row.className = 'list-item-row';
+                row.innerHTML = `
+                    <div class="item-label" onclick="selectTagForTask('${t.nome}')">
+                        <span style="width:10px; height:10px; background:${t.cor}; border-radius:50%;"></span>
+                        <strong>${t.nome}</strong>
+                    </div>
+                    <div>
+                        <button class="btn-inline-edit" onclick="startEditTag(${idx})">Editar</button>
+                        <button class="btn-inline-del" onclick="deleteTag('${t.nome}')">&times;</button>
+                    </div>
+                `;
+                list.appendChild(row);
+            });
+        }
+
+        function selectTagForTask(t) {
+            state.tempTag = t;
+            document.getElementById('meta-tag-label').innerText = `🏷️ ${t}`;
+            closeDrawer();
+        }
+
+        function startEditTag(idx) {
+            state.editingTagIndex = idx;
+            const tag = state.tags[idx];
+            renderTagForm(tag.nome, tag.cor, 'Salvar Alterações');
+        }
+
+        function saveTagAction() {
+            const nameInp = document.getElementById('new-tag-name');
+            const colorInp = document.getElementById('new-tag-color');
+            const nameVal = nameInp.value.trim().toUpperCase();
+            const colorVal = colorInp.value;
+
+            if(!nameVal) return;
+
+            if(state.editingTagIndex !== null) {
+                // Atualiza tag existente
+                const velhaTagNome = state.tags[state.editingTagIndex].nome;
+                state.tags[state.editingTagIndex] = { nome: nameVal, cor: colorVal };
+                
+                // Alinha as tarefas órfãs que usavam o nome antigo
+                state.tasks.forEach(task => {
+                    if(task.tag === velhaTagNome) task.tag = nameVal;
+                });
+                
+                state.editingTagIndex = null;
+            } else {
+                // Cria uma nova
+                if(state.tags.some(t => t.nome === nameVal)) return alert('Tag já cadastrada.');
+                state.tags.push({ nome: nameVal, cor: colorVal });
             }
+
+            nameInp.value = '';
+            renderTagForm(); // Reseta para modo adição
+            renderTagsList();
+            render();
+            pushData();
+        }
+
+        function deleteTag(nome) {
+            state.tags = state.tags.filter(t => t.nome !== nome);
+            state.tasks.forEach(task => {
+                if(task.tag === nome) task.tag = '';
+            });
+            renderTagsList();
+            render();
+            pushData();
         }
     </script>
 </body>
