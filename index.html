@@ -442,9 +442,10 @@
 
         <div class="input-container">
             <div class="meta-selectors-row">
-                <button class="selector-btn" id="meta-date-btn">
+                <!-- Gatilho de clique direto para forçar abertura do calendário -->
+                <button class="selector-btn" id="meta-date-btn" onclick="openDatePicker()">
                     <span id="meta-date-label">📅 Hoje</span>
-                    <input type="date" class="hidden-date-input" id="task-date-picker" onchange="updateSelectedDate(this.value)">
+                    <input type="date" class="hidden-date-input" id="task-date-picker" onchange="updateSelectedDate(this.value)" onclick="event.stopPropagation();">
                 </button>
                 <button class="selector-btn" onclick="openContextDrawer('projetos')" id="meta-project-label">📋 Sem Projeto</button>
                 <button class="selector-btn" onclick="openContextDrawer('tags')" id="meta-tag-label">🏷️ Sem Tag</button>
@@ -492,7 +493,7 @@
             tempTag: '',
             
             editingTagIndex: null,
-            editingTaskId: null // Controla qual tarefa está em modo de edição inline
+            editingTaskId: null
         };
 
         function getTodayISO() {
@@ -512,11 +513,21 @@
             return `${parts[2]}/${parts[1]}`;
         }
 
-        // INICIALIZAÇÃO DO APLICATIVO CORRIGIDA
+        // Função explícita para contornar problemas de foco e toque em dispositivos mobile/Safari
+        function openDatePicker() {
+            const picker = document.getElementById('task-date-picker');
+            if (picker && typeof picker.showPicker === 'function') {
+                picker.showPicker();
+            } else if (picker) {
+                picker.focus();
+                picker.click();
+            }
+        }
+
         function initApp() {
             state.tempDate = getTodayISO();
             document.getElementById('task-date-picker').value = state.tempDate;
-            updateSelectedDate(state.tempDate); // Sincroniza o texto inicial do botão
+            updateSelectedDate(state.tempDate);
             fetchData();
         }
 
@@ -592,7 +603,7 @@
                 titleEl.innerText = `🏷️ Tag: ${value}`;
             }
 
-            state.editingTaskId = null; // Reseta edição inline ao mudar de filtro
+            state.editingTaskId = null;
             render();
         }
 
@@ -887,7 +898,6 @@
             pushData();
         }
 
-        // Executa a inicialização de forma segura após o carregamento da página
         window.addEventListener('DOMContentLoaded', initApp);
     </script>
 </body>
