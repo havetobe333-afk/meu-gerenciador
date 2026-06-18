@@ -3,1173 +3,580 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Gerenciador Pro - Custom Edition</title>
+    <title>Portal Corporativo - Intranet</title>
     <style>
+        /* Variáveis de Cores Inspiradas no Blitz */
         :root {
-            --bg-app: #f8fafc;
+            --bg-main: #f8f9fa;
             --bg-card: #ffffff;
-            --text-main: #0f172a;
-            --text-muted: #64748b;
-            --accent-blue: #3b82f6;
-            --app-slate: #1e293b;
-            --border-light: #e2e8f0;
-            --radius-lg: 16px;
-            --radius-md: 12px;
-            --radius-sm: 8px;
-            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --text-primary: #2d3748;
+            --text-secondary: #718096;
+            --accent-color: #4f46e5;
+            --accent-hover: #4338ca;
+            --border-color: #e2e8f0;
+            --success-color: #10b981;
+            --shadow: 0 1px 3px rgba(0,0,0,0.05), 0 1px 2px rgba(0,0,0,0.1);
         }
 
-        * { 
-            box-sizing: border-box; 
-            margin: 0; 
+        * {
+            box-sizing: border-box;
+            margin: 0;
             padding: 0;
-            word-wrap: break-word;
-            word-break: break-word;
-            white-space: normal;
-            transition: background-color 0.2s ease, transform 0.1s ease;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            -webkit-tap-highlight-color: transparent;
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            background-color: var(--bg-app);
-            color: var(--text-main);
-            -webkit-tap-highlight-color: transparent;
+            background-color: var(--bg-main);
+            color: var(--text-primary);
             min-height: 100vh;
             display: flex;
             flex-direction: column;
-            overflow-x: hidden;
         }
 
-        /* --- TELA DE LOGIN SEGRETO --- */
-        #loginGate {
+        /* TELA DE LOGIN DISFARÇADA */
+        #login-screen {
             position: fixed;
-            top: 0; left: 0;
-            width: 100vw; height: 100vh;
-            background: #0f172a;
-            z-index: 9999;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-color: #ffffff;
             display: flex;
-            align-items: center;
+            flex-direction: column;
             justify-content: center;
+            align-items: center;
+            z-index: 9999;
             padding: 20px;
         }
 
-        .login-box {
-            background: var(--bg-card);
-            padding: 36px;
-            border-radius: var(--radius-lg);
-            width: 100%;
+        .corp-header {
+            text-align: center;
             max-width: 400px;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-            text-align: center;
         }
 
-        .login-box h2 {
-            font-size: 1.3rem;
-            margin-bottom: 24px;
-            color: #0f172a;
-            font-weight: 800;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .login-field {
-            width: 100%;
-            padding: 14px 16px;
-            margin-bottom: 16px;
-            border: 1px solid var(--border-light);
-            border-radius: var(--radius-md);
-            font-family: inherit;
-            font-size: 0.95rem;
-            outline: none;
-            background-color: #f8fafc;
-        }
-        .login-field:focus { border-color: var(--accent-blue); background-color: #fff; }
-
-        .btn-login {
-            width: 100%;
-            background: #0f172a;
-            color: white;
-            padding: 14px;
-            font-size: 0.95rem;
-            border-radius: var(--radius-md);
+        .corp-logo {
+            font-size: 24px;
             font-weight: 700;
-            border: none;
-            cursor: pointer;
+            color: #1a202c;
+            letter-spacing: -0.5px;
+            margin-bottom: 8px;
         }
 
-        .error-screen {
-            display: none;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            width: 100%;
-            text-align: center;
-        }
-
-        .error-title {
-            font-size: 1.2rem;
-            font-weight: 800;
-            color: #ef4444;
-            margin-bottom: 12px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .error-subtitle {
-            font-size: 1.1rem;
-            font-weight: 700;
-            color: #ffffff;
-            margin-bottom: 20px;
+        /* O gatilho secreto na letra "o" de "Corporativo" */
+        .secret-trigger {
             cursor: default;
-            user-select: none;
+            color: inherit;
         }
 
-        .secret-trigger { cursor: pointer; color: inherit; display: inline-block; font-weight: inherit; }
-        .error-desc { font-size: 0.85rem; color: #94a3b8; max-width: 320px; line-height: 1.4; }
+        .corp-desc {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.5;
+        }
 
-        /* --- CONTAINER PRINCIPAL --- */
-        #appContent {
-            display: none;
+        /* APLICATIVO PRINCIPAL (BLITZ STYLE) */
+        #app-container {
+            display: none; /* Oculto inicialmente */
             flex-direction: column;
             width: 100%;
-            min-height: 100vh;
-            padding-bottom: 90px;
-            background-color: var(--bg-app);
+            max-width: 600px;
+            margin: 0 auto;
+            padding-bottom: 80px; /* Espaço para o input fixo */
         }
 
-        /* --- BARRA SUPERIOR E CONTROLES --- */
+        /* Header Superior Estilo Blitz */
         header {
             background-color: var(--bg-card);
-            width: 100%;
-            border-bottom: 1px solid var(--border-light);
-            padding-top: 14px;
+            padding: 16px;
+            border-bottom: 1px solid var(--border-color);
             position: sticky;
             top: 0;
             z-index: 100;
-            box-shadow: var(--shadow-sm);
-        }
-
-        .header-top-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 0 16px;
-            margin-bottom: 12px;
-        }
-
-        .header-controls-left {
-            display: flex;
-            gap: 6px;
-            align-items: center;
-        }
-
-        .header-icon {
-            font-size: 0.8rem;
-            background: #f1f5f9;
-            border: 1px solid var(--border-light);
-            padding: 8px 12px;
-            border-radius: var(--radius-sm);
-            font-weight: 600;
-            cursor: pointer;
-            color: var(--text-main);
-            display: flex;
-            align-items: center;
-            gap: 4px;
-        }
-        .header-icon:active { background: #e2e8f0; }
-
-        .month-title {
-            font-size: 1.05rem;
-            color: var(--text-main);
-            font-weight: 700;
-            text-transform: capitalize;
-            display: flex;
-            align-items: center;
-        }
-
-        .status-badge {
-            font-size: 0.7rem;
-            padding: 3px 6px;
-            border-radius: var(--radius-sm);
-            background: #f1f5f9;
-            font-weight: bold;
-            margin-left: 6px;
-            border: 1px solid var(--border-light);
-        }
-
-        /* Calendário Deslizante Estilo Strip */
-        .calendar-nav-wrapper {
-            display: flex;
-            align-items: center;
-            padding: 4px 8px 10px 8px;
-        }
-
-        .nav-arrow {
-            background: none;
-            border: none;
-            font-size: 1.2rem;
-            font-weight: bold;
-            padding: 10px;
-            cursor: pointer;
-            color: var(--text-muted);
-        }
-        .nav-arrow:active { color: var(--accent-blue); }
-
-        .calendar-strip {
-            display: flex;
-            justify-content: space-around;
-            flex-grow: 1;
-            text-align: center;
-            gap: 4px;
-        }
-
-        .calendar-day {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 4px;
-            width: 14%;
-            cursor: pointer;
-            padding: 6px 0;
-            border-radius: var(--radius-md);
-        }
-
-        .day-name {
-            font-size: 0.65rem;
-            color: var(--text-muted);
-            text-transform: uppercase;
-            font-weight: 700;
-            letter-spacing: 0.5px;
-        }
-
-        .day-number {
-            font-size: 0.95rem;
-            color: var(--text-main);
-            font-weight: 600;
-            width: 32px;
-            height: 32px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 50%;
-        }
-
-        .calendar-day.active { background-color: #f1f5f9; }
-        .calendar-day.active .day-number {
-            background-color: var(--app-slate);
-            color: #ffffff;
-            font-weight: 700;
-            box-shadow: var(--shadow-sm);
-        }
-
-        /* --- CORPO DA LISTA DE TAREFAS --- */
-        main { flex-grow: 1; width: 100%; padding: 12px; }
-
-        .task-list-container { 
-            display: flex; 
-            flex-direction: column; 
-            background-color: var(--bg-card); 
-            border-radius: var(--radius-lg);
-            box-shadow: var(--shadow-sm);
-            border: 1px solid var(--border-light);
-            overflow: hidden;
-        }
-
-        /* Estado Vazio */
-        .empty-state {
-            padding: 40px 20px;
-            text-align: center;
-            color: var(--text-muted);
-            font-size: 0.9rem;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 8px;
-        }
-        .empty-state-icon { font-size: 1.8rem; opacity: 0.7; }
-
-        .task-row {
-            display: flex;
-            align-items: flex-start;
-            padding: 16px;
-            border-bottom: 1px solid var(--border-light);
-            gap: 14px;
-        }
-        .task-row:last-child { border-bottom: none; }
-
-        .task-checkbox-wrapper { padding-top: 2px; }
-
-        .task-checkbox {
-            width: 22px;
-            height: 22px;
-            border: 2px solid #cbd5e1;
-            border-radius: 6px;
-            appearance: none;
-            -webkit-appearance: none;
-            outline: none;
-            cursor: pointer;
-            background: #fff;
-            position: relative;
-        }
-        .task-checkbox:checked {
-            background-color: var(--text-muted);
-            border-color: var(--text-muted);
-        }
-        .task-checkbox:checked::after {
-            content: "✓";
-            color: #fff;
-            position: absolute;
-            font-size: 14px;
-            font-weight: bold;
-            left: 50%; top: 50%;
-            transform: translate(-50%, -50%);
-        }
-
-        .task-content-area { flex-grow: 1; display: flex; flex-direction: column; gap: 6px; min-width: 0; }
-
-        .task-title-input {
-            font-size: 1.05rem;
-            font-weight: 500;
-            color: var(--text-main);
-            outline: none;
-            border: none;
-            background: transparent;
-            width: 100%;
-            line-height: 1.3;
-        }
-
-        .task-row.completed .task-title-input {
-            text-decoration: line-through;
-            color: var(--text-muted);
-            opacity: 0.7;
-        }
-
-        .task-project-link-label {
-            display: inline-flex;
-            align-items: center;
-            gap: 4px;
-            font-size: 0.8rem;
-            color: var(--text-muted);
-            background: #f1f5f9;
-            padding: 2px 8px;
-            border-radius: var(--radius-sm);
-            align-self: flex-start;
-            font-weight: 500;
-        }
-
-        .task-meta-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-top: 4px;
-            width: 100%;
-        }
-
-        .task-pill-tag {
-            font-size: 0.65rem;
-            font-weight: 700;
-            color: #ffffff;
-            padding: 3px 8px;
-            border-radius: var(--radius-sm);
-            text-transform: uppercase;
-            letter-spacing: 0.3px;
-        }
-
-        .task-deadline-zone {
-            display: flex;
-            align-items: center;
-            gap: 4px;
-            font-size: 0.8rem;
-            color: #ef4444;
-            font-weight: 600;
-        }
-        .task-deadline-zone.no-date { color: var(--text-muted); font-weight: 500; }
-
-        .btn-delete-item {
-            background: transparent;
-            border: none;
-            color: #cbd5e1;
-            font-size: 1.4rem;
-            cursor: pointer;
-            padding: 0 4px;
-            line-height: 1;
-        }
-        .btn-delete-item:active { color: #ef4444; }
-
-        /* --- GAVETAS INFERIORES (BOTTOM SHEETS) --- */
-        .bottom-sheet-overlay {
-            position: fixed;
-            top: 0; left: 0;
-            width: 100vw; height: 100vh;
-            background: rgba(15, 23, 42, 0.3);
-            backdrop-filter: blur(2px);
-            z-index: 1000;
-            display: none;
-        }
-
-        .bottom-sheet-container {
-            position: fixed;
-            bottom: 0; left: 0;
-            width: 100vw;
-            background: var(--bg-card);
-            border-top-left-radius: 24px;
-            border-top-right-radius: 24px;
-            z-index: 1001;
-            transform: translateY(100%);
-            transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
-            padding: 24px;
-            box-shadow: 0 -10px 25px -5px rgba(0,0,0,0.1);
-            max-height: 85vh;
-            overflow-y: auto;
-        }
-
-        .bottom-sheet-container.open { transform: translateY(0); }
-
-        .sheet-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-        .sheet-title { font-size: 1.15rem; font-weight: 700; color: var(--text-main); }
-        .sheet-subtitle { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 16px; line-height: 1.4; }
-        .sheet-close-btn { background: #f1f5f9; border: none; width: 32px; height: 32px; border-radius: 50%; font-size: 1.2rem; color: var(--text-muted); cursor: pointer; display: flex; align-items: center; justify-content: center;}
-
-        /* Listas de Itens dentro das Gavetas */
-        .project-item-row, .tag-item-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 14px 0;
-            border-bottom: 1px solid var(--border-light);
-        }
-        .item-clickable-zone { display: flex; align-items: center; gap: 10px; font-size: 0.95rem; font-weight: 500; cursor: pointer; flex-grow: 1; color: var(--text-main); }
-        
-        .project-count-circle {
-            width: 22px; height: 22px; border: 1.5px solid var(--border-light); border-radius: 50%;
-            display: flex; align-items: center; justify-content: center;
-            font-size: 0.75rem; font-weight: 700; color: var(--text-muted); background-color: #f8fafc;
-        }
-
-        /* Formulários de Criação Dinâmica */
-        .creator-form-block {
-            background: #f8fafc;
-            padding: 14px;
-            border-radius: var(--radius-md);
-            margin-bottom: 18px;
             display: flex;
             flex-direction: column;
             gap: 12px;
-            border: 1px solid var(--border-light);
         }
-        .inline-input {
-            width: 100%; padding: 10px 12px; border: 1px solid var(--border-light); border-radius: var(--radius-sm); outline: none; font-family: inherit; font-size: 0.9rem; background-color: #fff;
-        }
-        .inline-input:focus { border-color: var(--accent-blue); }
-        .color-row { display: flex; align-items: center; gap: 8px; font-size: 0.85rem; color: var(--text-muted); font-weight: 500; }
-        .color-picker-input { border: none; width: 36px; height: 28px; cursor: pointer; background: transparent; }
-        
-        .btn-sub-action {
-            background: var(--app-slate); color: white; padding: 10px; border: none; border-radius: var(--radius-sm); font-weight: 600; font-size: 0.9rem; cursor: pointer;
-        }
-        .btn-sub-action:active { opacity: 0.9; }
 
-        /* --- SUB-SELETORES INTERNOS POR TOQUE --- */
-        .inline-selection-list {
-            background: #f8fafc;
-            border: 1px solid var(--border-light);
-            border-radius: var(--radius-md);
-            margin-top: 8px;
-            max-height: 180px;
-            overflow-y: auto;
-            display: none;
-            box-shadow: inset 0 2px 4px rgba(0,0,0,0.02);
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
-        .inline-select-item {
+
+        .app-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--text-primary);
+            letter-spacing: -0.5px;
+        }
+
+        .sync-status {
+            font-size: 12px;
+            color: var(--text-secondary);
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            background-color: var(--success-color);
+            border-radius: 50%;
+        }
+
+        /* Barra de Progresso do Dia */
+        .progress-container {
+            width: 100%;
+            background-color: var(--border-color);
+            height: 6px;
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            width: 0%;
+            height: 100%;
+            background-color: var(--accent-color);
+            transition: width 0.3s ease;
+        }
+
+        /* Filtros Rápidos de Data (Baixo Atrito) */
+        .date-filters {
+            display: flex;
+            gap: 8px;
             padding: 12px 16px;
-            border-bottom: 1px solid var(--border-light);
-            font-size: 0.9rem;
+            overflow-x: auto;
+            white-space: nowrap;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .date-filters::-webkit-scrollbar {
+            display: none;
+        }
+
+        .filter-btn {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            padding: 6px 14px;
+            border-radius: 16px;
+            font-size: 13px;
             font-weight: 500;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .filter-btn.active {
+            background-color: var(--accent-color);
+            color: #ffffff;
+            border-color: var(--accent-color);
+        }
+
+        /* Lista de Tarefas (Cards Blitz) */
+        .task-list {
+            padding: 8px 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .task-item {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 14px;
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            box-shadow: var(--shadow);
+            transition: transform 0.2s ease, opacity 0.2s ease;
+        }
+
+        /* Toque/Swipe Mobile-First para abrir a Gaveta/Ações rápidos */
+        .task-item:active {
+            transform: scale(0.99);
+        }
+
+        .task-checkbox {
+            appearance: none;
+            -webkit-appearance: none;
+            width: 20px;
+            height: 20px;
+            border: 2px solid #cbd5e1;
+            border-radius: 6px;
+            outline: none;
             cursor: pointer;
             display: flex;
             align-items: center;
-            gap: 8px;
-            color: var(--text-main);
-        }
-        .inline-select-item:last-child { border-bottom: none; }
-        .inline-select-item:active { background: #e2e8f0; }
-
-        /* --- CAMPOS DA GAVETA DE NOVA TAREFA --- */
-        .new-task-input {
-            width: 100%; font-size: 1.15rem; font-weight: 500; border: none; border-bottom: 1px solid var(--border-light); outline: none; padding: 12px 0; margin-bottom: 20px; color: var(--text-main);
-        }
-        .new-task-input::placeholder { color: #cbd5e1; }
-        
-        .metadata-form-row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 20px; }
-        
-        .meta-form-btn {
-            background: #f1f5f9; border: 1px solid var(--border-light); padding: 8px 14px; border-radius: 20px; font-size: 0.8rem; font-weight: 600; color: var(--text-main); display: inline-flex; align-items: center; gap: 4px; cursor: pointer;
-            position: relative;
-        }
-        .meta-form-btn:active { background-color: #e2e8f0; }
-        
-        .hidden-date-picker {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer;
-        }
-
-        .form-confirm-fab {
-            margin-top: 10px;
-            width: 100%; background: var(--app-slate); border-radius: var(--radius-md); border: none;
-            color: white; font-size: 1rem; padding: 14px; font-weight: 700; cursor: pointer; box-shadow: var(--shadow-md);
-        }
-        .form-confirm-fab:active { opacity: 0.95; }
-
-        /* --- BOTÃO FLUTUANTE CENTRAL DE CRIAÇÃO (FAB) --- */
-        .floating-action-button {
-            position: fixed;
-            bottom: 28px; left: 50%;
-            transform: translateX(-50%);
-            width: 56px; height: 56px;
-            background-color: var(--app-slate);
-            border-radius: 50%;
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-            display: flex; align-items: center; justify-content: center;
-            border: none; cursor: pointer; z-index: 200;
-        }
-        .floating-action-button:active { transform: translateX(-50%) scale(0.95); opacity: 0.95; }
-        .floating-action-button::before, .floating-action-button::after {
-            content: ''; position: absolute; background-color: #ffffff; border-radius: 2px;
-        }
-        .floating-action-button::before { width: 18px; height: 3px; }
-        .floating-action-button::after { width: 3px; height: 18px; }
-
-        /* --- BARRA INFERIOR DE NAVEGAÇÃO --- */
-        footer {
-            position: fixed;
-            bottom: 0; left: 0;
-            width: 100vw; height: 64px;
-            background-color: var(--bg-card);
-            border-top: 1px solid var(--border-light);
-            display: flex;
-            align-items: center;
-            z-index: 150;
-            box-shadow: 0 -4px 6px -1px rgba(0, 0, 0, 0.02);
-        }
-
-        .footer-half {
-            display: flex;
             justify-content: center;
-            align-items: center;
-            width: calc(50% - 28px);
+            margin-top: 2px;
+            flex-shrink: 0;
+            transition: all 0.2s ease;
         }
 
-        .footer-nav-item {
-            background: none; border: none; font-size: 1.3rem; color: var(--text-muted);
-            cursor: pointer; width: 48px; height: 48px;
-            display: flex; align-items: center; justify-content: center;
-            border-radius: var(--radius-md);
+        .task-checkbox:checked {
+            background-color: var(--success-color);
+            border-color: var(--success-color);
         }
-        .footer-nav-item:active { background-color: #f1f5f9; color: var(--text-main); }
-        .footer-center-space { width: 56px; }
+
+        .task-checkbox:checked::after {
+            content: "✓";
+            color: white;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .task-content {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .task-text {
+            font-size: 15px;
+            line-height: 1.4;
+            color: var(--text-primary);
+            word-break: break-word;
+        }
+
+        .task-item.completed .task-text {
+            text-decoration: line-through;
+            color: var(--text-secondary);
+        }
+
+        .task-meta {
+            display: flex;
+            gap: 8px;
+            font-size: 11px;
+            color: var(--text-secondary);
+        }
+
+        /* Entrada de Dados Fixa Inferior (Zero Fricção) */
+        .input-container {
+            position: fixed;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100%;
+            max-width: 600px;
+            background-color: var(--bg-card);
+            padding: 12px 16px;
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            gap: 8px;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
+        }
+
+        .task-input {
+            flex-grow: 1;
+            border: 1px solid var(--border-color);
+            background-color: var(--bg-main);
+            padding: 12px 16px;
+            border-radius: 24px;
+            font-size: 15px;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .task-input:focus {
+            border-color: var(--accent-color);
+        }
+
+        /* GAVETA DE DETALHES / CONTEXTO (TOUCH) */
+        .drawer-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.4);
+            z-index: 1000;
+            display: none;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .drawer {
+            position: fixed;
+            bottom: 0; left: 0; width: 100%;
+            background: var(--bg-card);
+            border-top-left-radius: 16px;
+            border-top-right-radius: 16px;
+            padding: 24px 16px;
+            z-index: 1001;
+            transform: translateY(100%);
+            transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            max-width: 600px;
+            left: 50%;
+            transform: translate(-50%, 100%);
+        }
+
+        .drawer.open {
+            transform: translate(-50%, 0);
+        }
+
+        .drawer-handle {
+            width: 40px;
+            height: 4px;
+            background: var(--border-color);
+            border-radius: 2px;
+            margin: 0 auto 16px auto;
+        }
+
+        .drawer-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .drawer-btn {
+            width: 100%;
+            padding: 14px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            background: var(--bg-card);
+            font-size: 16px;
+            font-weight: 500;
+            text-align: left;
+            cursor: pointer;
+        }
+
+        .drawer-btn.delete {
+            color: #ef4444;
+            border-color: #fee2e2;
+            background: #fef2f2;
+        }
     </style>
 </head>
 <body>
 
-    <div id="loginGate">
-        <div class="login-box" id="formContainer">
-            <h2>Acesso ao Sistema</h2>
-            <input type="email" id="emailField" class="login-field" placeholder="E-mail Corporativo">
-            <input type="password" id="passwordField" class="login-field" placeholder="Chave de Segurança">
-            <button class="btn-login" onclick="executarPreLogin()">Entrar</button>
-        </div>
-        
-        <div class="error-box error-screen" id="errorContainer">
-            <div class="error-title">Falha de Autenticação</div>
-            <div class="error-subtitle" id="errorTitleClickable">
-                Gerenciador Pr<span class="secret-trigger" onclick="autenticarViaGatilhoSecret()">o</span> - Custom Workspace
-            </div>
-            <div class="error-desc">Credenciais não localizadas na base corporativa.</div>
+    <!-- 1. TELA DE LOGIN DISFARÇADA -->
+    <div id="login-screen">
+        <div class="corp-header">
+            <div class="corp-logo">Portal Corp<span class="secret-trigger" onclick="unlockApp()">o</span>rativo</div>
+            <div class="corp-desc">Ambiente Interno de Homologação e Monitoramento de Sistemas de Rede.</div>
         </div>
     </div>
 
-    <div id="appContent">
+    <!-- 2. PAINEL PRINCIPAL (ESTILO BLITZ) -->
+    <div id="app-container">
         <header>
-            <div class="header-top-row">
-                <div class="header-controls-left">
-                    <button class="header-icon" onclick="limparFiltros()">📅 Todos</button>
-                    <button class="header-icon" onclick="irParaHoje()" title="Ir para Hoje">📍 Hoje</button>
-                    <button class="header-icon" onclick="filtrarSemData()" title="Sem Data">🚫 S/ Data</button>
-                </div>
-                <div class="month-title">
-                    <span id="nomeMesVisivel">Junho</span><span id="statusSalvar" class="status-badge">⏳</span>
+            <div class="header-top">
+                <div class="app-title">Hoje</div>
+                <div class="sync-status">
+                    <div class="status-dot" id="status-dot"></div>
+                    <span id="status-text">Sincronizado</span>
                 </div>
             </div>
-
-            <div class="calendar-nav-wrapper">
-                <button class="nav-arrow" onclick="deslocarSemana(-7)">&lt;</button>
-                <div class="calendar-strip" id="calendarStripContainer">
-                    </div>
-                <button class="nav-arrow" onclick="deslocarSemana(7)">&gt;</button>
+            <div class="progress-container">
+                <div class="progress-bar" id="progress-bar"></div>
             </div>
         </header>
 
-        <main>
-            <div class="task-list-container" id="tasksContainer">
-                </div>
+        <!-- Filtros rápidos para navegação sem fricção -->
+        <div class="date-filters">
+            <button class="filter-btn active" onclick="filterTasks('hoje')">Hoje</button>
+            <button class="filter-btn" onclick="filterTasks('amanha')">Amanhã</button>
+            <button class="filter-btn" onclick="filterTasks('foco')">Foco Principal</button>
+        </div>
+
+        <!-- Lista Dinâmica de Tarefas -->
+        <main class="task-list" id="task-list-container">
+            <!-- Gerado via JavaScript -->
         </main>
 
-        <button class="floating-action-button" onclick="abrirGavetaCriacao()"></button>
-
-        <footer>
-            <div class="footer-half">
-                <button class="footer-nav-item" onclick="abrirGavetaProjetos()" title="Projetos">📋</button>
-            </div>
-            <div class="footer-center-space"></div>
-            <div class="footer-half">
-                <button class="footer-nav-item" onclick="abrirGavetaTags()" title="Gerenciar Tags">🏷️</button>
-            </div>
-        </footer>
+        <!-- Barra Fixo de Entrada de Dados -->
+        <div class="input-container">
+            <input type="text" class="task-input" id="new-task-input" placeholder="Adicionar nova tarefa..." onkeypress="handleKeyPress(event)">
+        </div>
     </div>
 
-    <div class="bottom-sheet-overlay" id="overlayProjetos" onclick="fecharGavetas()"></div>
-    <div class="bottom-sheet-container" id="sheetProjetos">
-        <div class="sheet-header">
-            <div class="sheet-title">Projetos</div>
-            <button class="sheet-close-btn" onclick="fecharGavetas()">×</button>
+    <!-- 3. GAVETA DE TOQUE (MODAL INFERIOR) -->
+    <div class="drawer-overlay" id="drawer-overlay" onclick="closeDrawer()"></div>
+    <div class="drawer" id="drawer">
+        <div class="drawer-handle"></div>
+        <div class="drawer-actions">
+            <button class="drawer-btn" onclick="moveTaskAction()">Mudar Data/Foco</button>
+            <button class="drawer-btn delete" onclick="deleteTaskAction()">Excluir Tarefa</button>
         </div>
-        <div class="creator-form-block">
-            <input type="text" id="newProjectNameInput" class="inline-input" placeholder="Nome do novo projeto...">
-            <button class="btn-sub-action" onclick="criarNovoProjetoContexto()">Criar Projeto</button>
-        </div>
-        <div id="listaProjetosContainer"></div>
-    </div>
-
-    <div class="bottom-sheet-overlay" id="overlayTags" onclick="fecharGavetas()"></div>
-    <div class="bottom-sheet-container" id="sheetTags">
-        <div class="sheet-header">
-            <div class="sheet-title">Gerenciar Tags</div>
-            <button class="sheet-close-btn" onclick="fecharGavetas()">×</button>
-        </div>
-        <div class="sheet-subtitle">Customize quantas tags desejar usando o seletor cromático.</div>
-        
-        <div class="creator-form-block">
-            <input type="text" id="newTagNameInput" class="inline-input" placeholder="Nome da Tag (Ex: URGENTE)">
-            <div class="color-row">
-                <span>Cor de Exibição:</span>
-                <input type="color" id="newTagColorInput" class="color-picker-input" value="#3b82f6">
-            </div>
-            <button class="btn-sub-action" onclick="criarNovaTagEstrutura()">Adicionar Nova Tag</button>
-        </div>
-
-        <div id="listaTagsGerenciadorContainer"></div>
-    </div>
-
-    <div class="bottom-sheet-overlay" id="overlayCriacao" onclick="fecharGavetas()"></div>
-    <div class="bottom-sheet-container" id="sheetCriacao">
-        <div class="sheet-header">
-            <div class="sheet-title">Nova Atividade</div>
-            <button class="sheet-close-btn" onclick="fecharGavetas()">×</button>
-        </div>
-        <input type="text" id="newFormTitle" class="new-task-input" placeholder="O que precisa ser feito?">
-        
-        <div class="metadata-form-row">
-            <button class="meta-form-btn" id="formBtnAlert" onclick="toggleFormAlert()">🔔 Alerta: Não</button>
-            
-            <button class="meta-form-btn" id="formBtnDate">
-                <span id="formBtnDateText">📅 Definir Data</span>
-                <input type="date" id="formDateNativeInput" class="hidden-date-picker" onchange="capturarDataNativa(this.value)">
-            </button>
-
-            <button class="meta-form-btn" id="formBtnProject" onclick="toggleSubListaProjetos()">📋 Sem projeto</button>
-            <button class="meta-form-btn" id="formBtnTag" onclick="toggleSubListaTags()">🏷️ Escolher Tag</button>
-        </div>
-
-        <div class="inline-selection-list" id="subListaProjetos"></div>
-        <div class="inline-selection-list" id="subListaTags"></div>
-
-        <button class="form-confirm-fab" onclick="salvarFormNovaTarefa()">Salvar Atividade</button>
     </div>
 
     <script>
-        const BIN_ID = "6937666aae596e708f8c6683";
-        const API_KEY = "$2a$10$V0UFHZ8bHEdDdwGEpXjEYeR1.ZL9oIiMUY//5YbHFHc7yjai/WHpy";
-        const REQUISICAO_URL = `https://api.jsonbin.io/v3/b/${BIN_ID}`;
+        // CONFIGURAÇÕES DO JSONBIN (PERSISTÊNCIA SEM LOGIN COMPLEXO)
+        const BIN_ID = 'SEU_BIN_ID_AQUI'; // Substitua pelo seu ID do JSONBin
+        const API_KEY = 'SUA_API_KEY_AQUI'; // Substitua pelo seu X-Master-Key ou Access Key
+        const URL = `https://api.jsonbin.io/v3/b/${BIN_ID}`;
 
-        let tarefasLista = [];
-        let projetosLista = ["Terminar Discurso do Congresso", "Trabalho"];
-        let tagsLista = [
-            { nome: "VITAL ACTIVITIES", cor: "#00b0ff" },
-            { nome: "GOLDEN ACTIVITIES", cor: "#ffc107" },
-            { nome: "DEDICATED TASKS", cor: "#ff9800" }
-        ];
-        
-        // Controle de Calendário Infinito
-        let dataReferenciaInicio = new Date(2026, 5, 15); 
-        let filtroDiaFormatado = "2026-06-15"; 
-        let filtroProjeto = "";
-        let filtroTag = "";
-        let filtroSemDataAtivo = false;
-        let debounceTimer = null;
+        let state = {
+            tasks: [],
+            currentFilter: 'hoje',
+            selectedTaskId: null
+        };
 
-        let formMetadata = { alerta: false, dataForm: "2026-06-15", projeto: "No project", tagSelecionada: "" };
-
-        const mesesNomes = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
-        const diasSemanasNomes = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"];
-
-        function executarPreLogin() {
-            const user = document.getElementById('emailField').value;
-            const pass = document.getElementById('passwordField').value;
-            if (user === "superprojectmanager@spm.org" && pass === "01709@mM") {
-                document.getElementById('formContainer').style.display = 'none';
-                document.getElementById('errorContainer').style.display = 'flex';
-            } else { alert("Acesso não autorizado."); }
+        // 1. SISTEMA DE LOGIN SECRETO
+        function unlockApp() {
+            document.getElementById('login-screen').style.display = 'none';
+            document.getElementById('app-container').style.display = 'flex';
+            loadTasks(); // Baixa os dados imediatamente ao abrir
         }
 
-        function autenticarViaGatilhoSecret() {
-            document.getElementById('loginGate').style.display = 'none';
-            document.getElementById('appContent').style.display = 'flex';
-            
-            const hoje = new Date();
-            filtroDiaFormatado = formatarDataISO(hoje);
-            const dSemana = hoje.getDay();
-            const diferenca = dSemana === 0 ? -6 : 1 - dSemana;
-            dataReferenciaInicio = new Date(hoje);
-            dataReferenciaInicio.setDate(hoje.getDate() + diferenca);
-
-            carregarDadosNuvem();
-        }
-
-        function atualizarStatus(estado) {
-            const statusEl = document.getElementById('statusSalvar');
-            if (!statusEl) return;
-            if (estado === 'sinc') { statusEl.innerText = "⏳"; statusEl.style.background = "#ffedd5"; statusEl.style.borderColor = "#fed7aa"; }
-            if (estado === 'ok') { statusEl.innerText = "☁️"; statusEl.style.background = "#f0fdf4"; statusEl.style.borderColor = "#bbf7d0"; }
-            if (estado === 'erro') { statusEl.innerText = "❌"; statusEl.style.background = "#fef2f2"; statusEl.style.borderColor = "#fecaca"; }
-        }
-
-        async function carregarDadosNuvem() {
+        // 2. COMUNICAÇÃO COM O JSONBIN
+        async function loadTasks() {
+            updateSyncStatus('Sincronizando...', '#eab308');
             try {
-                atualizarStatus('sinc');
-                const resposta = await fetch(REQUISICAO_URL, { method: 'GET', headers: { 'X-Master-Key': API_KEY } });
-                if (!resposta.ok) throw new Error();
-                const dados = await resposta.json();
-                
-                tarefasLista = dados.record.tarefasLista || [];
-                if (dados.record.tagsLista) tagsLista = dados.record.tagsLista;
-                if (dados.record.projetosLista) projetosLista = dados.record.projetosLista;
-
-                if (tagsLista.length > 0 && !formMetadata.tagSelecionada) {
-                    formMetadata.tagSelecionada = tagsLista[0].nome;
-                }
-
-                atualizarStatus('ok');
-                renderizarInterfaceApp();
-                construirCalendarioStrip();
-            } catch (err) { atualizarStatus('erro'); }
-        }
-
-        function salvarDadosNuvem() {
-            atualizarStatus('sinc');
-            clearTimeout(debounceTimer);
-            debounceTimer = setTimeout(async () => {
-                try {
-                    await fetch(REQUISICAO_URL, {
-                        method: 'PUT',
-                        headers: { 'Content-Type': 'application/json', 'X-Master-Key': API_KEY },
-                        body: JSON.stringify({ tarefasLista, tagsLista, projetosLista })
-                    });
-                    atualizarStatus('ok');
-                } catch (err) { atualizarStatus('erro'); }
-            }, 1000);
-        }
-
-        function formatarDataISO(dateObj) {
-            const y = dateObj.getFullYear();
-            const m = String(dateObj.getMonth() + 1).padStart(2, '0');
-            const d = String(dateObj.getDate()).padStart(2, '0');
-            return `${y}-${m}-${d}`;
-        }
-
-        function formatarExibicaoAmigavel(isoString) {
-            if (!isoString) return "Sem data";
-            const partes = isoString.split('-');
-            if (partes.length !== 3) return isoString;
-            const mesesAbrev = ["Jan", "Fev", "Mar", "Abr", "Mai", "Jun", "Jul", "Ago", "Set", "Out", "Nov", "Dez"];
-            const mIdx = parseInt(partes[1], 10) - 1;
-            return `${parseInt(partes[2], 10)} de ${mesesAbrev[mIdx]}`;
-        }
-
-        function construirCalendarioStrip() {
-            const container = document.getElementById('calendarStripContainer');
-            if (!container) return;
-            container.innerHTML = '';
-
-            document.getElementById('nomeMesVisivel').innerText = mesesNomes[dataReferenciaInicio.getMonth()];
-
-            let cursorData = new Date(dataReferenciaInicio);
-
-            for (let i = 0; i < 7; i++) {
-                const dataStringCorrente = formatarDataISO(cursorData);
-                const nDia = cursorData.getDate();
-                const nomeSemana = diasSemanasNomes[cursorData.getDay()];
-
-                const dayBox = document.createElement('div');
-                dayBox.className = 'calendar-day';
-                if (!filtroSemDataAtivo && !filtroProjeto && !filtroTag && filtroDiaFormatado === dataStringCorrente) {
-                    dayBox.classList.add('active');
-                }
-
-                dayBox.onclick = () => {
-                    filtroDiaFormatado = dataStringCorrente;
-                    filtroProjeto = ""; filtroTag = ""; filtroSemDataAtivo = false;
-                    document.querySelectorAll('.calendar-day').forEach(d => d.classList.remove('active'));
-                    dayBox.classList.add('active');
-                    renderizarInterfaceApp();
-                };
-
-                dayBox.innerHTML = `<span class="day-name">${nomeSemana}</span><span class="day-number">${nDia}</span>`;
-                container.appendChild(dayBox);
-
-                cursorData.setDate(cursorData.getDate() + 1);
-            }
-        }
-
-        function deslocarSemana(dias) {
-            dataReferenciaInicio.setDate(dataReferenciaInicio.getDate() + dias);
-            construirCalendarioStrip();
-        }
-
-        function irParaHoje() {
-            const hoje = new Date();
-            filtroDiaFormatado = formatarDataISO(hoje);
-            filtroProjeto = ""; filtroTag = ""; filtroSemDataAtivo = false;
-
-            const dSemana = hoje.getDay();
-            const diferenca = dSemana === 0 ? -6 : 1 - dSemana;
-            dataReferenciaInicio = new Date(hoje);
-            dataReferenciaInicio.setDate(hoje.getDate() + diferenca);
-
-            construirCalendarioStrip();
-            renderizarInterfaceApp();
-        }
-
-        function filtrarSemData() {
-            filtroSemDataAtivo = true;
-            filtroDiaFormatado = ""; filtroProjeto = ""; filtroTag = "";
-            construirCalendarioStrip();
-            renderizarInterfaceApp();
-        }
-
-        function filtrarPorProjeto(proj) {
-            filtroProjeto = proj; filtroDiaFormatado = ""; filtroTag = ""; filtroSemDataAtivo = false;
-            construirCalendarioStrip(); fecharGavetas(); renderizarInterfaceApp();
-        }
-
-        function filtrarPorTag(tagName) {
-            filtroTag = tagName; filtroDiaFormatado = ""; filtroProjeto = ""; filtroSemDataAtivo = false;
-            construirCalendarioStrip(); fecharGavetas(); renderizarInterfaceApp();
-        }
-
-        function limparFiltros() {
-            filtroDiaFormatado = ""; filtroProjeto = ""; filtroTag = ""; filtroSemDataAtivo = false;
-            construirCalendarioStrip();
-            renderizarInterfaceApp();
-        }
-
-        function abrirGavetaProjetos() {
-            document.getElementById('overlayProjetos').style.display = "block";
-            document.getElementById('sheetProjetos').classList.add('open');
-            renderizarGavetaProjetos();
-        }
-
-        function abrirGavetaTags() {
-            document.getElementById('overlayTags').style.display = "block";
-            document.getElementById('sheetTags').classList.add('open');
-            renderizarGavetaTags();
-        }
-
-        function abrirGavetaCriacao() {
-            document.getElementById('overlayCriacao').style.display = "block";
-            document.getElementById('sheetCriacao').classList.add('open');
-            
-            formMetadata = { alerta: false, dataForm: formatarDataISO(new Date()), projeto: "No project", tagSelecionada: tagsLista[0]?.nome || "" };
-            document.getElementById('formBtnAlert').innerText = "🔔 Alerta: Não";
-            document.getElementById('formBtnDateText').innerText = "📅 " + formatarExibicaoAmigavel(formMetadata.dataForm);
-            document.getElementById('formBtnProject').innerText = "📋 Sem projeto";
-            document.getElementById('formBtnTag').innerText = formMetadata.tagSelecionada ? `🏷️ ${formMetadata.tagSelecionada}` : "🏷️ Escolher Tag";
-            
-            fecharSubListasForm();
-        }
-
-        function fecharGavetas() {
-            document.querySelectorAll('.bottom-sheet-overlay').forEach(o => o.style.display = "none");
-            document.querySelectorAll('.bottom-sheet-container').forEach(s => s.classList.remove('open'));
-            fecharSubListasForm();
-        }
-
-        function fecharSubListasForm() {
-            document.getElementById('subListaProjetos').style.display = "none";
-            document.getElementById('subListaTags').style.display = "none";
-        }
-
-        function toggleFormAlert() {
-            formMetadata.alerta = !formMetadata.alerta;
-            document.getElementById('formBtnAlert').innerText = formMetadata.alerta ? "🔔 Alerta: Sim" : "🔔 Alerta: Não";
-        }
-
-        function capturarDataNativa(valorData) {
-            if (valorData) {
-                formMetadata.dataForm = valorData;
-                document.getElementById('formBtnDateText').innerText = "📅 " + formatarExibicaoAmigavel(valorData);
-            }
-        }
-
-        function toggleSubListaProjetos() {
-            const listaDiv = document.getElementById('subListaProjetos');
-            if (listaDiv.style.display === "block") {
-                listaDiv.style.display = "none";
-                return;
-            }
-            fecharSubListasForm();
-            listaDiv.innerHTML = `<div class="inline-select-item" onclick="selecionarProjetoPorToque('No project')">📋 Sem projeto vinculado</div>`;
-            projetosLista.forEach(proj => {
-                listaDiv.innerHTML += `<div class="inline-select-item" onclick="selecionarProjetoPorToque('${proj}')">📋 ${proj}</div>`;
-            });
-            listaDiv.style.display = "block";
-        }
-
-        function selecionarProjetoPorToque(nomeProj) {
-            formMetadata.projeto = nomeProj;
-            document.getElementById('formBtnProject').innerText = nomeProj === "No project" ? "📋 Sem projeto" : `📋 ${nomeProj}`;
-            document.getElementById('subListaProjetos').style.display = "none";
-        }
-
-        function toggleSubListaTags() {
-            const listaDiv = document.getElementById('subListaTags');
-            if (listaDiv.style.display === "block") {
-                listaDiv.style.display = "none";
-                return;
-            }
-            fecharSubListasForm();
-            if (tagsLista.length === 0) {
-                listaDiv.innerHTML = `<div class="inline-select-item" style="color:#888;">Nenhuma tag cadastrada</div>`;
-            } else {
-                tagsLista.forEach(tag => {
-                    listaDiv.innerHTML += `
-                        <div class="inline-select-item" onclick="selecionarTagPorToque('${tag.nome}')">
-                            <span style="display:inline-block; width:10px; height:10px; border-radius:50%; background-color:${tag.cor};"></span>
-                            ${tag.nome}
-                        </div>`;
+                const response = await fetch(URL, {
+                    method: 'GET',
+                    headers: { 'X-Master-Key': API_KEY }
                 });
+                const data = await response.json();
+                state.tasks = data.record.tasks || [];
+                render();
+                updateSyncStatus('Sincronizado', '#10b981');
+            } catch (error) {
+                console.error(error);
+                updateSyncStatus('Erro ao carregar', '#ef4444');
+                // Fallback local caso esteja sem internet
+                state.tasks = JSON.parse(localStorage.getItem('blitz_fallback') || '[]');
+                render();
             }
-            listaDiv.style.display = "block";
         }
 
-        function selecionarTagPorToque(nomeTag) {
-            formMetadata.tagSelecionada = nomeTag;
-            document.getElementById('formBtnTag').innerText = `🏷️ ${nomeTag}`;
-            document.getElementById('subListaTags').style.display = "none";
+        async function saveTasks() {
+            updateSyncStatus('Salvando...', '#eab308');
+            localStorage.setItem('blitz_fallback', JSON.stringify(state.tasks));
+            try {
+                await fetch(URL, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Master-Key': API_KEY
+                    },
+                    body: JSON.stringify({ tasks: state.tasks })
+                });
+                updateSyncStatus('Sincronizado', '#10b981');
+            } catch (error) {
+                console.error(error);
+                updateSyncStatus('Erro ao salvar (Salvo Local)', '#ef4444');
+            }
         }
 
-        function salvarFormNovaTarefa() {
-            const titulo = document.getElementById('newFormTitle').value.trim();
-            if (!titulo) return alert("Preencha o título.");
-
-            const nova = {
-                id: Date.now(),
-                texto: titulo,
-                projeto: formMetadata.projeto,
-                feito: false,
-                tag: formMetadata.tagSelecionada,
-                prazoTexto: formMetadata.dataForm, 
-                alerta: formMetadata.alerta
-            };
-
-            tarefasLista.push(nova);
-            salvarDadosNuvem();
-            fecharGavetas();
-            document.getElementById('newFormTitle').value = "";
-            renderizarInterfaceApp();
+        function updateSyncStatus(text, color) {
+            document.getElementById('status-text').innerText = text;
+            document.getElementById('status-dot').style.backgroundColor = color;
         }
 
-        function criarNovaTagEstrutura() {
-            const nomeInput = document.getElementById('newTagNameInput').value.trim().toUpperCase();
-            const corInput = document.getElementById('newTagColorInput').value;
+        // 3. LÓGICA E REGRAS DE NEGÓCIO DO APP
+        function handleKeyPress(e) {
+            if (e.key === 'Enter') {
+                const input = document.getElementById('new-task-input');
+                const text = input.value.trim();
+                if (!text) return;
 
-            if (!nomeInput) return alert("Insira o nome da tag.");
-            if (tagsLista.some(t => t.nome === nomeInput)) return alert("Tag já cadastrada.");
+                const newTask = {
+                    id: Date.now().toString(),
+                    text: text,
+                    completed: false,
+                    category: state.currentFilter // Joga direto no filtro de data visualizado
+                };
 
-            tagsLista.push({ nome: nomeInput, cor: corInput });
-            document.getElementById('newTagNameInput').value = "";
-            salvarDadosNuvem();
-            renderizarGavetaTags();
+                state.tasks.push(newTask);
+                input.value = '';
+                render();
+                saveTasks();
+            }
         }
 
-        function excluirTagEstrutura(nomeTag) {
-            tagsLista = tagsLista.filter(t => t.nome !== nomeTag);
-            salvarDadosNuvem();
-            renderizarGavetaTags();
+        function toggleTask(id) {
+            const task = state.tasks.find(t => t.id === id);
+            if (task) {
+                task.completed = !task.completed;
+                render();
+                saveTasks();
+            }
         }
 
-        function criarNovoProjetoContexto() {
-            const pName = document.getElementById('newProjectNameInput').value.trim();
-            if (!pName) return alert("Nome inválido.");
-            projetosLista.push(pName);
-            document.getElementById('newProjectNameInput').value = "";
-            salvarDadosNuvem();
-            renderizarGavetaProjetos();
+        function filterTasks(filterType) {
+            state.currentFilter = filterType;
+            document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            // Muda o título superior dinamicamente
+            const titles = { 'hoje': 'Hoje', 'amanha': 'Amanhã', 'foco': 'Foco Principal' };
+            document.querySelector('.app-title').innerText = titles[filterType];
+            
+            render();
         }
 
-        function renderizarInterfaceApp() {
-            const container = document.getElementById('tasksContainer');
-            if (!container) return;
+        // 4. MOTOR DE RENDERIZAÇÃO INTERNA
+        function render() {
+            const container = document.getElementById('task-list-container');
             container.innerHTML = '';
 
-            let filtradas = tarefasLista;
-            if (filtroSemDataAtivo) {
-                filtradas = filtradas.filter(t => !t.prazoTexto);
-            } else {
-                if (filtroDiaFormatado) filtradas = filtradas.filter(t => t.prazoTexto === filtroDiaFormatado);
-                if (filtroProjeto) filtradas = filtradas.filter(t => t.projeto === filtroProjeto);
-                if (filtroTag) filtradas = filtradas.filter(t => t.tag === filtroTag);
-            }
+            const filtered = state.tasks.filter(t => t.category === state.currentFilter);
 
-            if (filtradas.length === 0) {
-                container.innerHTML = `
-                    <div class="empty-state">
-                        <div class="empty-state-icon">⚡</div>
-                        <div>Nenhuma atividade por aqui</div>
+            filtered.forEach(task => {
+                const item = document.createElement('div');
+                item.className = `task-item ${task.completed ? 'completed' : ''}`;
+                
+                // Segurar ou clicar no corpo do card ativa a gaveta de toque (mobile-first)
+                item.innerHTML = `
+                    <input type="checkbox" class="task-checkbox" ${task.completed ? 'checked' : ''} onclick="event.stopPropagation(); toggleTask('${task.id}')">
+                    <div class="task-content" onclick="openDrawer('${task.id}')">
+                        <span class="task-text">${task.text}</span>
                     </div>
                 `;
+                container.appendChild(item);
+            });
+
+            updateProgressBar();
+        }
+
+        function updateProgressBar() {
+            const currentTasks = state.tasks.filter(t => t.category === state.currentFilter);
+            if (currentTasks.length === 0) {
+                document.getElementById('progress-bar').style.width = '0%';
                 return;
             }
-
-            filtradas.forEach((tarefa) => {
-                const originalIdx = tarefasLista.findIndex(item => item.id === tarefa.id);
-
-                const row = document.createElement('div');
-                row.className = `task-row ${tarefa.feito ? 'completed' : ''}`;
-
-                const checkWrapper = document.createElement('div');
-                checkWrapper.className = 'task-checkbox-wrapper';
-                const check = document.createElement('input');
-                check.type = 'checkbox';
-                check.className = 'task-checkbox';
-                check.checked = tarefa.feito;
-                check.onchange = () => {
-                    tarefasLista[originalIdx].feito = check.checked;
-                    row.classList.toggle('completed', check.checked);
-                    salvarDadosNuvem();
-                };
-                checkWrapper.appendChild(check);
-                row.appendChild(checkWrapper);
-
-                const contentArea = document.createElement('div');
-                contentArea.className = 'task-content-area';
-
-                const titleInput = document.createElement('div');
-                titleInput.className = 'task-title-input';
-                titleInput.contentEditable = "true";
-                titleInput.innerText = tarefa.texto;
-                titleInput.onblur = () => {
-                    tarefasLista[originalIdx].texto = titleInput.innerText;
-                    salvarDadosNuvem();
-                };
-                contentArea.appendChild(titleInput);
-
-                if (tarefa.projeto && tarefa.projeto !== "No project") {
-                    const projLink = document.createElement('div');
-                    projLink.className = 'task-project-link-label';
-                    projLink.innerHTML = `📋 <span>${tarefa.projeto}</span>`;
-                    contentArea.appendChild(projLink);
-                }
-
-                const metaRow = document.createElement('div');
-                metaRow.className = 'task-meta-row';
-
-                const tagObjeto = tagsLista.find(t => t.nome === tarefa.tag);
-                const corDeFundo = tagObjeto ? tagObjeto.cor : "#94a3b8";
-
-                const tagPill = document.createElement('span');
-                tagPill.className = 'task-pill-tag';
-                tagPill.style.backgroundColor = corDeFundo;
-                tagPill.innerText = tarefa.tag || "SEM TAG";
-                metaRow.appendChild(tagPill);
-
-                const deadlineZone = document.createElement('div');
-                deadlineZone.className = `task-deadline-zone ${tarefa.prazoTexto ? '' : 'no-date'}`;
-                deadlineZone.innerText = tarefa.prazoTexto ? formatarExibicaoAmigavel(tarefa.prazoTexto) : "Sem Data";
-
-                if (tarefa.alerta) {
-                    const bell = document.createElement('span');
-                    bell.innerText = ' 🔔';
-                    deadlineZone.appendChild(bell);
-                }
-
-                metaRow.appendChild(deadlineZone);
-                contentArea.appendChild(metaRow);
-                row.appendChild(contentArea);
-
-                const btnDel = document.createElement('button');
-                btnDel.className = 'btn-delete-item';
-                btnDel.innerHTML = '&times;';
-                btnDel.onclick = () => {
-                    tarefasLista.splice(originalIdx, 1);
-                    salvarDadosNuvem();
-                    renderizarInterfaceApp();
-                };
-                row.appendChild(btnDel);
-
-                container.appendChild(row);
-            });
+            const completed = currentTasks.filter(t => t.completed).length;
+            const percentage = (completed / currentTasks.length) * 100;
+            document.getElementById('progress-bar').style.width = `${percentage}%`;
         }
 
-        function renderizarGavetaProjetos() {
-            const container = document.getElementById('listaProjetosContainer');
-            container.innerHTML = "";
-
-            const noProjCount = tarefasLista.filter(t => t.projeto === "No project" && !t.feito).length;
-            const baseRow = document.createElement('div');
-            baseRow.className = 'project-item-row';
-            baseRow.innerHTML = `
-                <div class="item-clickable-zone" onclick="filtrarPorProjeto('No project')">📋 Sem projeto associado</div>
-                <div class="project-count-circle">${noProjCount}</div>
-            `;
-            container.appendChild(baseRow);
-
-            projetosLista.forEach(proj => {
-                const count = tarefasLista.filter(t => t.projeto === proj && !t.feito).length;
-                const row = document.createElement('div');
-                row.className = 'project-item-row';
-                row.innerHTML = `
-                    <div class="item-clickable-zone" onclick="filtrarPorProjeto('${proj}')">📋 ${proj}</div>
-                    <div class="project-count-circle">${count}</div>
-                `;
-                container.appendChild(row);
-            });
+        // 5. EVENTOS DA GAVETA (DRAWER CONTROLS)
+        function openDrawer(id) {
+            state.selectedTaskId = id;
+            document.getElementById('drawer-overlay').style.display = 'block';
+            setTimeout(() => {
+                document.getElementById('drawer-overlay').style.opacity = '1';
+                document.getElementById('drawer').classList.add('open');
+            }, 10);
         }
 
-        function renderizarGavetaTags() {
-            const container = document.getElementById('listaTagsGerenciadorContainer');
-            container.innerHTML = "";
+        function closeDrawer() {
+            document.getElementById('drawer-overlay').style.opacity = '0';
+            document.getElementById('drawer').classList.remove('open');
+            setTimeout(() => {
+                document.getElementById('drawer-overlay').style.display = 'none';
+                state.selectedTaskId = null;
+            }, 300);
+        }
 
-            tagsLista.forEach(tag => {
-                const count = tarefasLista.filter(t => t.tag === tag.nome && !t.feito).length;
-                const row = document.createElement('div');
-                row.className = 'tag-item-row';
-                row.innerHTML = `
-                    <div class="item-clickable-zone" onclick="filtrarPorTag('${tag.nome}')">
-                        <span style="display:inline-block; width:12px; height:12px; border-radius:50%; background-color:${tag.cor}; margin-right:6px;"></span>
-                        <strong>${tag.nome}</strong>
-                    </div>
-                    <div style="display: flex; align-items: center; gap: 12px;">
-                        <div class="project-count-circle" style="border: none; background: #f1f5f9;">${count}</div>
-                        <button style="background:none; border:none; color:#cbd5e1; cursor:pointer; font-size:1.4rem; padding: 4px;" onclick="excluirTagEstrutura('${tag.nome}')">&times;</button>
-                    </div>
-                `;
-                container.appendChild(row);
-            });
+        function deleteTaskAction() {
+            if (!state.selectedTaskId) return;
+            state.tasks = state.tasks.filter(t => t.id !== state.selectedTaskId);
+            closeDrawer();
+            render();
+            saveTasks();
+        }
+
+        function moveTaskAction() {
+            if (!state.selectedTaskId) return;
+            const task = state.tasks.find(t => t.id === state.selectedTaskId);
+            if (task) {
+                // Cicla entre as categorias de baixo atrito de forma sequencial
+                const flows = { 'hoje': 'amanha', 'amanha': 'foco', 'foco': 'hoje' };
+                task.category = flows[task.category] || 'hoje';
+                closeDrawer();
+                render();
+                saveTasks();
+            }
         }
     </script>
 </body>
