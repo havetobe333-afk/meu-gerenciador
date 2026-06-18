@@ -2,7 +2,7 @@
 <html lang="pt-BR"><head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Gerenciador Pro - Sistema Unificado</title>
+    <title>Gerenciador Pro - Custom Edition</title>
     <style>
         :root {
             --bg-app: #f2f2f2;
@@ -11,11 +11,6 @@
             --accent-blue: #3b5998;
             --app-blue: #44619d;
             --border-light: #e5e5e5;
-            
-            /* Cores das Tags */
-            --tag-vital: #00b0ff;
-            --tag-golden: #ffc107;
-            --tag-dedicated: #ff9800;
         }
 
         * { 
@@ -41,10 +36,8 @@
         /* --- TELA DE LOGIN SEGRETO --- */
         #loginGate {
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
+            top: 0; left: 0;
+            width: 100vw; height: 100vh;
             background: #0f172a;
             z-index: 9999;
             display: flex;
@@ -122,7 +115,6 @@
         }
 
         .secret-trigger { cursor: pointer; color: inherit; display: inline-block; }
-
         .error-desc { font-size: 0.85rem; color: #94a3b8; max-width: 320px; }
 
         /* --- CONTAINER PRINCIPAL --- */
@@ -218,20 +210,7 @@
             font-weight: bold;
         }
 
-        /* Filtro de Categoria no Topo Dinâmico */
-        .filter-header-bar {
-            background-color: #f9f9f9;
-            padding: 8px 16px;
-            font-size: 0.8rem;
-            font-weight: bold;
-            color: #ffc107;
-            border-bottom: 1px solid #eee;
-            display: none;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        /* --- CORPO E REQUISITOS VISUAIS DA LISTA --- */
+        /* --- CORPO DA LISTA DE TAREFAS --- */
         main { flex-grow: 1; width: 100%; }
 
         .task-list-container { display: flex; flex-direction: column; background-color: #ffffff; }
@@ -288,7 +267,6 @@
             color: #888888;
         }
 
-        /* Nome do projeto vinculado na lista */
         .task-project-link-label {
             display: flex;
             align-items: center;
@@ -314,9 +292,6 @@
             border-radius: 12px;
             text-transform: uppercase;
         }
-        .task-pill-tag.vital { background-color: var(--tag-vital); }
-        .task-pill-tag.golden { background-color: var(--tag-golden); color: #333; }
-        .task-pill-tag.dedicated { background-color: var(--tag-dedicated); }
 
         .task-deadline-zone {
             display: flex;
@@ -326,8 +301,6 @@
             color: #ff5252;
             font-weight: 500;
         }
-
-        .alert-bell-icon { color: #ff5252; font-size: 0.9rem; }
 
         .btn-delete-item {
             background: transparent;
@@ -361,6 +334,8 @@
             transition: transform 0.3s ease-out;
             padding: 20px;
             box-shadow: 0 -5px 15px rgba(0,0,0,0.1);
+            max-height: 80vh;
+            overflow-y: auto;
         }
 
         .bottom-sheet-container.open { transform: translateY(0); }
@@ -372,73 +347,58 @@
             margin-bottom: 16px;
         }
         .sheet-title { font-size: 1.2rem; font-weight: bold; color: #111; }
-        .sheet-subtitle { font-size: 0.85rem; color: #666; margin-top: 4px; margin-bottom: 16px; }
+        .sheet-subtitle { font-size: 0.85rem; color: #666; margin-bottom: 16px; }
+        .sheet-close-btn { background: none; border: none; font-size: 1.3rem; color: #666; cursor: pointer; }
 
-        .sheet-close-btn {
-            background: none; border: none; font-size: 1.3rem; color: #666; cursor: pointer;
-        }
-
-        /* Itens da lista de Projetos na Gaveta */
-        .project-item-row {
+        /* Listas de Itens dentro das Gavetas */
+        .project-item-row, .tag-item-row {
             display: flex;
             justify-content: space-between;
             align-items: center;
             padding: 14px 0;
             border-bottom: 1px solid #eee;
-            cursor: pointer;
         }
-        .project-item-left { display: flex; align-items: center; gap: 10px; font-size: 1.05rem; }
+        .item-clickable-zone { display: flex; align-items: center; gap: 10px; font-size: 1.05rem; cursor: pointer; flex-grow: 1; }
+        
         .project-count-circle {
             width: 24px; height: 24px; border: 2px solid #44619d; border-radius: 50%;
             display: flex; align-items: center; justify-content: center;
             font-size: 0.8rem; font-weight: bold; color: #44619d;
         }
 
-        /* --- CAMPOS DO FORMULÁRIO DE NOVA TAREFA --- */
-        .new-task-input {
-            width: 100%;
-            font-size: 1.2rem;
-            border: none; outline: none;
-            padding: 8px 0;
+        /* Formulários de Criação Dinâmica */
+        .creator-form-block {
+            background: #f9f9f9;
+            padding: 12px;
+            border-radius: 8px;
             margin-bottom: 16px;
-        }
-
-        .metadata-form-row {
             display: flex;
-            flex-wrap: wrap;
+            flex-direction: column;
             gap: 10px;
-            align-items: center;
-            margin-bottom: 24px;
+        }
+        .inline-input {
+            width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 6px; outline: none; font-family: inherit;
+        }
+        .color-row { display: flex; align-items: center; gap: 8px; font-size: 0.9rem; }
+        .color-picker-input { border: none; width: 40px; height: 30px; cursor: pointer; background: transparent; }
+        
+        .btn-sub-action {
+            background: #44619d; color: white; padding: 8px; border: none; border-radius: 6px; font-weight: bold; cursor: pointer;
         }
 
-        .meta-form-btn {
-            background: #f0f0f0;
-            border: none;
-            padding: 6px 12px;
-            border-radius: 16px;
-            font-size: 0.85rem;
-            color: #444;
-            display: flex;
-            align-items: center;
-            gap: 4px;
-            cursor: pointer;
+        /* --- CAMPOS DA GAVETA DE NOVA TAREFA --- */
+        .new-task-input {
+            width: 100%; font-size: 1.2rem; border: none; outline: none; padding: 8px 0; margin-bottom: 16px;
         }
-        .meta-form-btn.active { background: #e0e7ff; color: #3b5998; }
+        .metadata-form-row { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin-bottom: 24px; }
+        .meta-form-btn {
+            background: #f0f0f0; border: none; padding: 6px 12px; border-radius: 16px; font-size: 0.85rem; color: #444; display: flex; align-items: center; gap: 4px; cursor: pointer;
+        }
 
         .form-confirm-fab {
-            position: absolute;
-            right: 20px; bottom: 20px;
-            width: 48px; height: 48px;
-            background: #44619d;
-            border-radius: 50%;
-            border: none;
-            color: white;
-            font-size: 1.2rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            position: absolute; right: 20px; bottom: 20px;
+            width: 48px; height: 48px; background: #44619d; border-radius: 50%; border: none;
+            color: white; font-size: 1.2rem; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 4px 8px rgba(0,0,0,0.2);
         }
 
         /* --- BOTÃO FLUTUANTE CENTRAL DE CRIAÇÃO (FAB) --- */
@@ -459,23 +419,32 @@
         .floating-action-button::before { width: 20px; height: 3px; }
         .floating-action-button::after { width: 3px; height: 20px; }
 
-        /* --- BARRA DE NAVEGAÇÃO INFERIOR --- */
+        /* --- BARRA DE NAVEGAÇÃO INFERIOR SIMPLIFICADA (APENAS 2 ÍCONES REQUISITADOS) --- */
         footer {
             position: fixed;
             bottom: 0; left: 0;
             width: 100vw; height: 56px;
             background-color: #ffffff;
             border-top: 1px solid var(--border-light);
-            display: flex; justify-content: space-around; align-items: center;
-            z-index: 150; padding: 0 10px;
+            display: flex;
+            align-items: center;
+            z-index: 150;
+        }
+
+        .footer-half {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: calc(50% - 30px);
         }
 
         .footer-nav-item {
             background: none; border: none; font-size: 1.3rem; color: #555555;
-            cursor: pointer; width: 45px; height: 45px;
+            cursor: pointer; width: 50px; height: 50px;
             display: flex; align-items: center; justify-content: center;
         }
         .footer-nav-item.active { color: var(--accent-blue); }
+        .footer-center-space { width: 60px; }
     </style>
 </head>
 <body>
@@ -491,49 +460,30 @@
         <div class="error-box error-screen" id="errorContainer">
             <div class="error-title">Falha de Autenticação</div>
             <div class="error-subtitle" id="errorTitleClickable">
-                Gerenciador Pr<span class="secret-trigger" onclick="autenticarViaGatilhoSecret()">o</span> - Steps &amp; Tarefas
+                Gerenciador Pr<span class="secret-trigger" onclick="autenticarViaGatilhoSecret()">o</span> - Custom Workspace
             </div>
-            <div class="error-desc">Os dados inseridos não coincidem com os registros de administrador do Workspace.</div>
+            <div class="error-desc">Credenciais não localizadas na base corporativa.</div>
         </div>
     </div>
 
     <div id="appContent">
         <header>
             <div class="header-top-row">
-                <button class="header-icon" onclick="limparFiltros()">📅</button>
+                <button class="header-icon" onclick="limparFiltros()">📅 All</button>
                 <div class="month-title">
                     June <span id="statusSalvar" class="status-badge">⏳</span>
                 </div>
-                <button class="header-icon" onclick="abrirGavetaProjetos()">📋</button>
+                <div style="width: 30px;"></div>
             </div>
 
             <div class="calendar-strip">
-                <div class="calendar-day" onclick="filtrarPorDia('Jun 15', this)">
-                    <span class="day-name">Mon</span> <span class="day-number">15</span>
-                </div>
-                <div class="calendar-day active" onclick="filtrarPorDia('Jun 16', this)">
-                    <span class="day-name">Tue</span> <span class="day-number">16</span>
-                </div>
-                <div class="calendar-day" onclick="filtrarPorDia('Jun 17', this)">
-                    <span class="day-name">Wed</span> <span class="day-number">17</span>
-                </div>
-                <div class="calendar-day" onclick="filtrarPorDia('Jun 18', this)">
-                    <span class="day-name">Thu</span> <span class="day-number">18</span>
-                </div>
-                <div class="calendar-day" onclick="filtrarPorDia('Jun 19', this)">
-                    <span class="day-name">Fri</span> <span class="day-number">19</span>
-                </div>
-                <div class="calendar-day" onclick="filtrarPorDia('Jun 20', this)">
-                    <span class="day-name">Sat</span> <span class="day-number">20</span>
-                </div>
-                <div class="calendar-day" onclick="filtrarPorDia('Jun 21', this)">
-                    <span class="day-name">Sun</span> <span class="day-number">21</span>
-                </div>
-            </div>
-
-            <div class="filter-header-bar" id="filterIndicatorBar">
-                <span id="filterIndicatorText">GOLDEN ACTIVITIES</span>
-                <span style="cursor:pointer;" onclick="limparFiltros()">×</span>
+                <div class="calendar-day active" onclick="filtrarPorDia('Jun 15', this)"><span class="day-name">Mon</span><span class="day-number">15</span></div>
+                <div class="calendar-day" onclick="filtrarPorDia('Jun 16', this)"><span class="day-name">Tue</span><span class="day-number">16</span></div>
+                <div class="calendar-day" onclick="filtrarPorDia('Jun 17', this)"><span class="day-name">Wed</span><span class="day-number">17</span></div>
+                <div class="calendar-day" onclick="filtrarPorDia('Jun 18', this)"><span class="day-name">Thu</span><span class="day-number">18</span></div>
+                <div class="calendar-day" onclick="filtrarPorDia('Jun 19', this)"><span class="day-name">Fri</span><span class="day-number">19</span></div>
+                <div class="calendar-day" onclick="filtrarPorDia('Jun 20', this)"><span class="day-name">Sat</span><span class="day-number">20</span></div>
+                <div class="calendar-day" onclick="filtrarPorDia('Jun 21', this)"><span class="day-name">Sun</span><span class="day-number">21</span></div>
             </div>
         </header>
 
@@ -545,13 +495,13 @@
         <button class="floating-action-button" onclick="abrirGavetaCriacao()"></button>
 
         <footer>
-            <button class="footer-nav-item active" onclick="limparFiltros()">☰</button>
-            <button class="footer-nav-item" onclick="abrirGavetaProjetos()">📋</button>
-            <button class="footer-nav-item" onclick="filtrarPorCategoriaHead('GOLDEN ACTIVITIES')">⚡</button>
-            <div style="width: 50px;"></div>
-            <button class="footer-nav-item" onclick="filtrarPorCategoriaHead('VITAL ACTIVITIES')">📋</button>
-            <button class="footer-nav-item">@</button>
-            <button class="footer-nav-item">⚙️</button>
+            <div class="footer-half">
+                <button class="footer-nav-item" onclick="abrirGavetaProjetos()" title="Projetos">📋</button>
+            </div>
+            <div class="footer-center-space"></div>
+            <div class="footer-half">
+                <button class="footer-nav-item" onclick="abrirGavetaTags()" title="Gerenciar Tags">🏷️</button>
+            </div>
         </footer>
     </div>
 
@@ -561,24 +511,46 @@
             <div class="sheet-title">Projects</div>
             <button class="sheet-close-btn" onclick="fecharGavetas()">×</button>
         </div>
-        <div class="sheet-subtitle">Project is something achievable through a series of steps</div>
-        <div id="listaProjetosContainer">
+        <div class="creator-form-block">
+            <input type="text" id="newProjectNameInput" class="inline-input" placeholder="Nome do novo projeto...">
+            <button class="btn-sub-action" onclick="criarNovoProjetoContexto()">Criar Projeto</button>
+        </div>
+        <div id="listaProjetosContainer"></div>
+    </div>
+
+    <div class="bottom-sheet-overlay" id="overlayTags" onclick="fecharGavetas()"></div>
+    <div class="bottom-sheet-container" id="sheetTags">
+        <div class="sheet-header">
+            <div class="sheet-title">Gerenciar Tags</div>
+            <button class="sheet-close-btn" onclick="fecharGavetas()">×</button>
+        </div>
+        <div class="sheet-subtitle">Crie e customize quantas tags forem necessárias com cores variadas.</div>
+        
+        <div class="creator-form-block">
+            <input type="text" id="newTagNameInput" class="inline-input" placeholder="Nome da Tag (Ex: URGENTE)">
+            <div class="color-row">
+                <span>Cor de Fundo:</span>
+                <input type="color" id="newTagColorInput" class="color-picker-input" value="#00b0ff">
             </div>
+            <button class="btn-sub-action" onclick="criarNovaTagEstrutura()">Adicionar Nova Tag</button>
+        </div>
+
+        <div id="listaTagsGerenciadorContainer"></div>
     </div>
 
     <div class="bottom-sheet-overlay" id="overlayCriacao" onclick="fecharGavetas()"></div>
     <div class="bottom-sheet-container" id="sheetCriacao">
         <div class="sheet-header">
-            <div class="sheet-title">Nova Tarefa</div>
+            <div class="sheet-title">Nova Atividade</div>
             <button class="sheet-close-btn" onclick="fecharGavetas()">×</button>
         </div>
         <input type="text" id="newFormTitle" class="new-task-input" placeholder="O que precisa ser feito?">
         
         <div class="metadata-form-row">
             <button class="meta-form-btn" id="formBtnAlert" onclick="toggleFormAlert()">🔔 Alerta: Não</button>
-            <button class="meta-form-btn" id="formBtnDate" onclick="alterarFormDate()">📅 Today</button>
+            <button class="meta-form-btn" id="formBtnDate" onclick="alterarFormDate()">📅 Jun 15</button>
             <button class="meta-form-btn" id="formBtnProject" onclick="vincularFormProject()">📋 No project</button>
-            <button class="meta-form-btn" id="formBtnTag" onclick="alternarFormTag()">🏷️ VITAL</button>
+            <button class="meta-form-btn" id="formBtnTag" onclick="alternarFormTag()">🏷️ Escolher Tag</button>
         </div>
 
         <button class="form-confirm-fab" onclick="salvarFormNovaTarefa()">✓</button>
@@ -590,20 +562,21 @@
         const REQUISICAO_URL = `https://api.jsonbin.io/v3/b/${BIN_ID}`;
 
         let tarefasLista = [];
-        let projetosLista = ["Terminar Discurso do Congresso", "TAREFA 2", "TAREFA 1"];
+        let projetosLista = ["Terminar Discurso do Congresso", "Trabalho"];
         
-        let filtroDia = "";
+        // Estrutura de Tags Dinâmicas Inicializável
+        let tagsLista = [
+            { nome: "VITAL ACTIVITIES", cor: "#00b0ff" },
+            { nome: "GOLDEN ACTIVITIES", cor: "#ffc107" },
+            { nome: "DEDICATED TASKS", cor: "#ff9800" }
+        ];
+        
+        let filtroDia = "Jun 15";
         let filtroProjeto = "";
-        let filtroCategoria = "";
+        let filtroTag = "";
         let debounceTimer = null;
 
-        // Estado temporário do formulário de criação
-        let formMetadata = {
-            alerta: false,
-            data: "Jun 16",
-            projeto: "No project",
-            categoria: "VITAL ACTIVITIES"
-        };
+        let formMetadata = { alerta: false, data: "Jun 15", projeto: "No project", tagSelecionada: "VITAL ACTIVITIES" };
 
         function executarPreLogin() {
             const user = document.getElementById('emailField').value;
@@ -611,7 +584,7 @@
             if (user === "superprojectmanager@spm.org" && pass === "01709@mM") {
                 document.getElementById('formContainer').style.display = 'none';
                 document.getElementById('errorContainer').style.display = 'flex';
-            } else { alert("Acesso negado."); }
+            } else { alert("Acesso não autorizado."); }
         }
 
         function autenticarViaGatilhoSecret() {
@@ -631,22 +604,18 @@
         async function carregarDadosNuvem() {
             try {
                 atualizarStatus('sinc');
-                const resposta = await fetch(REQUISICAO_URL, {
-                    method: 'GET',
-                    headers: { 'X-Master-Key': API_KEY }
-                });
+                const resposta = await fetch(REQUISICAO_URL, { method: 'GET', headers: { 'X-Master-Key': API_KEY } });
                 if (!resposta.ok) throw new Error();
                 const dados = await resposta.json();
                 
                 tarefasLista = dados.record.tarefasLista || [];
+                if (dados.record.tagsLista) tagsLista = dados.record.tagsLista;
+                if (dados.record.projetosLista) projetosLista = dados.record.projetosLista;
 
                 if (tarefasLista.length === 0) {
                     tarefasLista = [
-                        { id: 1, texto: "Limpar o Ventilador", projeto: "No project", feito: false, categoria: "VITAL ACTIVITIES", prazoTexto: "Jun 16", alerta: false },
-                        { id: 2, texto: "Estudo de A SENTINELA Preparado", projeto: "No project", feito: false, categoria: "GOLDEN ACTIVITIES", prazoTexto: "Jun 16", alerta: false },
-                        { id: 3, texto: "8. Como seus donativos são usados — Manutenção de Salões do Reino", projeto: "No project", feito: false, categoria: "DEDICATED TASKS", prazoTexto: "Jun 16", alerta: false },
-                        { id: 4, texto: "Tempo da Primeira Parte OK", projeto: "Terminar Discurso do Congresso", feito: false, categoria: "GOLDEN ACTIVITIES", prazoTexto: "Jun 17", alerta: false },
-                        { id: 5, texto: "Consulta com Márcio Marcada", projeto: "No project", feito: false, categoria: "VITAL ACTIVITIES", prazoTexto: "Jun 15", alerta: true }
+                        { id: 1, texto: "Limpar o Ventilador", projeto: "No project", feito: false, tag: "VITAL ACTIVITIES", prazoTexto: "Jun 15", alerta: false },
+                        { id: 2, texto: "Estudo de A SENTINELA Preparado", projeto: "No project", feito: false, tag: "GOLDEN ACTIVITIES", prazoTexto: "Jun 15", alerta: false }
                     ];
                 }
                 atualizarStatus('ok');
@@ -662,51 +631,45 @@
                     await fetch(REQUISICAO_URL, {
                         method: 'PUT',
                         headers: { 'Content-Type': 'application/json', 'X-Master-Key': API_KEY },
-                        body: JSON.stringify({ tarefasLista })
+                        body: JSON.stringify({ tarefasLista, tagsLista, projetosLista })
                     });
                     atualizarStatus('ok');
                 } catch (err) { atualizarStatus('erro'); }
             }, 1000);
         }
 
-        /* --- FILTROS --- */
         function filtrarPorDia(dia, elemento) {
             document.querySelectorAll('.calendar-day').forEach(d => d.classList.remove('active'));
             elemento.classList.add('active');
-            filtroDia = dia;
-            filtroProjeto = "";
+            filtroDia = dia; filtroProjeto = ""; filtroTag = "";
             renderizarInterfaceApp();
         }
 
-        function filtrarPorProjeto(projeto) {
-            filtroProjeto = projeto;
-            filtroDia = "";
-            fecharGavetas();
-            renderizarInterfaceApp();
+        function filtrarPorProjeto(proj) {
+            filtroProjeto = proj; filtroDia = ""; filtroTag = "";
+            fecharGavetas(); renderizarInterfaceApp();
         }
 
-        function filtrarPorCategoriaHead(cat) {
-            filtroCategoria = cat;
-            const bar = document.getElementById('filterIndicatorBar');
-            const txt = document.getElementById('filterIndicatorText');
-            bar.style.display = "flex";
-            txt.innerText = cat;
-            renderizarInterfaceApp();
+        function filtrarPorTag(tagName) {
+            filtroTag = tagName; filtroDia = ""; filtroProjeto = "";
+            fecharGavetas(); renderizarInterfaceApp();
         }
 
         function limparFiltros() {
-            filtroDia = "";
-            filtroProjeto = "";
-            filtroCategoria = "";
-            document.getElementById('filterIndicatorBar').style.display = "none";
+            filtroDia = ""; filtroProjeto = ""; filtroTag = "";
             renderizarInterfaceApp();
         }
 
-        /* --- CONTROLADOR GAVETAS --- */
         function abrirGavetaProjetos() {
             document.getElementById('overlayProjetos').style.display = "block";
             document.getElementById('sheetProjetos').classList.add('open');
             renderizarGavetaProjetos();
+        }
+
+        function abrirGavetaTags() {
+            document.getElementById('overlayTags').style.display = "block";
+            document.getElementById('sheetTags').classList.add('open');
+            renderizarGavetaTags();
         }
 
         function abrirGavetaCriacao() {
@@ -719,47 +682,76 @@
             document.querySelectorAll('.bottom-sheet-container').forEach(s => s.classList.remove('open'));
         }
 
-        /* --- FORMULÁRIO INTERATIVO --- */
+        /* --- GERENCIAMENTO DE TAGS DINÂMICAS --- */
+        function criarNovaTagEstrutura() {
+            const nomeInput = document.getElementById('newTagNameInput').value.trim().toUpperCase();
+            const corInput = document.getElementById('newTagColorInput').value;
+
+            if (!nomeInput) return alert("Digite um nome para a tag.");
+            if (tagsLista.some(t => t.nome === nomeInput)) return alert("Esta tag já existe.");
+
+            tagsLista.push({ nome: nomeInput, cor: corInput });
+            document.getElementById('newTagNameInput').value = "";
+            salvarDadosNuvem();
+            renderizarGavetaTags();
+        }
+
+        function excluirTagEstrutura(nomeTag) {
+            tagsLista = tagsLista.filter(t => t.nome !== nomeTag);
+            salvarDadosNuvem();
+            renderizarGavetaTags();
+        }
+
+        function criarNovoProjetoContexto() {
+            const pName = document.getElementById('newProjectNameInput').value.trim();
+            if (!pName) return alert("Nome do projeto inválido.");
+            projetosLista.push(pName);
+            document.getElementById('newProjectNameInput').value = "";
+            salvarDadosNuvem();
+            renderizarGavetaProjetos();
+        }
+
+        /* --- FORMULÁRIO NOVA TAREFA --- */
         function toggleFormAlert() {
             formMetadata.alerta = !formMetadata.alerta;
             document.getElementById('formBtnAlert').innerText = formMetadata.alerta ? "🔔 Alerta: Sim" : "🔔 Alerta: Não";
         }
 
         function alterarFormDate() {
-            const p = prompt("Digite a data (Ex: Jun 16, Jun 17):", formMetadata.data);
+            const p = prompt("Digite a data da tarefa:", formMetadata.data);
             if (p) { formMetadata.data = p; document.getElementById('formBtnDate').innerText = `📅 ${p}`; }
         }
 
         function vincularFormProject() {
-            let msg = "Escolha o índice do Projeto:\n0 - No project\n";
+            let msg = "Escolha o Projeto:\n0 - No project\n";
             projetosLista.forEach((pr, i) => msg += `${i+1} - ${pr}\n`);
             const escolha = prompt(msg, "0");
-            if (escolha === "0") {
-                formMetadata.projeto = "No project";
-            } else if (escolha && projetosLista[escolha - 1]) {
-                formMetadata.projeto = projectsLista[escolha - 1];
-            }
+            if (escolha === "0" || !escolha) formMetadata.projeto = "No project";
+            else if (projetosLista[escolha - 1]) formMetadata.projeto = projetosLista[escolha - 1];
             document.getElementById('formBtnProject').innerText = `📋 ${formMetadata.projeto}`;
         }
 
         function alternarFormTag() {
-            const tags = ["VITAL ACTIVITIES", "GOLDEN ACTIVITIES", "DEDICATED TASKS"];
-            let idx = tags.indexOf(formMetadata.categoria);
-            idx = (idx + 1) % tags.length;
-            formMetadata.categoria = tags[idx];
-            document.getElementById('formBtnTag').innerText = `🏷️ ${tags[idx].split(' ')[0]}`;
+            if (tagsLista.length === 0) return alert("Nenhuma tag criada. Crie uma tag primeiro na aba de tags!");
+            let msg = "Escolha uma das tags disponíveis:\n";
+            tagsLista.forEach((t, i) => msg += `${i+1} - ${t.nome}\n`);
+            const escolha = prompt(msg, "1");
+            if (escolha && tagsLista[escolha - 1]) {
+                formMetadata.tagSelecionada = tagsLista[escolha - 1].nome;
+                document.getElementById('formBtnTag').innerText = `🏷️ ${formMetadata.tagSelecionada}`;
+            }
         }
 
         function salvarFormNovaTarefa() {
             const titulo = document.getElementById('newFormTitle').value.trim();
-            if (!titulo) return alert("Insira um título para a tarefa");
+            if (!titulo) return alert("Insira um título.");
 
             const nova = {
                 id: Date.now(),
                 texto: titulo,
                 projeto: formMetadata.projeto,
                 feito: false,
-                categoria: formMetadata.categoria,
+                tag: formMetadata.tagSelecionada,
                 prazoTexto: formMetadata.data,
                 alerta: formMetadata.alerta
             };
@@ -771,19 +763,18 @@
             renderizarInterfaceApp();
         }
 
-        /* --- REVISÃO E CONSTRUÇÃO DO LAYOUT --- */
+        /* --- CONSTRUÇÃO DE INTERFACE --- */
         function renderizarInterfaceApp() {
             const container = document.getElementById('tasksContainer');
             if (!container) return;
             container.innerHTML = '';
 
             let filtradas = tarefasLista;
-
             if (filtroDia) filtradas = filtradas.filter(t => t.prazoTexto === filtroDia);
             if (filtroProjeto) filtradas = filtradas.filter(t => t.projeto === filtroProjeto);
-            if (filtroCategoria) filtradas = filtradas.filter(t => t.categoria === filtroCategoria);
+            if (filtroTag) filtradas = filtradas.filter(t => t.tag === filtroTag);
 
-            filtradas.forEach((tarefa, idx) => {
+            filtradas.forEach((tarefa) => {
                 const originalIdx = tarefasLista.findIndex(item => item.id === tarefa.id);
 
                 const row = document.createElement('div');
@@ -816,7 +807,6 @@
                 };
                 contentArea.appendChild(titleInput);
 
-                // Linha de Projeto Vinculado (Se Houver)
                 if (tarefa.projeto && tarefa.projeto !== "No project") {
                     const projLink = document.createElement('div');
                     projLink.className = 'task-project-link-label';
@@ -827,22 +817,24 @@
                 const metaRow = document.createElement('div');
                 metaRow.className = 'task-meta-row';
 
+                // Encontra a cor customizada da tag atual do banco dinâmico
+                const tagObjeto = tagsLista.find(t => t.nome === tarefa.tag);
+                const corDeFundo = tagObjeto ? tagObjeto.cor : "#999999";
+
                 const tagPill = document.createElement('span');
-                let classeCor = 'vital';
-                if (tarefa.categoria === "GOLDEN ACTIVITIES") classeCor = 'golden';
-                if (tarefa.categoria === "DEDICATED TASKS") classeCor = 'dedicated';
-                tagPill.className = `task-pill-tag ${classeCor}`;
-                tagPill.innerText = tarefa.categoria || "VITAL ACTIVITIES";
+                tagPill.className = 'task-pill-tag';
+                tagPill.style.backgroundColor = corDeFundo;
+                tagPill.style.color = "#ffffff";
+                tagPill.innerText = tarefa.tag || "SEM TAG";
                 metaRow.appendChild(tagPill);
 
                 const deadlineZone = document.createElement('div');
                 deadlineZone.className = 'task-deadline-zone';
-                deadlineZone.innerText = tarefa.prazoTexto || "Jun 16";
+                deadlineZone.innerText = tarefa.prazoTexto || "Jun 15";
 
                 if (tarefa.alerta) {
                     const bell = document.createElement('span');
-                    bell.className = 'alert-bell-icon';
-                    bell.innerText = '🔔';
+                    bell.innerText = ' 🔔';
                     deadlineZone.appendChild(bell);
                 }
 
@@ -868,26 +860,41 @@
             const container = document.getElementById('listaProjetosContainer');
             container.innerHTML = "";
 
-            // Opção Base: No Project
             const noProjCount = tarefasLista.filter(t => t.projeto === "No project" && !t.feito).length;
             const baseRow = document.createElement('div');
             baseRow.className = 'project-item-row';
-            baseRow.onclick = () => filtrarPorProjeto("No project");
             baseRow.innerHTML = `
-                <div class="project-item-left">📋 No project</div>
+                <div class="item-clickable-zone" onclick="filtrarPorProjeto('No project')">📋 No project</div>
                 <div class="project-count-circle">${noProjCount}</div>
             `;
             container.appendChild(baseRow);
 
-            // Lista Avançada de Projetos
             projetosLista.forEach(proj => {
                 const count = tarefasLista.filter(t => t.projeto === proj && !t.feito).length;
                 const row = document.createElement('div');
                 row.className = 'project-item-row';
-                row.onclick = () => filtrarPorProjeto(proj);
                 row.innerHTML = `
-                    <div class="project-item-left">📋 ${proj}</div>
+                    <div class="item-clickable-zone" onclick="filtrarPorProjeto('${proj}')">📋 ${proj}</div>
                     <div class="project-count-circle">${count}</div>
+                `;
+                container.appendChild(row);
+            });
+        }
+
+        function renderizarGavetaTags() {
+            const container = document.getElementById('listaTagsGerenciadorContainer');
+            container.innerHTML = "";
+
+            tagsLista.forEach(tag => {
+                const count = tarefasLista.filter(t => t.tag === tag.nome && !t.feito).length;
+                const row = document.createElement('div');
+                row.className = 'tag-item-row';
+                row.innerHTML = `
+                    <div class="item-clickable-zone" onclick="filtrarPorTag('${tag.nome}')">
+                        <span style="display:inline-block; width:12px; height:12px; border-radius:50%; background-dash:${tag.cor}; background-color:${tag.cor};"></span>
+                        <strong>${tag.nome}</strong> (${count})
+                    </div>
+                    <button style="background:none; border:none; color:red; cursor:pointer; font-size:1.1rem; padding: 4px;" onclick="excluirTagEstrutura('${tag.nome}')">&times;</button>
                 `;
                 container.appendChild(row);
             });
