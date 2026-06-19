@@ -15,7 +15,7 @@
         }
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: system-ui, -apple-system, sans-serif; -webkit-tap-highlight-color: transparent; }
         body { background: var(--bg-main); color: var(--text-primary); min-height: 100vh; display: flex; flex-direction: column; }
-        #app-container { width: 100%; max-width: 600px; margin: 0 auto; padding-bottom: 150px; }
+        #app-container { width: 100%; max-width: 600px; margin: 0 auto; padding-bottom: 170px; }
         
         header { background: var(--bg-card); padding: 16px; border-bottom: 1px solid var(--border-color); position: sticky; top: 0; z-index: 100; display: flex; flex-direction: column; gap: 12px; }
         .header-top, .header-left, .sync-status { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
@@ -83,6 +83,46 @@
         .changelog-list { list-style: none; display: flex; flex-direction: column; gap: 10px; margin-top: 10px; font-size: 13px; }
         .changelog-item { padding-bottom: 8px; border-bottom: 1px dashed var(--border-color); line-height: 1.4; }
         .changelog-version { font-weight: 700; color: var(--accent-color); }
+
+        /* ==========================================
+           MELHORIAS EXCLUSIVAS PARA TELAS DE CELULAR
+           ========================================== */
+        @media screen and (max-width: 480px) {
+            /* Aumenta títulos e espaçamento do cabeçalho */
+            .app-title { font-size: 22px; }
+            header { padding: 14px 12px; gap: 10px; }
+            
+            /* Filtros em formato de pílulas maiores para facilitar o clique */
+            .date-filters { padding: 10px 12px; gap: 10px; }
+            .filter-btn { padding: 8px 16px; font-size: 14px; border-radius: 20px; }
+            
+            /* Torna os blocos de projetos menos apertados */
+            .task-list { padding: 4px 12px; gap: 18px; }
+            .project-group-card { padding: 14px 12px; gap: 12px; }
+            .project-group-header { font-size: 14px; padding-bottom: 2px; }
+            
+            /* Itens das tarefas maiores e com mais respiro */
+            .task-item { padding: 14px 12px; gap: 14px; border-radius: 12px; }
+            .task-checkbox { width: 24px; height: 24px; } /* Checkbox maior */
+            .task-checkbox:checked::after { font-size: 13px; }
+            .task-text { font-size: 16px; line-height: 1.5; } /* Fonte da tarefa maior */
+            .task-edit-inline-input { font-size: 16px; padding: 6px 8px; }
+            
+            /* Pílulas de metadados das tarefas com letras legíveis */
+            .clickable-pill { font-size: 11px; padding: 3px 8px; border-radius: 6px; }
+            .btn-inline-del { font-size: 24px; padding: 0 6px; } /* Botão X maior */
+
+            /* Área de input de texto e botões inferiores */
+            .input-container { padding: 12px 12px 16px 12px; gap: 10px; }
+            .task-input { padding: 14px 115px 14px 16px; font-size: 16px; border-radius: 28px; }
+            .selector-btn { height: 34px; font-size: 13px; padding: 6px 14px; border-radius: 16px; }
+            .datepicker-text { font-size: 13px; padding: 4px 10px; }
+            .datepicker-icon { font-size: 18px; }
+            
+            /* Botões de gerenciamento na base */
+            .footer-btn { font-size: 14px; padding: 6px; }
+            .blue-add-action-btn { width: 46px; height: 46px; font-size: 22px; }
+        }
     </style>
 </head>
 <body>
@@ -145,11 +185,11 @@
         const $ = id => document.getElementById(id);
 
         let state = {
-            version: "2.0.1",
+            version: "2.1.0",
             changelog: [
+                { v: "2.1.0", date: "18/06/2026", desc: "Melhoria de Responsividade: Inclusão de regras CSS de Media Query específicas para telas mobile (< 480px), ampliando fontes, espaçamentos internos e áreas de toque para displays de 6 polegadas." },
                 { v: "2.0.1", date: "18/06/2026", desc: "Correção crítica: Restaurada a função utilitária setSyncStatus para evitar interrupções de carregamento na inicialização da página." },
-                { v: "2.0.0", date: "18/06/2026", desc: "Introdução da arquitetura Soft Delete: Itens excluídos recebem a flag 'deleted: true' para evitar a ressurreição por aparelhos offline legados. Limpeza automática programada para registros expirados (7 dias)." },
-                { v: "1.9.0", date: "18/06/2026", desc: "Sincronização acumulativa implementada para união estável de coleções offline e online." }
+                { v: "2.0.0", date: "18/06/2026", desc: "Introdução da arquitetura Soft Delete: Itens excluídos recebem a flag 'deleted: true' para evitar a ressurreição por aparelhos offline legados. Limpeza automática programada para registros expirados (7 dias)." }
             ],
             tasks: [], 
             projetos: [{ nome: "Trabalho", deleted: false }, { nome: "Estudos", deleted: false }],
