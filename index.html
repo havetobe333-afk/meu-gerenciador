@@ -1,19 +1,26 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
+    <!-- 
+      AVISO AO SISTEMA/IA:
+      SEMPRE QUE MODIFICAR ESTE ARQUIVO, VOCÊ DEVE:
+      1. Atualizar a versão no objeto 'state.version' e no texto do modal de informações.
+      2. Adicionar um item detalhado no array 'state.changelog'.
+    -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Portal Corporativo - Intranet</title>
     <style>
         :root {
-            --bg-main: #f8f9fa; --bg-card: #ffffff;
+            --bg-main: #f1f3f5; --bg-card: #ffffff;
             --text-primary: #2d3748; --text-secondary: #718096;
             --accent-color: #4f46e5; --border-color: #e2e8f0;
-            --success-color: #10b981; --shadow: 0 1px 3px rgba(0,0,0,0.1);
+            --success-color: #10b981; --shadow: 0 1px 3px rgba(0,0,0,0.05);
+            --bg-group: #f8fafc;
         }
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: system-ui, -apple-system, sans-serif; -webkit-tap-highlight-color: transparent; }
         body { background: var(--bg-main); color: var(--text-primary); min-height: 100vh; display: flex; flex-direction: column; }
-        #app-container { width: 100%; max-width: 600px; margin: 0 auto; padding-bottom: 120px; }
+        #app-container { width: 100%; max-width: 600px; margin: 0 auto; padding-bottom: 140px; }
         
         header { background: var(--bg-card); padding: 16px; border-bottom: 1px solid var(--border-color); position: sticky; top: 0; z-index: 100; display: flex; flex-direction: column; gap: 12px; }
         .header-top, .header-left, .sync-status { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
@@ -28,30 +35,32 @@
         .filter-btn { background: var(--bg-card); border: 1px solid var(--border-color); padding: 6px 14px; border-radius: 16px; font-size: 13px; font-weight: 500; color: var(--text-secondary); cursor: pointer; }
         .filter-btn.active { background: var(--accent-color); color: #fff; border-color: var(--accent-color); }
         
-        .task-list { padding: 8px 16px; display: flex; flex-direction: column; gap: 8px; }
-        .task-item { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 8px; padding: 14px; display: flex; align-items: flex-start; gap: 12px; box-shadow: var(--shadow); }
-        .task-checkbox { appearance: none; -webkit-appearance: none; width: 20px; height: 20px; border: 2px solid #cbd5e1; border-radius: 6px; cursor: pointer; flex-shrink: 0; display: inline-flex; align-items: center; justify-content: center; }
+        /* ESTILIZAÇÃO DOS GRUPOS DE PROJETOS COMO EM SCREENSHOT.JPG */
+        .task-list { padding: 8px 16px; display: flex; flex-direction: column; gap: 16px; }
+        .project-group-card { background: #eaede6; border: 1px solid #d1d5db; border-radius: 14px; padding: 16px; display: flex; flex-direction: column; gap: 10px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); }
+        .project-group-header { display: flex; justify-content: space-between; align-items: center; font-size: 13px; font-weight: 700; text-transform: uppercase; color: #374151; padding-bottom: 4px; letter-spacing: 0.5px; }
+        .project-group-count { font-weight: 500; color: #6b7280; font-size: 13px; }
+
+        .task-item { background: var(--bg-card); border: 1px solid #e5e7eb; border-radius: 10px; padding: 12px; display: flex; align-items: center; gap: 12px; box-shadow: var(--shadow); }
+        .task-checkbox { appearance: none; -webkit-appearance: none; width: 20px; height: 20px; border: 2px solid #cbd5e1; border-radius: 50%; cursor: pointer; flex-shrink: 0; display: inline-flex; align-items: center; justify-content: center; }
         .task-checkbox:checked { background: var(--success-color); border-color: var(--success-color); }
-        .task-checkbox:checked::after { content: "✓"; color: #fff; font-size: 12px; font-weight: bold; }
-        .task-content { flex-grow: 1; display: flex; flex-direction: column; gap: 6px; }
-        .task-text { font-size: 15px; line-height: 1.4; word-break: break-word; cursor: pointer; }
+        .task-checkbox:checked::after { content: "✓"; color: #fff; font-size: 11px; font-weight: bold; }
+        .task-content { flex-grow: 1; display: flex; flex-direction: column; gap: 4px; }
+        .task-text { font-size: 15px; font-weight: 500; line-height: 1.4; word-break: break-word; cursor: pointer; color: #374151; }
         .task-item.completed .task-text { text-decoration: line-through; color: var(--text-secondary); }
         .task-edit-inline-input { width: 100%; border: 1px solid var(--accent-color); border-radius: 4px; padding: 4px 8px; font-size: 15px; outline: none; background: var(--bg-main); }
         .task-meta-clickable-zone { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
         
-        .clickable-pill { font-size: 11px; padding: 2px 8px; border-radius: 4px; font-weight: 600; cursor: pointer; border: 1px solid transparent; }
-        .clickable-pill.project-pill { background: #f1f5f9; color: #475569; border-color: #cbd5e1; }
+        .clickable-pill { font-size: 10px; padding: 2px 6px; border-radius: 4px; font-weight: 600; cursor: pointer; border: 1px solid transparent; }
         .clickable-pill.tag-pill { color: #fff; }
         .clickable-pill.date-pill { background: #fffbeb; color: #b45309; border-color: #fde68a; }
         
         .input-container { position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); width: 100%; max-width: 600px; background: var(--bg-card); padding: 12px 16px; border-top: 1px solid var(--border-color); display: flex; flex-direction: column; gap: 8px; box-shadow: 0 -2px 10px rgba(0,0,0,0.05); z-index: 500; }
         .input-row { position: relative; display: flex; align-items: center; width: 100%; }
-        /* Aumentado o padding direito do input para comportar o texto da data + ícone */
         .task-input { width: 100%; border: 1px solid var(--border-color); background: var(--bg-main); padding: 12px 110px 12px 16px; border-radius: 24px; font-size: 15px; outline: none; }
         .meta-selectors-row { display: flex; align-items: center; gap: 6px; overflow-x: auto; padding-bottom: 2px; }
         .selector-btn { background: #f1f5f9; border: 1px solid var(--border-color); padding: 6px 12px; border-radius: 14px; font-size: 12px; font-weight: 500; color: var(--text-secondary); cursor: pointer; display: inline-flex; align-items: center; height: 30px; white-space: nowrap; }
         
-        /* BLOCO DO CALENDÁRIO EMBUTIDO À DIREITA */
         .datepicker-wrapper { position: absolute; right: 12px; display: inline-flex; align-items: center; gap: 6px; cursor: pointer; user-select: none; }
         .datepicker-text { font-size: 12px; color: var(--text-secondary); font-weight: 500; background: #e2e8f0; padding: 2px 8px; border-radius: 12px; }
         .datepicker-icon { font-size: 16px; display: inline-flex; align-items: center; justify-content: center; width: 24px; height: 24px; z-index: 2; pointer-events: none; }
@@ -137,11 +146,11 @@
         const $ = id => document.getElementById(id);
 
         let state = {
-            version: "1.6.0",
+            version: "1.7.0",
             changelog: [
-                { v: "1.6.0", date: "18/06/2026", desc: "Indicação da data escolhida inserida de forma dinâmica e direta à esquerda do ícone de calendário dentro do input." },
-                { v: "1.5.0", date: "18/06/2026", desc: "Adicionada a funcionalidade de edição para Projetos, espelhando o comportamento das Tags." },
-                { v: "1.4.0", date: "18/06/2026", desc: "Seletor de data movido para dentro do campo de texto como um ícone à direita." }
+                { v: "1.7.0", date: "18/06/2026", desc: "Reestruturação visual inspirada em screenshot.jpg, agrupando tarefas por projetos com cabeçalho dedicado acima delas." },
+                { v: "1.6.0", date: "18/06/2026", desc: "Indicação da data escolhida inserida de forma dinâmica e direta à esquerda do ícone de calendário." },
+                { v: "1.5.0", date: "18/06/2026", desc: "Adicionada a funcionalidade de edição para Projetos." }
             ],
             tasks: [], projetos: ["Trabalho", "Estudos"],
             tags: [{ nome: "URGENTE", cor: "#ef4444" }, { nome: "FOCO", cor: "#3b82f6" }],
@@ -217,6 +226,8 @@
 
         function render() {
             const container = $('task-list-container'); container.innerHTML = '';
+            
+            // 1. Filtragem inicial das tarefas baseadas no estado global
             let filtered = state.tasks.filter(t => 
                 state.filterType === 'hoje' ? t.date === getISO(0) :
                 state.filterType === 'amanha' ? t.date === getISO(1) :
@@ -229,23 +240,56 @@
                 $('progress-bar').style.width = '0%'; return;
             }
 
+            // 2. Agrupamento estruturado por Projetos (conforme screenshot.jpg)
+            const groups = {};
             filtered.forEach(t => {
-                const item = document.createElement('div'); item.className = `task-item ${t.completed ? 'completed' : ''}`;
-                const tTag = state.tags.find(g => g.nome === t.tag);
-                item.innerHTML = `
-                    <input type="checkbox" class="task-checkbox" ${t.completed ? 'checked' : ''} onchange="opTask('${t.id}', 'toggle')">
-                    <div class="task-content">
-                        ${state.editingTaskId === t.id ? `<input type="text" class="task-edit-inline-input" id="inline-edit-${t.id}" value="${t.text}" onkeydown="e => e.key==='Enter' && opTask('${t.id}', 'save', this.value)" onblur="opTask('${t.id}', 'save', this.value)">` : `<span class="task-text" onclick="state.editingTaskId='${t.id}'; render(); $('inline-edit-${t.id}').focus();">${t.text}</span>`}
-                        <div class="task-meta-clickable-zone">
-                            ${t.project && t.project !== 'No project' ? `<span class="clickable-pill project-pill" onclick="setFilter('projeto', '${t.project}')">📋 ${t.project}</span>` : ''}
-                            ${t.tag ? `<span class="clickable-pill tag-pill" style="background:${tTag ? tTag.cor : '#718096'}" onclick="setFilter('tag', '${t.tag}')">🏷️ ${t.tag}</span>` : ''}
-                            <span class="clickable-pill date-pill">📅 ${formatDisplayDate(t.date)}</span>
-                        </div>
-                    </div>
-                    <button class="btn-inline-del" onclick="opTask('${t.id}', 'delete')">&times;</button>
-                `;
-                container.appendChild(item);
+                const projKey = (t.project && t.project !== 'No project') ? t.project : 'Sem Projeto';
+                if (!groups[projKey]) groups[projKey] = [];
+                groups[projKey].push(t);
             });
+
+            // 3. Renderização dos blocos/containers de Projetos
+            Object.keys(groups).forEach(projName => {
+                const projTasks = groups[projName];
+                
+                const groupCard = document.createElement('div');
+                groupCard.className = 'project-group-card';
+                
+                groupCard.innerHTML = `
+                    <div class="project-group-header">
+                        <span>${projName}</span>
+                        <span class="project-group-count">${projTasks.length}</span>
+                    </div>
+                    <div class="project-group-tasks-container" id="group-container-${btoa(encodeURIComponent(projName)).replace(/=/g, '')}"></div>
+                `;
+                
+                container.appendChild(groupCard);
+                const tasksContainer = groupCard.querySelector('.project-group-tasks-container');
+
+                projTasks.forEach(t => {
+                    const item = document.createElement('div');
+                    item.className = `task-item ${t.completed ? 'completed' : ''}`;
+                    const tTag = state.tags.find(g => g.nome === t.tag);
+                    
+                    item.innerHTML = `
+                        <input type="checkbox" class="task-checkbox" ${t.completed ? 'checked' : ''} onchange="opTask('${t.id}', 'toggle')">
+                        <div class="task-content">
+                            ${state.editingTaskId === t.id ? 
+                                `<input type="text" class="task-edit-inline-input" id="inline-edit-${t.id}" value="${t.text}" onkeydown="e => e.key==='Enter' && opTask('${t.id}', 'save', this.value)" onblur="opTask('${t.id}', 'save', this.value)">` : 
+                                `<span class="task-text" onclick="state.editingTaskId='${t.id}'; render(); $('inline-edit-${t.id}').focus();">${t.text}</span>`
+                            }
+                            <div class="task-meta-clickable-zone">
+                                ${t.tag ? `<span class="clickable-pill tag-pill" style="background:${tTag ? tTag.cor : '#718096'}" onclick="setFilter('tag', '${t.tag}')">🏷️ ${t.tag}</span>` : ''}
+                                <span class="clickable-pill date-pill">📅 ${formatDisplayDate(t.date)}</span>
+                            </div>
+                        </div>
+                        <button class="btn-inline-del" onclick="opTask('${t.id}', 'delete')">&times;</button>
+                    `;
+                    tasksContainer.appendChild(item);
+                });
+            });
+
+            // Atualização da barra de progresso geral baseada em todos os itens exibidos
             $('progress-bar').style.width = `${(filtered.filter(t => t.completed).length / filtered.length) * 100}%`;
         }
 
