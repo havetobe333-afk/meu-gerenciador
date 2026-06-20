@@ -132,9 +132,13 @@
         .task-item.overdue .task-checkbox:checked { background: var(--md-primary); border-color: var(--md-primary); }
         
         .task-content { flex-grow: 1; display: flex; flex-direction: column; gap: 4px; overflow: hidden; }
+        .task-text-row { display: flex; align-items: center; gap: 6px; width: 100%; }
         .task-text { font-size: 15px; font-weight: 500; line-height: 1.3; word-break: break-word; cursor: pointer; color: var(--md-on-surface); }
-        .task-item.completed .task-text { text-decoration: line-through; color: var(--md-outline) !important; opacity: 0.6; font-weight: 400; }
-        .task-edit-inline-input { width: 100%; border: none; border-bottom: 2px solid var(--md-primary); padding: 2px 0; font-size: 15px; outline: none; background: transparent; color: var(--md-on-surface); }
+        .task-item.completed .task-text { text-decoration: line-through; color: var(--md-outline) !important; opacity: 0.6; font-weight: 400; cursor: default; }
+        
+        /* Ícone indicador de recorrência na própria tarefa */
+        .task-recurrence-icon { color: var(--md-outline); display: inline-flex; align-items: center; justify-content: center; }
+        .task-recurrence-icon .md-icon { font-size: 15px; font-weight: bold; }
         
         /* Badges e Pílulas */
         .task-meta-clickable-zone { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
@@ -167,10 +171,8 @@
         .btn-inline-del { background: none; border: none; color: var(--md-outline); cursor: pointer; padding: 4px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
         .btn-inline-del .md-icon { font-size: 16px; }
         .btn-inline-del:active { background: var(--md-surface-variant); color: var(--error-color); }
-        .btn-inline-edit { background: none; border: none; color: var(--md-primary); font-size: 11px; font-weight: 700; cursor: pointer; padding: 2px 6px; border-radius: 4px; }
-        .btn-inline-edit:active { background: var(--md-surface-container-high); }
 
-        /* BOTÃO FLUTUANTE (FAB AS CORES DO + AZUL ESCURO MARCANTE) */
+        /* BOTÃO FLUTUANTE */
         .fab-add-btn {
             position: fixed;
             bottom: 24px;
@@ -192,7 +194,7 @@
         .fab-add-btn .md-icon { font-size: 24px; font-weight: bold; }
         .fab-add-btn:active { transform: scale(0.95); background: var(--md-primary); }
         
-        /* BARRA INFERIOR DE INSERÇÃO */
+        /* BARRA INFERIOR DE INSERÇÃO INTEGRADA COM ICONES COMPACTOS */
         .input-container { 
             position: fixed; 
             bottom: 0; 
@@ -214,11 +216,20 @@
             transform: translateX(-50%) translateY(0);
         }
         
-        .meta-selectors-row { display: flex; align-items: center; gap: 6px; overflow-x: auto; padding-bottom: 2px; scrollbar-width: none; }
+        .meta-selectors-row { display: flex; align-items: center; gap: 8px; overflow-x: auto; padding-bottom: 2px; scrollbar-width: none; }
         .meta-selectors-row::-webkit-scrollbar { display: none; }
-        .selector-btn { background: var(--md-surface); border: 1px solid var(--md-outline); padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: 600; color: var(--md-on-surface-variant); cursor: pointer; display: inline-flex; align-items: center; gap: 4px; height: 24px; white-space: nowrap; }
-        .selector-btn .md-icon { font-size: 13px; color: var(--md-primary); }
+        
+        /* Seletores baseados estritamente em Ícones Material M3 Compactos */
+        .selector-btn { background: var(--md-surface); border: 1px solid var(--md-outline); width: 34px; height: 34px; border-radius: 8px; display: inline-flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0; transition: all 0.2s; position: relative; }
+        .selector-btn .md-icon { font-size: 18px; color: var(--md-on-surface-variant); }
         .selector-btn:active { background: var(--md-surface-container-high); }
+        
+        /* Estado Ativo/Preenchido do Seletor Compacto */
+        .selector-btn.has-value { border-color: var(--md-primary); background: #eff6ff; }
+        .selector-btn.has-value .md-icon { color: var(--md-primary); }
+        
+        /* Pequeno balão informativo complementar ao lado dos ícones */
+        .meta-badge-text { font-size: 11px; font-weight: 700; color: var(--md-primary); background: #eff6ff; padding: 4px 8px; border-radius: 6px; border: 1px solid var(--md-surface-variant); display: none; max-width: 120px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
         .main-input-block { display: flex; align-items: center; gap: 10px; width: 100%; }
         .input-row { position: relative; display: flex; align-items: center; flex-grow: 1; }
@@ -346,16 +357,28 @@
 
         <main class="task-list" id="task-list-container"></main>
 
-        <!-- BOTÃO FLUTUANTE ATUALIZADO (AZUL ESCURO) -->
+        <!-- BOTÃO FLUTUANTE -->
         <button class="fab-add-btn" id="fab-trigger" onclick="toggleInputPanel(true)" title="Nova Tarefa">
             <span class="md-icon">add</span>
         </button>
 
-        <!-- CAMADA DE INSERÇÃO -->
+        <!-- CAMADA DE INSERÇÃO REORGANIZADA COM ICONES E BADGES INLINE -->
         <div class="input-container" id="bottom-input-panel">
             <div class="meta-selectors-row">
-                <button class="selector-btn" onclick="openContextDrawer('projetos')" id="meta-project-label"><span class="md-icon">folder</span> Sem Projeto</button>
-                <button class="selector-btn" onclick="openContextDrawer('tags')" id="meta-tag-label"><span class="md-icon">label</span> Sem Tag</button>
+                <button class="selector-btn" onclick="openContextDrawer('projetos')" id="meta-project-btn" title="Definir Projeto">
+                    <span class="md-icon">folder</span>
+                </button>
+                <div class="meta-badge-text" id="badge-project-text"></div>
+
+                <button class="selector-btn" onclick="openContextDrawer('tags')" id="meta-tag-btn" title="Definir Tag">
+                    <span class="md-icon">label</span>
+                </button>
+                <div class="meta-badge-text" id="badge-tag-text"></div>
+
+                <button class="selector-btn" onclick="openContextDrawer('recorrencia')" id="meta-recurrence-btn" title="Definir Recorrência">
+                    <span class="md-icon">repeat</span>
+                </button>
+                <div class="meta-badge-text" id="badge-recurrence-text"></div>
             </div>
             
             <div class="main-input-block">
@@ -389,16 +412,16 @@
         const $ = id => document.getElementById(id);
 
         let state = {
-            version: "4.7.1",
+            version: "4.9.0",
             changelog: [
-                { v: "4.7.1", date: "19/06/2026", desc: "Corrigida a sincronização de data inline. Agora, alterações de data efetuadas diretamente no card atualizam corretamente o timestamp 'updatedAt' e propagam instantaneamente entre os dispositivos." },
-                { v: "4.7.0", date: "19/06/2026", desc: "Ajustada a paleta de cores geral do app para tons mais escuros e contrastantes, fundo 100% branco e botão '+' flutuante em azul marinho corporativo destacado." },
-                { v: "4.6.0", date: "19/06/2026", desc: "Adicionado destaque visual avermelhado automático para tarefas que estão com a data atrasada/vencida e não concluídas." }
+                { v: "4.9.0", date: "19/06/2026", desc: "Fluxo de Baixa Fricção implementado: Clicar no texto de uma tarefa agora a chama de volta ao estado de rascunho na barra inferior para edição rápida e limpa." },
+                { v: "4.8.0", date: "19/06/2026", desc: "Implementado suporte à tarefas recorrentes sem poluição visual. Os seletores da barra inferior foram transformados em ícones compactos M3 e foi adicionado o indicador 'repeat' discreto diretamente nos cards de atividades." },
+                { v: "4.7.1", date: "19/06/2026", desc: "Corrigida a sincronização de data inline. Agora, alterações de data efetuadas diretamente no card atualizam corretamente o timestamp 'updatedAt' e propagam instantaneamente entre os dispositivos." }
             ],
             tasks: [], 
             projetos: [{ nome: "Trabalho", deleted: false }, { nome: "Estudos", deleted: false }],
             tags: [{ nome: "URGENTE", cor: "#ef4444", deleted: false }, { nome: "FOCO", cor: "#3b82f6", deleted: false }],
-            filterType: 'hoje', selectedFilterValue: '', tempDate: '', tempProject: 'No project', tempTag: '', editingTagIndex: null, editingProjIndex: null, editingTaskId: null
+            filterType: 'hoje', selectedFilterValue: '', tempDate: '', tempProject: 'No project', tempTag: '', tempRecurrence: 'Nenhuma'
         };
 
         let dragSrcEl = null;
@@ -480,10 +503,11 @@
                         const local = taskMap.get(st.id);
                         if (st.deleted || local.deleted) { local.deleted = true; local.deletedAt = local.deletedAt || st.deletedAt || Date.now(); } 
                         else { 
-                            if (st.completed) local.completed = true; 
+                            if (st.completed !== undefined) local.completed = st.completed; 
                             if (st.updatedAt > (local.updatedAt || 0)) {
                                 if (st.text !== local.text) local.text = st.text; 
                                 if (st.date !== local.date) local.date = st.date;
+                                if (st.recurrence !== local.recurrence) local.recurrence = st.recurrence;
                                 local.updatedAt = st.updatedAt;
                             }
                         }
@@ -567,11 +591,32 @@
             else if (type === 'tag') headingContent = `<span class="md-icon" style="font-size:22px;">label</span> ${value}`;
             
             $('current-view-title').innerHTML = headingContent;
-            state.editingTaskId = null; render();
+            render();
         }
 
         function handleInputKey(e) {
             if(e.key === 'Enter') { triggerSubmitTask(); }
+        }
+
+        function updateBarMetaUi() {
+            const pBtn = $('meta-project-btn'); const pBadge = $('badge-project-text');
+            if(state.tempProject && state.tempProject !== 'No project') {
+                pBtn.classList.add('has-value'); pBadge.innerText = state.tempProject; pBadge.style.display = 'inline-block';
+            } else {
+                pBtn.classList.remove('has-value'); pBadge.style.display = 'none';
+            }
+            const tBtn = $('meta-tag-btn'); const tBadge = $('badge-tag-text');
+            if(state.tempTag) {
+                tBtn.classList.add('has-value'); tBadge.innerText = state.tempTag; tBadge.style.display = 'inline-block';
+            } else {
+                tBtn.classList.remove('has-value'); tBadge.style.display = 'none';
+            }
+            const rBtn = $('meta-recurrence-btn'); const rBadge = $('badge-recurrence-text');
+            if(state.tempRecurrence && state.tempRecurrence !== 'Nenhuma') {
+                rBtn.classList.add('has-value'); rBadge.innerText = state.tempRecurrence; rBadge.style.display = 'inline-block';
+            } else {
+                rBtn.classList.remove('has-value'); rBadge.style.display = 'none';
+            }
         }
 
         function triggerSubmitTask() {
@@ -580,20 +625,62 @@
                 state.tasks.push({ 
                     id: 'task_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5), 
                     text: val, completed: false, date: state.tempDate, project: state.tempProject, 
-                    tag: state.tempTag, deleted: false, updatedAt: Date.now() 
+                    tag: state.tempTag, recurrence: state.tempRecurrence || 'Nenhuma', deleted: false, updatedAt: Date.now() 
                 });
-                inputElement.value = ''; state.tempProject = 'No project'; state.tempTag = '';
-                $('meta-project-label').innerHTML = '<span class="md-icon">folder</span> Sem Projeto'; 
-                $('meta-tag-label').innerHTML = '<span class="md-icon">label</span> Sem Tag';
+                inputElement.value = ''; state.tempProject = 'No project'; state.tempTag = ''; state.tempRecurrence = 'Nenhuma';
+                updateBarMetaUi();
                 toggleInputPanel(false);
                 render(); pushData();
             }
         }
 
+        function calculateNextRecurrentDate(currentDateStr, type) {
+            if(!currentDateStr) return getISO(0);
+            const d = new Date(currentDateStr + 'T00:00:00');
+            if(type === 'Diária') d.setDate(d.getDate() + 1);
+            else if(type === 'Semanal') d.setDate(d.getDate() + 7);
+            else if(type === 'Mensal') d.setMonth(d.getMonth() + 1);
+            else if(type === 'Anual') d.setFullYear(d.getFullYear() + 1);
+            
+            return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+        }
+
+        function callTaskBackToDraft(id) {
+            const t = state.tasks.find(x => x.id === id); if(!t || t.completed) return;
+            
+            // 1. Resgata os dados da tarefa antiga de volta para os estados de inserção
+            $('new-task-input').value = t.text;
+            state.tempDate = t.date;
+            state.tempProject = t.project || 'No project';
+            state.tempTag = t.tag || '';
+            state.tempRecurrence = t.recurrence || 'Nenhuma';
+            
+            // 2. Atualiza os metadados visuais da barra inferior e o datepicker
+            updateBarMetaUi();
+            updateSelectedDate(t.date);
+            if ($('task-date-picker')) $('task-date-picker').value = t.date;
+            
+            // 3. Deleta suavemente a tarefa atual
+            t.deleted = true;
+            t.deletedAt = Date.now();
+            
+            // 4. Abre o painel e foca o cursor automaticamente
+            toggleInputPanel(true);
+            render();
+            pushData();
+        }
+
         function opTask(id, type, val = '') {
             const t = state.tasks.find(x => x.id === id); if(!t) return;
-            if (type === 'toggle') { t.completed = !t.completed; t.updatedAt = Date.now(); }
-            if (type === 'save') { if(val.trim()) t.text = val.trim(); t.updatedAt = Date.now(); state.editingTaskId = null; }
+            if (type === 'toggle') { 
+                if(!t.completed && t.recurrence && t.recurrence !== 'Nenhuma') {
+                    t.date = calculateNextRecurrentDate(t.date, t.recurrence);
+                    t.completed = false;
+                } else {
+                    t.completed = !t.completed; 
+                }
+                t.updatedAt = Date.now(); 
+            }
             if (type === 'change-date') { if(val) t.date = val; t.updatedAt = Date.now(); }
             if (type === 'delete') { t.deleted = true; t.deletedAt = Date.now(); }
             render(); pushData();
@@ -740,14 +827,16 @@
                     item.addEventListener('touchend', handleTouchEnd);
 
                     const tTag = state.tags.find(g => g.nome === t.tag && !g.deleted);
+                    const isRecurrent = t.recurrence && t.recurrence !== 'Nenhuma';
+
                     item.innerHTML = `
                         <div class="drag-handle"><span class="md-icon" style="font-size:18px;">drag_indicator</span></div>
                         <input type="checkbox" class="task-checkbox" ${t.completed ? 'checked' : ''} onchange="opTask('${t.id}', 'toggle')">
                         <div class="task-content">
-                            ${state.editingTaskId === t.id ? 
-                                `<input type="text" class="task-edit-inline-input" id="inline-edit-${t.id}" value="${t.text}" onkeydown="if(event.key==='Enter') opTask('${t.id}', 'save', this.value)" onblur="opTask('${t.id}', 'save', this.value)">` : 
-                                `<span class="task-text" onclick="state.editingTaskId='${t.id}'; render(); $('inline-edit-${t.id}').focus();">${t.text}</span>`
-                            }
+                            <div class="task-text-row">
+                                <span class="task-text" onclick="${t.completed ? '' : `callTaskBackToDraft('${t.id}')`}">${t.text}</span>
+                                ${isRecurrent ? `<span class="task-recurrence-icon" title="Recorrência: ${t.recurrence}"><span class="md-icon">repeat</span></span>` : ''}
+                            </div>
                             <div class="task-meta-clickable-zone">
                                 ${t.tag && tTag ? `<span class="clickable-pill tag-pill" style="background:${tTag.cor}; color:#fff;" onclick="togglePillFilter('tag', '${t.tag}')">${t.tag}</span>` : ''}
                                 
@@ -780,20 +869,51 @@
 
         function openContextDrawer(mode) {
             state.editingTagIndex = null; state.editingProjIndex = null;
-            if(mode === 'projetos') { openDrawerCommon("Gerenciar Projetos", '', () => { renderProjForm(); renderProjectsList(); }); } 
-            else { openDrawerCommon("Gerenciar Tags", '', () => { renderTagForm(); renderTagsList(); }); }
+            if(mode === 'projetos') { 
+                openDrawerCommon("Gerenciar Projetos", '', () => { renderProjForm(); renderProjectsList(); }); 
+            } else if(mode === 'tags') { 
+                openDrawerCommon("Gerenciar Tags", '', () => { renderTagForm(); renderTagsList(); }); 
+            } else if(mode === 'recorrencia') {
+                openDrawerCommon("Definir Recorrência", '<div style="font-size:12px;color:var(--md-on-surface-variant);text-align:center;padding:4px 0;">Selecione o intervalo de repetição da tarefa:</div>', renderRecurrenceList);
+            }
         }
 
         function selectProjectFromDrawer(name) {
             state.tempProject = name; 
-            $('meta-project-label').innerHTML = `<span class="md-icon">folder</span> ${name}`; 
+            updateBarMetaUi();
             closeDrawer();
         }
 
         function selectTagFromDrawer(name) {
             state.tempTag = name; 
-            $('meta-tag-label').innerHTML = `<span class="md-icon">label</span> ${name}`; 
+            updateBarMetaUi();
             closeDrawer();
+        }
+
+        function selectRecurrenceFromDrawer(type) {
+            state.tempRecurrence = type;
+            updateBarMetaUi();
+            closeDrawer();
+        }
+
+        function renderRecurrenceList() {
+            const options = ['Nenhuma', 'Diária', 'Semanal', 'Mensal', 'Anual'];
+            const itemsContainer = $('drawer-list-items');
+            itemsContainer.innerHTML = '';
+            
+            options.forEach(opt => {
+                const row = document.createElement('div');
+                row.className = 'list-item-row';
+                row.style.cursor = 'pointer';
+                row.onclick = () => selectRecurrenceFromDrawer(opt);
+                
+                const label = document.createElement('div');
+                label.className = 'item-label';
+                label.innerHTML = `<span class="md-icon">repeat</span> ${opt}`;
+                
+                row.appendChild(label);
+                itemsContainer.appendChild(row);
+            });
         }
 
         function renderProjForm(n='', l='Adicionar Projeto') {
