@@ -4,172 +4,258 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Portal Corporativo - Intranet</title>
+    
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20,400,0,0" />
+    
     <style>
         :root {
-            --bg-main: #f1f3f5; --bg-card: #ffffff;
-            --text-primary: #2d3748; --text-secondary: #718096;
-            --accent-color: #4f46e5; --border-color: #e2e8f0;
-            --success-color: #10b981; --shadow: 0 -2px 10px rgba(0,0,0,0.05);
-            --bg-group: #f8fafc;
-            --blue-btn-color: #3f51b5;
+            /* Paleta Material Design 3 (M3) Baseline */
+            --md-primary: #6750A4;
+            --md-on-primary: #ffffff;
+            --md-primary-container: #eaddff;
+            --md-on-primary-container: #21005d;
+            --md-surface: #fef7ff;
+            --md-surface-variant: #e7e0ec;
+            --md-on-surface: #1d1b20;
+            --md-on-surface-variant: #49454f;
+            --md-outline: #79747e;
+            --md-surface-container: #f3edf7;
+            --md-surface-container-high: #ece6f0;
+            --success-color: #15803d;
+            --shadow-1: 0px 1px 3px 1px rgba(0, 0, 0, 0.15), 0px 1px 2px 0px rgba(0, 0, 0, 0.30);
+            --shadow-2: 0px 2px 6px 2px rgba(0, 0, 0, 0.15), 0px 1px 2px 0px rgba(0, 0, 0, 0.30);
         }
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: system-ui, -apple-system, sans-serif; -webkit-tap-highlight-color: transparent; }
-        body { background: var(--bg-main); color: var(--text-primary); min-height: 100vh; display: flex; flex-direction: column; }
-        #app-container { width: 100%; max-width: 600px; margin: 0 auto; padding-bottom: 100px; }
         
-        header { background: var(--bg-card); padding: 16px; border-bottom: 1px solid var(--border-color); position: sticky; top: 0; z-index: 100; display: flex; flex-direction: column; gap: 12px; }
-        .header-top, .header-left, .sync-status { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
-        .app-title { font-size: 20px; font-weight: 700; }
-        .info-btn { background: none; border: none; font-size: 18px; cursor: pointer; color: var(--text-secondary); }
-        .sync-status { font-size: 12px; color: var(--text-secondary); }
-        .status-dot { width: 8px; height: 8px; background: var(--success-color); border-radius: 50%; }
-        .progress-container { width: 100%; background: var(--border-color); height: 6px; border-radius: 3px; overflow: hidden; }
-        .progress-bar { width: 0%; height: 100%; background: var(--accent-color); transition: width 0.3s; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Roboto', system-ui, -apple-system, sans-serif; -webkit-tap-highlight-color: transparent; }
+        body { background: var(--md-surface); color: var(--md-on-surface); min-height: 100vh; display: flex; flex-direction: column; }
+        #app-container { width: 100%; max-width: 600px; margin: 0 auto; padding-bottom: 120px; position: relative; }
         
-        .date-filters { display: flex; gap: 8px; padding: 12px 16px; overflow-x: auto; white-space: nowrap; }
-        .filter-btn { background: var(--bg-card); border: 1px solid var(--border-color); padding: 6px 14px; border-radius: 16px; font-size: 13px; font-weight: 500; color: var(--text-secondary); cursor: pointer; }
-        .filter-btn.active { background: var(--accent-color); color: #fff; border-color: var(--accent-color); }
-        
-        .task-list { padding: 8px 16px; display: flex; flex-direction: column; gap: 16px; }
-        .project-group-card { background: #eaede6; border: 1px solid #d1d5db; border-radius: 14px; padding: 16px; display: flex; flex-direction: column; gap: 10px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); }
-        .project-group-header { display: flex; justify-content: space-between; align-items: center; font-size: 13px; font-weight: 700; text-transform: uppercase; color: #374151; padding-bottom: 4px; letter-spacing: 0.5px; }
-        .project-group-count { font-weight: 500; color: #6b7280; font-size: 13px; }
+        /* Classe base para ícones do Google Fonts */
+        .md-icon {
+            font-family: 'Material Symbols Outlined';
+            font-weight: normal;
+            font-style: normal;
+            font-size: 16px;
+            line-height: 1;
+            letter-spacing: normal;
+            text-transform: none;
+            display: inline-block;
+            white-space: nowrap;
+            word-wrap: normal;
+            direction: ltr;
+            -webkit-font-smoothing: antialiased;
+            user-select: none;
+        }
 
-        .task-item { background: var(--bg-card); border: 1px solid #e5e7eb; border-radius: 10px; padding: 12px; display: flex; align-items: center; gap: 12px; box-shadow: var(--shadow); }
-        .task-checkbox { appearance: none; -webkit-appearance: none; width: 20px; height: 20px; border: 2px solid #cbd5e1; border-radius: 50%; cursor: pointer; flex-shrink: 0; display: inline-flex; align-items: center; justify-content: center; }
-        .task-checkbox:checked { background: var(--success-color); border-color: var(--success-color); }
-        .task-checkbox:checked::after { content: "✓"; color: #fff; font-size: 11px; font-weight: bold; }
-        .task-content { flex-grow: 1; display: flex; flex-direction: column; gap: 4px; }
-        .task-text { font-size: 15px; font-weight: 500; line-height: 1.4; word-break: break-word; cursor: pointer; color: #374151; }
-        .task-item.completed .task-text { text-decoration: line-through; color: var(--text-secondary); }
-        .task-edit-inline-input { width: 100%; border: 1px solid var(--accent-color); border-radius: 4px; padding: 4px 8px; font-size: 15px; outline: none; background: var(--bg-main); }
+        /* Header Estilo Material App Bar */
+        header { background: var(--md-surface-container); padding: 12px 16px; border-bottom: 1px solid var(--md-surface-variant); position: sticky; top: 0; z-index: 100; display: flex; flex-direction: column; gap: 8px; }
+        .header-top, .header-left, .sync-status { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+        .header-left { justify-content: flex-start; }
+        .app-title { font-size: 20px; font-weight: 400; color: var(--md-on-surface); display: flex; align-items: center; gap: 8px; }
+        .info-btn { background: none; border: none; cursor: pointer; color: var(--md-on-surface-variant); padding: 4px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+        .info-btn .md-icon { font-size: 20px; }
+        .info-btn:active { background: var(--md-surface-variant); }
+        .sync-status { font-size: 11px; color: var(--md-on-surface-variant); font-weight: 500; }
+        .status-dot { width: 6px; height: 6px; background: var(--success-color); border-radius: 50%; }
+        .progress-container { width: 100%; background: var(--md-surface-variant); height: 3px; border-radius: 1.5px; overflow: hidden; }
+        .progress-bar { width: 0%; height: 100%; background: var(--md-primary); transition: width 0.3s; }
+        
+        /* Material Chips para Filtros */
+        .date-filters { display: flex; gap: 8px; padding: 12px 16px; background: var(--md-surface); align-items: center; }
+        .filter-btn { background: var(--md-surface); border: 1px solid var(--md-outline); width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s; color: var(--md-on-surface-variant); flex-shrink: 0; outline: none; }
+        .filter-btn .md-icon { font-size: 22px; }
+        
+        /* CORREÇÃO DO ESTADO ATIVO E FOCO PARA ELIMINAR MANCHAS */
+        .filter-btn.active { 
+            background: var(--md-primary-container) !important; 
+            color: var(--md-on-primary-container) !important; 
+            border: 1px solid var(--md-primary) !important; 
+            outline: none !important;
+            box-shadow: none !important;
+        }
+        .filter-btn:focus, .filter-btn:focus-visible {
+            outline: none !important;
+            box-shadow: none !important;
+        }
+        
+        /* Listas e Cards Material - ESTILO MAGRINHO */
+        .task-list { padding: 4px 16px; display: flex; flex-direction: column; gap: 10px; }
+        .project-group-card { background: var(--md-surface-container); border-radius: 12px; padding: 10px; display: flex; flex-direction: column; gap: 8px; box-shadow: var(--shadow-1); }
+        .project-group-header { display: flex; justify-content: space-between; align-items: center; font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--md-primary); letter-spacing: 0.5px; margin-bottom: 2px; }
+        .project-group-count { font-weight: 500; color: var(--md-on-surface-variant); font-size: 11px; background: var(--md-surface-container-high); padding: 1px 6px; border-radius: 8px; }
+
+        /* Itens de Tarefa Compactos e Reordenáveis */
+        .task-item { background: var(--md-surface); border: 1px solid var(--md-surface-variant); border-radius: 8px; padding: 8px 10px; display: flex; align-items: center; gap: 10px; transition: background-color 0.2s, opacity 0.2s; position: relative; }
+        .task-item.dragging { opacity: 0.4; background: var(--md-surface-container-high); }
+        .task-item.drag-over { border-top: 2px solid var(--md-primary); }
+
+        /* Alça de Arraste (Drag Handle) */
+        .drag-handle { color: var(--md-outline); cursor: grab; display: flex; align-items: center; justify-content: center; padding: 4px 2px; user-select: none; touch-action: none; }
+        .drag-handle:active { cursor: grabbing; color: var(--md-primary); }
+        
+        /* Checkbox Material Estilizado */
+        .task-checkbox { appearance: none; -webkit-appearance: none; width: 18px; height: 18px; border: 2px solid var(--md-outline); border-radius: 4px; cursor: pointer; flex-shrink: 0; display: inline-flex; align-items: center; justify-content: center; transition: all 0.1s; }
+        .task-checkbox:checked { background: var(--md-primary); border-color: var(--md-primary); }
+        .task-checkbox:checked::after { content: "✓"; color: var(--md-on-primary); font-size: 11px; font-weight: bold; }
+        
+        .task-content { flex-grow: 1; display: flex; flex-direction: column; gap: 4px; overflow: hidden; }
+        .task-text { font-size: 15px; font-weight: 400; line-height: 1.3; word-break: break-word; cursor: pointer; color: var(--md-on-surface); }
+        .task-item.completed .task-text { text-decoration: line-through; color: var(--md-on-surface-variant); opacity: 0.6; }
+        .task-edit-inline-input { width: 100%; border: none; border-bottom: 2px solid var(--md-primary); padding: 2px 0; font-size: 15px; outline: none; background: transparent; color: var(--md-on-surface); }
+        
+        /* Badges e Pílulas Material */
         .task-meta-clickable-zone { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+        .clickable-pill { position: relative; font-size: 10px; padding: 2px 8px; border-radius: 6px; font-weight: 500; cursor: pointer; border: 1px solid transparent; display: inline-flex; align-items: center; gap: 4px; }
+        .clickable-pill.tag-pill { filter: saturate(0.8) brightness(0.9); font-weight: 600; }
+        .clickable-pill .md-icon { font-size: 11px; }
         
-        .clickable-pill { font-size: 10px; padding: 2px 6px; border-radius: 4px; font-weight: 600; cursor: pointer; border: 1px solid transparent; }
-        .clickable-pill.tag-pill { color: #fff; }
-        .clickable-pill.date-pill { background: #fffbeb; color: #b45309; border-color: #fde68a; }
+        /* Pílula de Data da Tarefa - Fina e Alinhada */
+        .clickable-pill.date-pill { background: transparent; padding: 0; border-radius: 0; display: inline-flex; align-items: center; gap: 4px; user-select: none; }
+        .task-card-date-text { font-size: 11px; color: var(--md-on-primary-container); font-weight: 500; background: var(--md-primary-container); padding: 3px 6px; border-radius: 5px; }
+        .task-card-date-icon { font-size: 13px; display: inline-flex; align-items: center; justify-content: center; color: var(--md-primary); pointer-events: none; }
+        .inline-date-picker-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0.01; cursor: pointer; z-index: 3; }
         
-        /* ==========================================
-           BARRA INFERIOR ULTRA COMPACTA
-           ========================================== */
+        /* Botões Inline */
+        .btn-inline-del { background: none; border: none; color: var(--md-outline); cursor: pointer; padding: 4px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+        .btn-inline-del .md-icon { font-size: 16px; }
+        .btn-inline-del:active { background: var(--md-surface-variant); color: #ba1a1a; }
+        .btn-inline-edit { background: none; border: none; color: var(--md-primary); font-size: 11px; font-weight: 500; cursor: pointer; padding: 2px 6px; border-radius: 4px; }
+        .btn-inline-edit:active { background: var(--md-primary-container); }
+
+        /* BOTÃO FLUTUANTE (FAB) PARA ADICIONAR TAREFA */
+        .fab-add-btn {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            width: 56px;
+            height: 56px;
+            background: var(--md-primary-container);
+            color: var(--md-on-primary-container);
+            border: none;
+            border-radius: 16px;
+            box-shadow: var(--shadow-2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 400;
+            transition: transform 0.2s, background-color 0.2s;
+        }
+        .fab-add-btn .md-icon { font-size: 24px; font-weight: bold; }
+        .fab-add-btn:active { transform: scale(0.95); background: var(--md-primary); color: var(--md-on-primary); }
+        
+        /* BARRA INFERIOR DE INSERÇÃO */
         .input-container { 
             position: fixed; 
             bottom: 0; 
             left: 50%; 
-            transform: translateX(-50%); 
+            transform: translateX(-50%) translateY(100%); 
             width: 100%; 
             max-width: 600px; 
-            background: var(--bg-card); 
-            padding: 10px 14px 12px 14px; 
-            border-top: 1px solid var(--border-color); 
+            background: var(--md-surface-container-high); 
+            padding: 12px 16px 16px 16px; 
+            border-top: 1px solid var(--md-surface-variant); 
             display: flex; 
             flex-direction: column; 
             gap: 8px; 
-            box-shadow: 0 -3px 12px rgba(0,0,0,0.05); 
+            box-shadow: var(--shadow-2); 
             z-index: 500;
+            transition: transform 0.25s cubic-bezier(0.2, 0.8, 0.4, 1);
+        }
+        .input-container.visible {
+            transform: translateX(-50%) translateY(0);
         }
         
-        .main-input-block {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            width: 100%;
-        }
-        
-        .input-row { 
-            position: relative; 
-            display: flex; 
-            align-items: center; 
-            flex-grow: 1;
-        }
+        .meta-selectors-row { display: flex; align-items: center; gap: 6px; overflow-x: auto; padding-bottom: 2px; scrollbar-width: none; }
+        .meta-selectors-row::-webkit-scrollbar { display: none; }
+        .selector-btn { background: var(--md-surface); border: 1px solid var(--md-outline); padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: 500; color: var(--md-on-surface-variant); cursor: pointer; display: inline-flex; align-items: center; gap: 4px; height: 24px; white-space: nowrap; }
+        .selector-btn .md-icon { font-size: 13px; color: var(--md-primary); }
+        .selector-btn:active { background: var(--md-surface-container); }
+
+        .main-input-block { display: flex; align-items: center; gap: 10px; width: 100%; }
+        .input-row { position: relative; display: flex; align-items: center; flex-grow: 1; }
         
         .task-input { 
             width: 100%; 
-            border: 1px solid var(--border-color); 
-            background: var(--bg-main); 
+            border: 1px solid var(--md-outline); 
+            background: var(--md-surface); 
             padding: 10px 95px 10px 14px; 
-            border-radius: 20px; 
+            border-radius: 10px; 
             font-size: 14px; 
+            color: var(--md-on-surface);
             outline: none; 
+            transition: border-color 0.2s;
         }
+        .task-input:focus { border-color: var(--md-primary); border-width: 2px; padding-bottom: 9px; padding-top: 9px; }
         
         .datepicker-wrapper { position: absolute; right: 10px; display: inline-flex; align-items: center; gap: 4px; cursor: pointer; user-select: none; }
-        .datepicker-text { font-size: 11px; color: var(--text-secondary); font-weight: 500; background: #e2e8f0; padding: 2px 6px; border-radius: 8px; }
-        .datepicker-icon { font-size: 14px; display: inline-flex; align-items: center; justify-content: center; width: 20px; height: 20px; pointer-events: none; }
+        .datepicker-text { font-size: 11px; color: var(--md-on-primary-container); font-weight: 500; background: var(--md-primary-container); padding: 3px 6px; border-radius: 5px; }
+        .datepicker-icon { font-size: 15px; display: inline-flex; align-items: center; justify-content: center; color: var(--md-primary); pointer-events: none; }
         .datepicker-wrapper input[type="date"] { position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0.01; cursor: pointer; z-index: 3; }
 
-        /* Botão Padrão Desktop Lateral */
+        .action-buttons-group { display: flex; gap: 6px; align-items: center; }
+
+        .btn-cancel-task {
+            background: none;
+            border: 1px solid var(--md-outline);
+            color: var(--md-on-surface-variant);
+            width: 38px;
+            height: 38px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+        .btn-cancel-task:active { background: var(--md-surface-variant); }
+
         .blue-add-action-btn { 
-            background: var(--blue-btn-color); 
-            color: #ffffff; 
+            background: var(--md-primary-container); 
+            color: var(--md-on-primary-container); 
             border: none; 
-            width: 36px; 
-            height: 36px; 
-            border-radius: 50%; 
+            width: 38px; 
+            height: 38px; 
+            border-radius: 10px; 
             display: flex; 
             align-items: center; 
             justify-content: center; 
-            font-size: 15px; 
             cursor: pointer; 
-            box-shadow: 0 2px 4px rgba(0,0,0,0.15); 
+            box-shadow: var(--shadow-1); 
             flex-shrink: 0;
-            transition: transform 0.1s, background-color 0.2s;
+            transition: all 0.2s;
         }
-        .blue-add-action-btn:active { transform: scale(0.92); }
+        .blue-add-action-btn .md-icon { font-size: 20px; font-weight: bold; }
+        .blue-add-action-btn:active { background: var(--md-primary); color: var(--md-on-primary); transform: scale(0.95); box-shadow: none; }
         
-        .meta-selectors-row { display: flex; align-items: center; gap: 6px; overflow-x: auto; padding-bottom: 2px; }
-        .selector-btn { background: #f1f5f9; border: 1px solid var(--border-color); padding: 4px 10px; border-radius: 12px; font-size: 11px; font-weight: 500; color: var(--text-secondary); cursor: pointer; display: inline-flex; align-items: center; height: 24px; white-space: nowrap; }
-
-        /* Drawers */
-        .drawer-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); z-index: 1000; display: none; }
-        .drawer { position: fixed; bottom: 0; left: 50%; width: 100%; max-width: 600px; background: var(--bg-card); border-radius: 16px 16px 0 0; padding: 20px 16px; z-index: 1001; transform: translate(-50%, 100%); transition: transform 0.25s ease; }
+        /* DRAWERS MATERIAL M3 BOTTOM SHEET */
+        .drawer-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.3); z-index: 1000; display: none; }
+        .drawer { position: fixed; bottom: 0; left: 50%; width: 100%; max-width: 600px; background: var(--md-surface-container-high); border-radius: 16px 16px 0 0; padding: 12px 14px; z-index: 1001; transform: translate(-50%, 100%); transition: transform 0.25s cubic-bezier(0.2, 0.8, 0.4, 1); box-shadow: var(--shadow-2); }
         .drawer.open { transform: translate(-50%, 0); }
-        .drawer-handle { width: 40px; height: 4px; background: var(--border-color); border-radius: 2px; margin: 0 auto 16px; }
-        .drawer-title { font-size: 16px; font-weight: 700; margin-bottom: 14px; }
-        .drawer-form-block { background: #f8fafc; padding: 12px; border-radius: 8px; border: 1px solid var(--border-color); margin-bottom: 12px; display: flex; flex-direction: column; gap: 10px; }
-        .drawer-input { width: 100%; padding: 10px; border: 1px solid var(--border-color); border-radius: 6px; font-size: 14px; outline: none; }
-        .action-submit-btn { background: var(--accent-color); color: #fff; border: none; padding: 10px; border-radius: 6px; font-weight: 600; cursor: pointer; }
-        .items-list-scroll { max-height: 200px; overflow-y: auto; display: flex; flex-direction: column; gap: 6px; }
-        .list-item-row { display: flex; justify-content: space-between; align-items: center; padding: 10px; border: 1px solid var(--border-color); border-radius: 6px; background: #fff; font-size: 14px; }
-        .item-label { display: flex; align-items: center; gap: 6px; cursor: pointer; flex-grow: 1; }
-        .btn-inline-del { background: none; border: none; color: #ef4444; font-size: 18px; cursor: pointer; padding: 0 4px; }
-        .btn-inline-edit { background: none; border: none; color: var(--accent-color); font-size: 13px; cursor: pointer; padding: 0 4px; margin-right: 6px; }
+        .drawer-handle { width: 28px; height: 4px; background: var(--md-outline); opacity: 0.3; border-radius: 2px; margin: 0 auto 10px; }
+        .drawer-title { font-size: 13px; font-weight: 500; margin-bottom: 8px; text-align: center; color: var(--md-on-surface); text-transform: uppercase; letter-spacing: 0.3px; }
         
-        .changelog-list { list-style: none; display: flex; flex-direction: column; gap: 10px; margin-top: 10px; font-size: 13px; }
-        .changelog-item { padding-bottom: 8px; border-bottom: 1px dashed var(--border-color); line-height: 1.4; }
-        .changelog-version { font-weight: 700; color: var(--accent-color); }
+        .drawer-form-block { background: var(--md-surface); padding: 5px 8px; border-radius: 8px; border: 1px solid var(--md-surface-variant); margin-bottom: 8px; display: flex; flex-direction: column; gap: 6px; }
+        .drawer-input { width: 100%; padding: 6px 8px; border: 1px solid var(--md-outline); border-radius: 6px; font-size: 13px; background: var(--md-surface); color: var(--md-on-surface); outline: none; }
+        .drawer-input:focus { border-color: var(--md-primary); border-width: 1.5px; padding-bottom: 5.5px; padding-top: 5.5px; }
+        .action-submit-btn { background: var(--md-primary); color: var(--md-on-primary); border: none; padding: 6px; border-radius: 6px; font-weight: 500; font-size: 11px; cursor: pointer; box-shadow: var(--shadow-1); }
+        
+        .items-list-scroll { max-height: 200px; overflow-y: auto; display: flex; flex-direction: column; gap: 4px; }
+        
+        .list-item-row { display: flex; justify-content: space-between; align-items: center; padding: 3px 8px; border: 1px solid var(--md-surface-variant); border-radius: 6px; background: var(--md-surface); font-size: 13px; }
+        .item-label { display: flex; align-items: center; gap: 5px; cursor: pointer; flex-grow: 1; color: var(--md-on-surface); padding: 2px 0; }
+        .item-label .md-icon { font-size: 13px; }
+        .list-item-row .btn-inline-del { padding: 2px; }
+        .list-item-row .btn-inline-del .md-icon { font-size: 14px; }
+        
+        .changelog-list { list-style: none; display: flex; flex-direction: column; gap: 10px; margin-top: 8px; font-size: 12px; }
+        .changelog-item { padding-bottom: 8px; border-bottom: 1px dashed var(--md-surface-variant); line-height: 1.4; color: var(--md-on-surface-variant); }
+        .changelog-version { font-weight: 700; color: var(--md-primary); }
 
-        /* ==========================================
-           REGRAS DE ADAPTAÇÃO PARA SMARTPHONES (MAX-WIDTH: 480PX)
-           ========================================== */
         @media screen and (max-width: 480px) {
-            #app-container { padding-bottom: 110px; }
-            
-            .input-container { 
-                padding: 14px 14px 16px 14px; 
-                gap: 10px;
-            }
-            
-            .task-input { 
-                padding: 12px 100px 12px 14px; 
-                font-size: 15px; 
-            }
-            
-            /* Botão Flutuante perfeitamente encaixado na borda */
-            .blue-add-action-btn { 
-                position: absolute;
-                top: -24px; 
-                right: 20px; 
-                width: 48px; 
-                height: 48px; 
-                font-size: 18px;
-                box-shadow: 0 -2px 10px rgba(0,0,0,0.1), 0 4px 10px rgba(0,0,0,0.15);
-                z-index: 600;
-            }
-            
-            .main-input-block {
-                gap: 0;
-            }
+            #app-container { padding-bottom: 120px; }
+            .input-container { padding: 14px 16px 16px 16px; gap: 10px; }
+            .task-input { padding: 12px 100px 12px 14px; font-size: 15px; border-radius: 12px; }
+            .main-input-block { gap: 8px; }
         }
     </style>
 </head>
@@ -179,41 +265,57 @@
         <header>
             <div class="header-top">
                 <div class="header-left">
-                    <div class="app-title" id="current-view-title">Hoje</div>
-                    <button class="info-btn" onclick="openInfoDrawer()">ℹ️</button>
+                    <div class="app-title" id="current-view-title"><span class="md-icon" style="font-size:22px;">today</span> Hoje</div>
+                    <button class="info-btn" onclick="openInfoDrawer()"><span class="md-icon">info</span></button>
                 </div>
                 <div class="sync-status">
                     <div class="status-dot" id="status-dot"></div>
-                    <span id="status-text">A carregar...</span>
+                    <span id="status-text">Sincronizando...</span>
                 </div>
             </div>
             <div class="progress-container"><div class="progress-bar" id="progress-bar"></div></div>
         </header>
 
         <div class="date-filters">
-            <button class="filter-btn active" id="f-btn-hoje" onclick="setFilter('hoje')">Hoje</button>
-            <button class="filter-btn" id="f-btn-amanha" onclick="setFilter('amanha')">Amanhã</button>
-            <button class="filter-btn" id="f-btn-todos" onclick="setFilter('todos')">Todos os Itens</button>
+            <button class="filter-btn active" id="f-btn-hoje" onclick="setFilter('hoje')" title="Hoje">
+                <span class="md-icon">today</span>
+            </button>
+            <button class="filter-btn" id="f-btn-amanha" onclick="setFilter('amanha')" title="Amanhã">
+                <span class="md-icon">next_week</span>
+            </button>
+            <button class="filter-btn" id="f-btn-todos" onclick="setFilter('todos')" title="Todos os Itens">
+                <span class="md-icon">all_inbox</span>
+            </button>
+            <button class="filter-btn" id="f-btn-completas" onclick="setFilter('completas')" title="Tarefas Completas">
+                <span class="md-icon">done_all</span>
+            </button>
         </div>
 
         <main class="task-list" id="task-list-container"></main>
 
+        <button class="fab-add-btn" id="fab-trigger" onclick="toggleInputPanel(true)" title="Nova Tarefa">
+            <span class="md-icon">add</span>
+        </button>
+
         <div class="input-container" id="bottom-input-panel">
             <div class="meta-selectors-row">
-                <button class="selector-btn" onclick="openContextDrawer('projetos')" id="meta-project-label">📋 Sem Projeto</button>
-                <button class="selector-btn" onclick="openContextDrawer('tags')" id="meta-tag-label">🏷️ Sem Tag</button>
+                <button class="selector-btn" onclick="openContextDrawer('projetos')" id="meta-project-label"><span class="md-icon">folder</span> Sem Projeto</button>
+                <button class="selector-btn" onclick="openContextDrawer('tags')" id="meta-tag-label"><span class="md-icon">label</span> Sem Tag</button>
             </div>
             
             <div class="main-input-block">
                 <div class="input-row">
-                    <input type="text" class="task-input" id="new-task-input" placeholder="Adicionar nova atividade..." onkeypress="handleInputKey(event)">
+                    <input type="text" class="task-input" id="new-task-input" placeholder="Nova atividade..." onkeypress="handleInputKey(event)">
                     <div class="datepicker-wrapper" id="datepicker-trigger-zone">
                         <span class="datepicker-text" id="meta-date-text">Hoje</span>
-                        <span class="datepicker-icon">📅</span>
+                        <span class="datepicker-icon class-icon-adjust"><span class="md-icon">calendar_today</span></span>
                         <input type="date" id="task-date-picker" onchange="updateSelectedDate(this.value)">
                     </div>
                 </div>
-                <button class="blue-add-action-btn" id="main-action-trigger-btn" onclick="triggerSubmitTask()" title="Adicionar Tarefa">✓</button>
+                <div class="action-buttons-group">
+                    <button class="btn-cancel-task" onclick="toggleInputPanel(false)" title="Cancelar"><span class="md-icon">close</span></button>
+                    <button class="blue-add-action-btn" id="main-action-trigger-btn" onclick="triggerSubmitTask()" title="Confirmar e Salvar"><span class="md-icon">check</span></button>
+                </div>
             </div>
         </div>
     </div>
@@ -223,7 +325,7 @@
         <div class="drawer-handle"></div>
         <div class="drawer-title" id="drawer-title">Contexto</div>
         <div class="drawer-form-block" id="drawer-form-area"></div>
-        <div class="items-list-scroll" id="drawer-list-items"></div>
+        <div class="drawer-list-items items-list-scroll" id="drawer-list-items"></div>
     </div>
 
     <script>
@@ -232,9 +334,12 @@
         const $ = id => document.getElementById(id);
 
         let state = {
-            version: "3.0.0",
+            version: "4.5.3",
             changelog: [
-                { v: "3.0.0", date: "18/06/2026", desc: "Remoção total dos botões inferiores redundantes de gerenciamento, otimizando drasticamente a altura e o minimalismo da barra de digitação." }
+                { v: "4.5.3", date: "19/06/2026", desc: "Remoção de artefato visual (tarja laranja) de foco e active nos botões de filtro resetando outline e box-shadow." },
+                { v: "4.5.2", date: "19/06/2026", desc: "Substituição do ícone 'calendar_later' que quebrava como texto puro por 'next_week', nativo do Material Symbols." },
+                { v: "4.5.1", date: "19/06/2026", desc: "Correção de layout e alinhamento dos botões de filtro com apenas ícones para evitar quebras visuais e aspecto bagunçado." },
+                { v: "4.4.0", date: "19/06/2026", desc: "Adicionado suporte nativo e mobile para reordenação de tarefas via drag-and-drop (arrastar e soltar) usando uma alça dedicada à esquerda do card." }
             ],
             tasks: [], 
             projetos: [{ nome: "Trabalho", deleted: false }, { nome: "Estudos", deleted: false }],
@@ -242,15 +347,37 @@
             filterType: 'hoje', selectedFilterValue: '', tempDate: '', tempProject: 'No project', tempTag: '', editingTagIndex: null, editingProjIndex: null, editingTaskId: null
         };
 
+        let dragSrcEl = null;
+
         const getISO = (offset = 0) => {
             const d = new Date(); d.setDate(d.getDate() + offset);
             return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
         };
         const formatDisplayDate = str => str ? `${str.split('-')[2]}/${str.split('-')[1]}` : 'Sem Data';
 
+        function getFriendlyDateText(dateStr) {
+            if (!dateStr) return 'Sem Data';
+            if (dateStr === getISO(0)) return 'Hoje';
+            if (dateStr === getISO(1)) return 'Amanhã';
+            return formatDisplayDate(dateStr);
+        }
+
         function setSyncStatus(text, color) {
             const txtEl = $('status-text'); const dotEl = $('status-dot');
             if (txtEl) txtEl.innerText = text; if (dotEl) dotEl.style.backgroundColor = color;
+        }
+
+        function toggleInputPanel(show) {
+            const panel = $('bottom-input-panel');
+            const fab = $('fab-trigger');
+            if(show) {
+                panel.classList.add('visible');
+                fab.style.display = 'none';
+                $('new-task-input').focus();
+            } else {
+                panel.classList.remove('visible');
+                fab.style.display = 'flex';
+            }
         }
 
         function loadLocalStorageFallback() {
@@ -298,7 +425,7 @@
                     else {
                         const local = taskMap.get(st.id);
                         if (st.deleted || local.deleted) { local.deleted = true; local.deletedAt = local.deletedAt || st.deletedAt || Date.now(); } 
-                        else { if (st.completed) local.completed = true; if (st.text !== local.text && st.updatedAt < local.updatedAt) local.text = st.text; }
+                        else { if (st.completed) local.completed = true; if (st.text !== local.text && st.updatedAt < local.updatedAt) local.text = st.text; if(st.date !== local.date && st.updatedAt < local.updatedAt) local.date = st.date; }
                     }
                 });
             }
@@ -333,14 +460,14 @@
         }
 
         async function apiCall(method, body = null) {
-            setSyncStatus(method === 'GET' ? 'A sincronizar...' : 'A guardar...', '#eab308');
+            setSyncStatus(method === 'GET' ? 'Sincronizando...' : 'Salvando...', '#eab308');
             try {
                 const headers = { 'X-Master-Key': API_KEY };
                 if (body) headers['Content-Type'] = 'application/json';
                 const res = await fetch(JSONBIN_URL, { method, headers, body: body ? JSON.stringify(body) : null });
-                const data = await res.json(); setSyncStatus('Sincronizado', '#10b981'); return data.record;
+                const data = await res.json(); setSyncStatus('Sincronizado', '#15803d'); return data.record;
             } catch(e) {
-                setSyncStatus('Modo Offline Activo', '#ef4444'); return null;
+                setSyncStatus('Modo Offline', '#ba1a1a'); return null;
             }
         }
 
@@ -354,14 +481,23 @@
         function updateSelectedDate(val) {
             if(!val) return; state.tempDate = val;
             const el = $('meta-date-text');
-            if (el) el.innerText = val === getISO(0) ? "Hoje" : val === getISO(1) ? "Amanhã" : formatDisplayDate(val);
+            if (el) el.innerText = getFriendlyDateText(val);
         }
 
         function setFilter(type, value = '') {
             state.filterType = type; state.selectedFilterValue = value;
             document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-            if(['hoje', 'amanha', 'todos'].includes(type)) $(`f-btn-${type}`).classList.add('active');
-            $('current-view-title').innerText = type === 'hoje' ? "Hoje" : type === 'amanha' ? "Amanhã" : type === 'todos' ? "Todos os Itens" : `${type === 'projeto' ? '📋' : '🏷️'} ${value}`;
+            if(['hoje', 'amanha', 'todos', 'completas'].includes(type)) $(`f-btn-${type}`).classList.add('active');
+            
+            let headingContent = '';
+            if (type === 'hoje') headingContent = `<span class="md-icon" style="font-size:22px;">today</span> Hoje`;
+            else if (type === 'amanha') headingContent = `<span class="md-icon" style="font-size:22px;">next_week</span> Amanhã`;
+            else if (type === 'todos') headingContent = `<span class="md-icon" style="font-size:22px;">all_inbox</span> Todos os Itens`;
+            else if (type === 'completas') headingContent = `<span class="md-icon" style="font-size:22px;">done_all</span> Completas`;
+            else if (type === 'projeto') headingContent = `<span class="md-icon" style="font-size:22px;">folder</span> ${value}`;
+            else if (type === 'tag') headingContent = `<span class="md-icon" style="font-size:22px;">label</span> ${value}`;
+            
+            $('current-view-title').innerHTML = headingContent;
             state.editingTaskId = null; render();
         }
 
@@ -378,7 +514,9 @@
                     tag: state.tempTag, deleted: false, updatedAt: Date.now() 
                 });
                 inputElement.value = ''; state.tempProject = 'No project'; state.tempTag = '';
-                $('meta-project-label').innerText = '📋 Sem Projeto'; $('meta-tag-label').innerText = '🏷️ Sem Tag';
+                $('meta-project-label').innerHTML = '<span class="md-icon">folder</span> Sem Projeto'; 
+                $('meta-tag-label').innerHTML = '<span class="md-icon">label</span> Sem Tag';
+                toggleInputPanel(false);
                 render(); pushData();
             }
         }
@@ -387,22 +525,117 @@
             const t = state.tasks.find(x => x.id === id); if(!t) return;
             if (type === 'toggle') { t.completed = !t.completed; t.updatedAt = Date.now(); }
             if (type === 'save') { if(val.trim()) t.text = val.trim(); t.updatedAt = Date.now(); state.editingTaskId = null; }
+            if (type === 'change-date') { if(val) t.date = val; t.updatedAt = Date.now(); }
             if (type === 'delete') { t.deleted = true; t.deletedAt = Date.now(); }
             render(); pushData();
+        }
+
+        /* DRAG & DROP E TOQUE PARA REORDENAÇÃO */
+        function handleDragStart(e) {
+            dragSrcEl = this;
+            this.classList.add('dragging');
+            e.dataTransfer.effectAllowed = 'move';
+            e.dataTransfer.setData('text/plain', this.getAttribute('data-id'));
+        }
+
+        function handleDragOver(e) {
+            if (e.preventDefault) { e.preventDefault(); }
+            e.dataTransfer.dropEffect = 'move';
+            if (this !== dragSrcEl && this.getAttribute('data-project') === dragSrcEl.getAttribute('data-project')) {
+                this.classList.add('drag-over');
+            }
+            return false;
+        }
+
+        function handleDragLeave() {
+            this.classList.remove('drag-over');
+        }
+
+        function handleDrop(e) {
+            if (e.stopPropagation) { e.stopPropagation(); }
+            this.classList.remove('drag-over');
+            
+            const srcId = e.dataTransfer.getData('text/plain') || dragSrcEl.getAttribute('data-id');
+            const targetId = this.getAttribute('data-id');
+            
+            if (srcId !== targetId && this.getAttribute('data-project') === dragSrcEl.getAttribute('data-project')) {
+                reorderTasks(srcId, targetId);
+            }
+            return false;
+        }
+
+        function handleDragEnd() {
+            document.querySelectorAll('.task-item').forEach(item => {
+                item.classList.remove('dragging');
+                item.classList.remove('drag-over');
+            });
+        }
+
+        // Suporte Mobile Touch
+        let touchTargetEl = null;
+        function handleTouchStart(e) {
+            const item = e.target.closest('.task-item');
+            if (e.target.closest('.drag-handle') && item) {
+                dragSrcEl = item;
+                item.classList.add('dragging');
+            }
+        }
+
+        function handleTouchMove(e) {
+            if (!dragSrcEl) return;
+            e.preventDefault();
+            const touch = e.touches[0];
+            const target = document.elementFromPoint(touch.clientX, touch.clientY);
+            if (!target) return;
+            const itemOver = target.closest('.task-item');
+            
+            document.querySelectorAll('.task-item').forEach(i => i.classList.remove('drag-over'));
+            
+            if (itemOver && itemOver !== dragSrcEl && itemOver.getAttribute('data-project') === dragSrcEl.getAttribute('data-project')) {
+                itemOver.classList.add('drag-over');
+                touchTargetEl = itemOver;
+            } else {
+                touchTargetEl = null;
+            }
+        }
+
+        function handleTouchEnd() {
+            if (!dragSrcEl) return;
+            dragSrcEl.classList.remove('dragging');
+            if (touchTargetEl) {
+                touchTargetEl.classList.remove('drag-over');
+                reorderTasks(dragSrcEl.getAttribute('data-id'), touchTargetEl.getAttribute('data-id'));
+            }
+            dragSrcEl = null;
+            touchTargetEl = null;
+            document.querySelectorAll('.task-item').forEach(i => i.classList.remove('drag-over'));
+        }
+
+        function reorderTasks(srcId, targetId) {
+            const srcIndex = state.tasks.findIndex(t => t.id === srcId);
+            const targetIndex = state.tasks.findIndex(t => t.id === targetId);
+            
+            if (srcIndex !== -1 && targetIndex !== -1) {
+                const [removed] = state.tasks.splice(srcIndex, 1);
+                state.tasks.splice(targetIndex, 0, removed);
+                render();
+                pushData();
+            }
         }
 
         function render() {
             const container = $('task-list-container'); container.innerHTML = '';
             let activeTasks = state.tasks.filter(t => !t.deleted);
             let filtered = activeTasks.filter(t => 
-                state.filterType === 'hoje' ? t.date === getISO(0) :
-                state.filterType === 'amanha' ? t.date === getISO(1) :
+                state.filterType === 'hoje' ? (t.date === getISO(0) && !t.completed) :
+                state.filterType === 'amanha' ? (t.date === getISO(1) && !t.completed) :
+                state.filterType === 'completas' ? t.completed :
                 state.filterType === 'projeto' ? t.project === state.selectedFilterValue :
                 state.filterType === 'tag' ? t.tag === state.selectedFilterValue : true
             );
 
             if(!filtered.length) {
-                container.innerHTML = `<div style="text-align:center; color:var(--text-secondary); padding:40px 0; font-size:14px;">Nenhuma atividade localizada.</div>`;
+                container.innerHTML = `<div style="text-align:center; color:var(--md-on-surface-variant); padding:30px 0; font-size:13px;">Nenhuma atividade localizada.</div>`;
                 $('progress-bar').style.width = '0%'; return;
             }
 
@@ -415,14 +648,30 @@
             Object.keys(groups).forEach(projName => {
                 const projTasks = groups[projName]; const groupCard = document.createElement('div');
                 groupCard.className = 'project-group-card';
-                groupCard.innerHTML = `<div class="project-group-header"><span>${projName}</span><span class="project-group-count">${projTasks.length}</span></div><div class="project-group-tasks-container"></div>`;
+                groupCard.innerHTML = `<div class="project-group-header"><span>${projName}</span><span class="project-group-count">${projTasks.length}</span></div><div class="project-group-tasks-container" style="display:flex; flex-direction:column; gap:6px;"></div>`;
                 container.appendChild(groupCard);
                 const tasksContainer = groupCard.querySelector('.project-group-tasks-container');
 
                 projTasks.forEach(t => {
-                    const item = document.createElement('div'); item.className = `task-item ${t.completed ? 'completed' : ''}`;
+                    const item = document.createElement('div'); 
+                    item.className = `task-item ${t.completed ? 'completed' : ''}`;
+                    item.setAttribute('draggable', 'true');
+                    item.setAttribute('data-id', t.id);
+                    item.setAttribute('data-project', projName);
+                    
+                    item.addEventListener('dragstart', handleDragStart);
+                    item.addEventListener('dragover', handleDragOver);
+                    item.addEventListener('dragleave', handleDragLeave);
+                    item.addEventListener('drop', handleDrop);
+                    item.addEventListener('dragend', handleDragEnd);
+                    
+                    item.addEventListener('touchstart', handleTouchStart, {passive: true});
+                    item.addEventListener('touchmove', handleTouchMove, {passive: false});
+                    item.addEventListener('touchend', handleTouchEnd);
+
                     const tTag = state.tags.find(g => g.nome === t.tag && !g.deleted);
                     item.innerHTML = `
+                        <div class="drag-handle"><span class="md-icon" style="font-size:18px;">drag_indicator</span></div>
                         <input type="checkbox" class="task-checkbox" ${t.completed ? 'checked' : ''} onchange="opTask('${t.id}', 'toggle')">
                         <div class="task-content">
                             ${state.editingTaskId === t.id ? 
@@ -430,11 +679,16 @@
                                 `<span class="task-text" onclick="state.editingTaskId='${t.id}'; render(); $('inline-edit-${t.id}').focus();">${t.text}</span>`
                             }
                             <div class="task-meta-clickable-zone">
-                                ${t.tag && tTag ? `<span class="clickable-pill tag-pill" style="background:${tTag.cor}" onclick="setFilter('tag', '${t.tag}')">🏷️ ${t.tag}</span>` : ''}
-                                <span class="clickable-pill date-pill">📅 ${formatDisplayDate(t.date)}</span>
+                                ${t.tag && tTag ? `<span class="clickable-pill tag-pill" style="background:${tTag.cor}; color:#fff;" onclick="setFilter('tag', '${t.tag}')"><span class="md-icon" style="margin-right:2px;">label</span>${t.tag}</span>` : ''}
+                                
+                                <span class="clickable-pill date-pill">
+                                    <span class="task-card-date-text">${getFriendlyDateText(t.date)}</span>
+                                    <span class="task-card-date-icon"><span class="md-icon">calendar_today</span></span>
+                                    <input type="date" class="inline-date-picker-overlay" value="${t.date}" onchange="opTask('${t.id}', 'change-date', this.value)">
+                                </span>
                             </div>
                         </div>
-                        <button class="btn-inline-del" onclick="opTask('${t.id}', 'delete')">&times;</button>
+                        <button class="btn-inline-del" onclick="opTask('${t.id}', 'delete')"><span class="md-icon">close</span></button>
                     `;
                     tasksContainer.appendChild(item);
                 });
@@ -449,7 +703,7 @@
         const closeDrawer = () => { $('context-drawer').classList.remove('open'); $('drawer-overlay').style.display = 'none'; };
 
         function openInfoDrawer() {
-            openDrawerCommon(`Informações do Sistema (v${state.version})`, `<div style="font-size: 13px; color: var(--text-secondary);">Histórico de modificações:</div>`, () => {
+            openDrawerCommon(`Informações (v${state.version})`, `<div style="font-size: 12px; color: var(--md-on-surface-variant);">Histórico de modificações:</div>`, () => {
                 $('drawer-list-items').innerHTML = `<ul class="changelog-list">` + state.changelog.map(x => `<li class="changelog-item"><span class="changelog-version">Versão ${x.v}</span> (${x.date})<br>${x.desc}</li>`).join('') + `</ul>`;
             });
         }
@@ -460,21 +714,57 @@
             else { openDrawerCommon("Gerenciar Tags", '', () => { renderTagForm(); renderTagsList(); }); }
         }
 
+        function selectProjectFromDrawer(name) {
+            state.tempProject = name; 
+            $('meta-project-label').innerHTML = `<span class="md-icon">folder</span> ${name}`; 
+            closeDrawer();
+        }
+
+        function selectTagFromDrawer(name) {
+            state.tempTag = name; 
+            $('meta-tag-label').innerHTML = `<span class="md-icon">label</span> ${name}`; 
+            closeDrawer();
+        }
+
         function renderProjForm(n='', l='Adicionar Projeto') {
             $('drawer-form-area').innerHTML = `<input type="text" class="drawer-input" id="new-proj-name" placeholder="Nome do Projeto..." value="${n}"><button class="action-submit-btn" onclick="saveProj()">${l}</button>`;
         }
 
         function renderProjectsList() {
             const activeProj = state.projetos.filter(p => !p.deleted);
-            $('drawer-list-items').innerHTML = activeProj.map((p, i) => `
-                <div class="list-item-row">
-                    <div class="item-label" onclick="state.tempProject='${p.nome}'; $('meta-project-label').innerText='📋 ${p.nome}'; closeDrawer()">📋 ${p.nome}</div>
-                    <div>
-                        <button class="btn-inline-edit" onclick="state.editingProjIndex=${state.projetos.indexOf(p)}; renderProjForm('${p.nome}','Salvar')">Editar</button>
-                        <button class="btn-inline-del" onclick="deleteProj('${p.nome}')">&times;</button>
-                    </div>
-                </div>
-            `).join('');
+            const itemsContainer = $('drawer-list-items');
+            itemsContainer.innerHTML = '';
+            
+            activeProj.forEach(p => {
+                const row = document.createElement('div');
+                row.className = 'list-item-row';
+                
+                const label = document.createElement('div');
+                label.className = 'item-label';
+                label.innerHTML = `<span class="md-icon">folder</span> ${p.nome}`;
+                label.onclick = () => selectProjectFromDrawer(p.nome);
+                
+                const actions = document.createElement('div');
+                actions.innerHTML = `
+                    <button class="btn-inline-edit">Editar</button>
+                    <button class="btn-inline-del"><span class="md-icon">close</span></button>
+                `;
+                
+                actions.querySelector('.btn-inline-edit').onclick = (e) => {
+                    e.stopPropagation();
+                    state.editingProjIndex = state.projetos.indexOf(p);
+                    renderProjForm(p.nome, 'Salvar');
+                };
+                
+                actions.querySelector('.btn-inline-del').onclick = (e) => {
+                    e.stopPropagation();
+                    deleteProj(p.nome);
+                };
+                
+                row.appendChild(label);
+                row.appendChild(actions);
+                itemsContainer.appendChild(row);
+            });
         }
 
         function saveProj() {
@@ -496,23 +786,45 @@
             renderProjectsList(); render(); pushData();
         }
 
-        function renderTagForm(n='', c='#4f46e5', l='Adicionar Tag') {
-            $('drawer-form-area').innerHTML = `<input type="text" class="drawer-input" id="new-tag-name" placeholder="Nome da Tag..." value="${n}"><div class="drawer-row-inline"><span>Cor:</span><input type="color" id="new-tag-color" value="${c}" style="border:none;background:none;width:40px;height:30px;cursor:pointer;"></div><button class="action-submit-btn" onclick="saveTag()">${l}</button>`;
+        function renderTagForm(n='', c='#6750A4', l='Adicionar Tag') {
+            $('drawer-form-area').innerHTML = `<input type="text" class="drawer-input" id="new-tag-name" placeholder="Nome da Tag..." value="${n}"><div style="display:flex; align-items:center; gap:6px; font-size:12px; margin-top:2px;"><span>Cor:</span><input type="color" id="new-tag-color" value="${c}" style="border:none;background:none;width:30px;height:24px;cursor:pointer;"></div><button class="action-submit-btn" onclick="saveTag()">${l}</button>`;
         }
 
         function renderTagsList() {
             const activeTags = state.tags.filter(t => !t.deleted);
-            $('drawer-list-items').innerHTML = activeTags.map((t) => `
-                <div class="list-item-row">
-                    <div class="item-label" onclick="state.tempTag='${t.nome}'; $('meta-tag-label').innerText='🏷️ ${t.nome}'; closeDrawer()">
-                        <span style="width:10px;height:10px;background:${t.cor};border-radius:50%;"></span><strong>${t.nome}</strong>
-                    </div>
-                    <div>
-                        <button class="btn-inline-edit" onclick="state.editingTagIndex=${state.tags.indexOf(t)}; renderTagForm('${t.nome}','${t.cor}','Salvar')">Editar</button>
-                        <button class="btn-inline-del" onclick="deleteTag('${t.nome}')">&times;</button>
-                    </div>
-                </div>
-            `).join('');
+            const itemsContainer = $('drawer-list-items');
+            itemsContainer.innerHTML = '';
+
+            activeTags.forEach(t => {
+                const row = document.createElement('div');
+                row.className = 'list-item-row';
+                
+                const label = document.createElement('div');
+                label.className = 'item-label';
+                label.innerHTML = `<span style="width:10px;height:10px;background:${t.cor};border-radius:50%;display:inline-block;margin-right:2px;"></span><strong>${t.nome}</strong>`;
+                label.onclick = () => selectTagFromDrawer(t.nome);
+                
+                const actions = document.createElement('div');
+                actions.innerHTML = `
+                    <button class="btn-inline-edit">Editar</button>
+                    <button class="btn-inline-del"><span class="md-icon">close</span></button>
+                `;
+                
+                actions.querySelector('.btn-inline-edit').onclick = (e) => {
+                    e.stopPropagation();
+                    state.editingTagIndex = state.tags.indexOf(t);
+                    renderTagForm(t.nome, t.cor, 'Salvar');
+                };
+                
+                actions.querySelector('.btn-inline-del').onclick = (e) => {
+                    e.stopPropagation();
+                    deleteTag(t.nome);
+                };
+                
+                row.appendChild(label);
+                row.appendChild(actions);
+                itemsContainer.appendChild(row);
+            });
         }
 
         function saveTag() {
