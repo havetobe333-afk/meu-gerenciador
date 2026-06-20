@@ -120,11 +120,26 @@
         .clickable-pill.tag-pill { filter: saturate(0.8) brightness(0.9); font-weight: 600; }
         .clickable-pill .md-icon { font-size: 11px; }
         
-        /* Pílula de Data */
-        .clickable-pill.date-pill { background: transparent; padding: 0; border-radius: 0; display: inline-flex; align-items: center; gap: 4px; user-select: none; }
-        .task-card-date-text { font-size: 11px; color: var(--md-on-primary-container); font-weight: 500; background: var(--md-primary-container); padding: 3px 6px; border-radius: 5px; }
-        .task-card-date-icon { font-size: 13px; display: inline-flex; align-items: center; justify-content: center; color: var(--md-primary); pointer-events: none; }
-        .inline-date-picker-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0.01; cursor: pointer; z-index: 3; }
+        /* Pílula de Data Redimensionada (Mais visível) */
+        .clickable-pill.date-pill { background: transparent; padding: 2px 0; border-radius: 0; display: inline-flex; align-items: center; gap: 6px; user-select: none; }
+        .task-card-date-text { font-size: 12px; color: var(--md-on-primary-container); font-weight: 500; background: var(--md-primary-container); padding: 5px 9px; border-radius: 6px; }
+        
+        /* Ícone de calendário visivelmente maior nos cards */
+        .task-card-date-icon { display: inline-flex; align-items: center; justify-content: center; color: var(--md-primary); pointer-events: none; }
+        .task-card-date-icon .md-icon { font-size: 16px !important; }
+        
+        /* Input invisível expandido para garantir clique perfeito */
+        .inline-date-picker-overlay { 
+            position: absolute; 
+            top: 0; 
+            left: 0; 
+            width: 100%; 
+            height: 100%; 
+            opacity: 0.01; 
+            cursor: pointer; 
+            z-index: 3;
+            font-size: 16px;
+        }
         
         /* Botões Inline */
         .btn-inline-del { background: none; border: none; color: var(--md-outline); cursor: pointer; padding: 4px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
@@ -133,7 +148,7 @@
         .btn-inline-edit { background: none; border: none; color: var(--md-primary); font-size: 11px; font-weight: 500; cursor: pointer; padding: 2px 6px; border-radius: 4px; }
         .btn-inline-edit:active { background: var(--md-primary-container); }
 
-        /* BOTÃO FLUTUANTE (FAB) - ADAPTADO PARA DESKTOP DENTRO DO BLOCO CONTEÚDO */
+        /* BOTÃO FLUTUANTE (FAB) */
         .fab-add-btn {
             position: fixed;
             bottom: 24px;
@@ -262,14 +277,10 @@
         .changelog-item { padding-bottom: 8px; border-bottom: 1px dashed var(--md-surface-variant); line-height: 1.4; color: var(--md-on-surface-variant); }
         .changelog-version { font-weight: 700; color: var(--md-primary); }
 
-        /* Ajustes responsivos para telas menores e smartphones */
+        /* Ajustes responsivos */
         @media screen and (max-width: 640px) {
-            .fab-add-btn {
-                left: auto;
-                right: 24px;
-            }
+            .fab-add-btn { left: auto; right: 24px; }
         }
-
         @media screen and (max-width: 480px) {
             #app-container { padding-bottom: 120px; }
             .input-container { padding: 14px 16px 16px 16px; gap: 10px; }
@@ -313,7 +324,7 @@
 
         <main class="task-list" id="task-list-container"></main>
 
-        <!-- BOTÃO FLUTUANTE REPOSICIONADO PARA USABILIDADE DESKTOP -->
+        <!-- BOTÃO FLUTUANTE REPOSICIONADO -->
         <button class="fab-add-btn" id="fab-trigger" onclick="toggleInputPanel(true)" title="Nova Tarefa">
             <span class="md-icon">add</span>
         </button>
@@ -356,11 +367,11 @@
         const $ = id => document.getElementById(id);
 
         let state = {
-            version: "4.5.7",
+            version: "4.5.9",
             changelog: [
+                { v: "4.5.9", date: "19/06/2026", desc: "Aumentado o tamanho visual da pílula de data e do ícone de calendário dentro do card de tarefa para melhorar a visibilidade." },
+                { v: "4.5.8", date: "19/06/2026", desc: "Aumentado o tamanho da fonte e espaçamento (padding) do seletor de data invisível nos cards para melhorar o clique/alvo de toque." },
                 { v: "4.5.7", date: "19/06/2026", desc: "Removido o ícone de etiqueta (label) de dentro das pílulas de tags nos cards de tarefas." },
-                { v: "4.5.6", date: "19/06/2026", desc: "Removido o ícone de pasta do cabeçalho do projeto dentro dos cards de tarefas e do filtro de cabeçalho dinâmico para suavizar o visual." },
-                { v: "4.5.5", date: "19/06/2026", desc: "Implementada lógica de alternância (toggle) ao clicar nos cabeçalhos de projetos ou pílulas de tags. Se já estiverem ativos, o filtro é limpo e retorna para 'Hoje'." },
                 { v: "4.4.0", date: "19/06/2026", desc: "Adicionado suporte nativo e mobile para reordenação de tarefas via drag-and-drop (arrastar e soltar) usando uma alça dedicada à esquerda do card." }
             ],
             tasks: [], 
@@ -560,7 +571,7 @@
             render(); pushData();
         }
 
-        /* DRAG & DROP E TOQUE PARA REORDENAÇÃO */
+        /* DRAG & DROP REORDENAÇÃO */
         function handleDragStart(e) {
             dragSrcEl = this;
             this.classList.add('dragging');
@@ -577,17 +588,13 @@
             return false;
         }
 
-        function handleDragLeave() {
-            this.classList.remove('drag-over');
-        }
+        function handleDragLeave() { this.classList.remove('drag-over'); }
 
         function handleDrop(e) {
             if (e.stopPropagation) { e.stopPropagation(); }
             this.classList.remove('drag-over');
-            
             const srcId = e.dataTransfer.getData('text/plain') || dragSrcEl.getAttribute('data-id');
             const targetId = this.getAttribute('data-id');
-            
             if (srcId !== targetId && this.getAttribute('data-project') === dragSrcEl.getAttribute('data-project')) {
                 reorderTasks(srcId, targetId);
             }
@@ -618,15 +625,11 @@
             const target = document.elementFromPoint(touch.clientX, touch.clientY);
             if (!target) return;
             const itemOver = target.closest('.task-item');
-            
             document.querySelectorAll('.task-item').forEach(i => i.classList.remove('drag-over'));
-            
             if (itemOver && itemOver !== dragSrcEl && itemOver.getAttribute('data-project') === dragSrcEl.getAttribute('data-project')) {
                 itemOver.classList.add('drag-over');
                 touchTargetEl = itemOver;
-            } else {
-                touchTargetEl = null;
-            }
+            } else { touchTargetEl = null; }
         }
 
         function handleTouchEnd() {
@@ -636,20 +639,17 @@
                 touchTargetEl.classList.remove('drag-over');
                 reorderTasks(dragSrcEl.getAttribute('data-id'), touchTargetEl.getAttribute('data-id'));
             }
-            dragSrcEl = null;
-            touchTargetEl = null;
+            dragSrcEl = null; touchTargetEl = null;
             document.querySelectorAll('.task-item').forEach(i => i.classList.remove('drag-over'));
         }
 
         function reorderTasks(srcId, targetId) {
             const srcIndex = state.tasks.findIndex(t => t.id === srcId);
             const targetIndex = state.tasks.findIndex(t => t.id === targetId);
-            
             if (srcIndex !== -1 && targetIndex !== -1) {
                 const [removed] = state.tasks.splice(srcIndex, 1);
                 state.tasks.splice(targetIndex, 0, removed);
-                render();
-                pushData();
+                render(); pushData();
             }
         }
 
@@ -777,32 +777,21 @@
             activeProj.forEach(p => {
                 const row = document.createElement('div');
                 row.className = 'list-item-row';
-                
                 const label = document.createElement('div');
                 label.className = 'item-label';
                 label.innerHTML = `<span class="md-icon">folder</span> ${p.nome}`;
                 label.onclick = () => selectProjectFromDrawer(p.nome);
                 
                 const actions = document.createElement('div');
-                actions.innerHTML = `
-                    <button class="btn-inline-edit">Editar</button>
-                    <button class="btn-inline-del"><span class="md-icon">close</span></button>
-                `;
+                actions.innerHTML = `<button class="btn-inline-edit">Editar</button><button class="btn-inline-del"><span class="md-icon">close</span></button>`;
                 
                 actions.querySelector('.btn-inline-edit').onclick = (e) => {
-                    e.stopPropagation();
-                    state.editingProjIndex = state.projetos.indexOf(p);
-                    renderProjForm(p.nome, 'Salvar');
+                    e.stopPropagation(); state.editingProjIndex = state.projetos.indexOf(p); renderProjForm(p.nome, 'Salvar');
                 };
-                
                 actions.querySelector('.btn-inline-del').onclick = (e) => {
-                    e.stopPropagation();
-                    deleteProj(p.nome);
+                    e.stopPropagation(); deleteProj(p.nome);
                 };
-                
-                row.appendChild(label);
-                row.appendChild(actions);
-                itemsContainer.appendChild(row);
+                row.appendChild(label); row.appendChild(actions); itemsContainer.appendChild(row);
             });
         }
 
@@ -837,32 +826,21 @@
             activeTags.forEach(t => {
                 const row = document.createElement('div');
                 row.className = 'list-item-row';
-                
                 const label = document.createElement('div');
                 label.className = 'item-label';
                 label.innerHTML = `<span style="width:10px;height:10px;background:${t.cor};border-radius:50%;display:inline-block;margin-right:2px;"></span><strong>${t.nome}</strong>`;
                 label.onclick = () => selectTagFromDrawer(t.nome);
                 
                 const actions = document.createElement('div');
-                actions.innerHTML = `
-                    <button class="btn-inline-edit">Editar</button>
-                    <button class="btn-inline-del"><span class="md-icon">close</span></button>
-                `;
+                actions.innerHTML = `<button class="btn-inline-edit">Editar</button><button class="btn-inline-del"><span class="md-icon">close</span></button>`;
                 
                 actions.querySelector('.btn-inline-edit').onclick = (e) => {
-                    e.stopPropagation();
-                    state.editingTagIndex = state.tags.indexOf(t);
-                    renderTagForm(t.nome, t.cor, 'Salvar');
+                    e.stopPropagation(); state.editingTagIndex = state.tags.indexOf(t); renderTagForm(t.nome, t.cor, 'Salvar');
                 };
-                
                 actions.querySelector('.btn-inline-del').onclick = (e) => {
-                    e.stopPropagation();
-                    deleteTag(t.nome);
+                    e.stopPropagation(); deleteTag(t.nome);
                 };
-                
-                row.appendChild(label);
-                row.appendChild(actions);
-                itemsContainer.appendChild(row);
+                row.appendChild(label); row.appendChild(actions); itemsContainer.appendChild(row);
             });
         }
 
