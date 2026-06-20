@@ -29,6 +29,9 @@
             --md-surface-container: #f3edf7;
             --md-surface-container-high: #ece6f0;
             --success-color: #15803d;
+            --error-color: #ba1a1a;
+            --error-container: #ffe2e2;
+            --on-error-container: #410002;
             --shadow-1: 0px 1px 3px 1px rgba(0, 0, 0, 0.15), 0px 1px 2px 0px rgba(0, 0, 0, 0.30);
             --shadow-2: 0px 2px 6px 2px rgba(0, 0, 0, 0.15), 0px 1px 2px 0px rgba(0, 0, 0, 0.30);
         }
@@ -99,6 +102,22 @@
         .task-item { background: var(--md-surface); border: 1px solid var(--md-surface-variant); border-radius: 8px; padding: 8px 10px; display: flex; align-items: center; gap: 10px; transition: background-color 0.2s, opacity 0.2s; position: relative; }
         .task-item.dragging { opacity: 0.4; background: var(--md-surface-container-high); }
         .task-item.drag-over { border-top: 2px solid var(--md-primary); }
+        
+        /* Estado Atrasado (Avermelhado) */
+        .task-item.overdue {
+            background: #fff5f5;
+            border-color: #ffcdd2;
+        }
+        .task-item.overdue .task-text {
+            color: #b71c1c;
+        }
+        .task-item.overdue .task-card-date-text {
+            background: #ffcdd2;
+            color: #b71c1c;
+        }
+        .task-item.overdue .task-card-date-icon {
+            color: #b71c1c;
+        }
 
         /* Alça de Arraste (Drag Handle) */
         .drag-handle { color: var(--md-outline); cursor: grab; display: flex; align-items: center; justify-content: center; padding: 4px 2px; user-select: none; touch-action: none; }
@@ -108,10 +127,12 @@
         .task-checkbox { appearance: none; -webkit-appearance: none; width: 18px; height: 18px; border: 2px solid var(--md-outline); border-radius: 4px; cursor: pointer; flex-shrink: 0; display: inline-flex; align-items: center; justify-content: center; transition: all 0.1s; }
         .task-checkbox:checked { background: var(--md-primary); border-color: var(--md-primary); }
         .task-checkbox:checked::after { content: "✓"; color: var(--md-on-primary); font-size: 11px; font-weight: bold; }
+        .task-item.overdue .task-checkbox { border-color: #e57373; }
+        .task-item.overdue .task-checkbox:checked { background: var(--md-primary); border-color: var(--md-primary); }
         
         .task-content { flex-grow: 1; display: flex; flex-direction: column; gap: 4px; overflow: hidden; }
         .task-text { font-size: 15px; font-weight: 400; line-height: 1.3; word-break: break-word; cursor: pointer; color: var(--md-on-surface); }
-        .task-item.completed .task-text { text-decoration: line-through; color: var(--md-on-surface-variant); opacity: 0.6; }
+        .task-item.completed .task-text { text-decoration: line-through; color: var(--md-on-surface-variant) !important; opacity: 0.6; }
         .task-edit-inline-input { width: 100%; border: none; border-bottom: 2px solid var(--md-primary); padding: 2px 0; font-size: 15px; outline: none; background: transparent; color: var(--md-on-surface); }
         
         /* Badges e Pílulas */
@@ -367,11 +388,11 @@
         const $ = id => document.getElementById(id);
 
         let state = {
-            version: "4.5.9",
+            version: "4.6.0",
             changelog: [
+                { v: "4.6.0", date: "19/06/2026", desc: "Adicionado destaque visual avermelhado automático para tarefas que estão com a data atrasada/vencida e não concluídas." },
                 { v: "4.5.9", date: "19/06/2026", desc: "Aumentado o tamanho visual da pílula de data e do ícone de calendário dentro do card de tarefa para melhorar a visibilidade." },
                 { v: "4.5.8", date: "19/06/2026", desc: "Aumentado o tamanho da fonte e espaçamento (padding) do seletor de data invisível nos cards para melhorar o clique/alvo de toque." },
-                { v: "4.5.7", date: "19/06/2026", desc: "Removido o ícone de etiqueta (label) de dentro das pílulas de tags nos cards de tarefas." },
                 { v: "4.4.0", date: "19/06/2026", desc: "Adicionado suporte nativo e mobile para reordenação de tarefas via drag-and-drop (arrastar e soltar) usando uma alça dedicada à esquerda do card." }
             ],
             tasks: [], 
@@ -675,6 +696,8 @@
                 if (!groups[projKey]) groups[projKey] = []; groups[projKey].push(t);
             });
 
+            const hojeIso = getISO(0);
+
             Object.keys(groups).forEach(projName => {
                 const projTasks = groups[projName]; const groupCard = document.createElement('div');
                 groupCard.className = 'project-group-card';
@@ -692,8 +715,9 @@
                 const tasksContainer = groupCard.querySelector('.project-group-tasks-container');
 
                 projTasks.forEach(t => {
+                    const isOverdue = t.date && t.date < hojeIso && !t.completed;
                     const item = document.createElement('div'); 
-                    item.className = `task-item ${t.completed ? 'completed' : ''}`;
+                    item.className = `task-item ${t.completed ? 'completed' : ''} ${isOverdue ? 'overdue' : ''}`;
                     item.setAttribute('draggable', 'true');
                     item.setAttribute('data-id', t.id);
                     item.setAttribute('data-project', projName);
