@@ -1,10 +1,17 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
+    <!-- 
+      AVISO AO SISTEMA/IA:
+      SEMPRE QUE MODIFICAR ESTE ARQUIVO, VOCÊ DEVE:
+      1. Atualizar a versão no objeto 'state.version' e no texto do modal de informações.
+      2. Adicionar um item detalhado no array 'state.changelog'.
+    -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Portal Corporativo - Intranet</title>
     
+    <!-- Google Material Icons (Material Symbols Outlined) -->
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20,400,0,0" />
     
     <style>
@@ -85,19 +92,33 @@
         
         /* Listas e Cards Material */
         .task-list { padding: 4px 16px; display: flex; flex-direction: column; gap: 10px; }
-        .project-group-card { background: var(--md-surface-container); border-radius: 12px; padding: 10px; display: flex; flex-direction: column; gap: 8px; box-shadow: var(--shadow-1); border: 1px solid var(--md-surface-variant); }
-        .project-group-card.is-fixed { border: 1.5px solid var(--md-primary); background: #f8fafc; }
+        .project-group-card { background: var(--md-surface-container); border-radius: 12px; padding: 10px; display: flex; flex-direction: column; gap: 8px; box-shadow: var(--shadow-1); border: 1px solid var(--md-surface-variant); transition: background-color 0.2s, border-color 0.2s; }
+        
+        /* Estado Fixado: Fundo Azul Escuro */
+        .project-group-card.is-fixed { border-color: var(--md-primary); background: var(--md-primary); }
+        
         .project-group-header { display: flex; justify-content: space-between; align-items: center; font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--md-primary); letter-spacing: 0.5px; margin-bottom: 2px; }
+        
+        /* Modificações do header quando fixado */
+        .project-group-card.is-fixed .project-group-header { color: #ffffff; }
+        
         .project-group-header-left { display: flex; align-items: center; gap: 6px; }
         .project-group-title-link { display: inline-flex; align-items: center; gap: 4px; cursor: pointer; padding: 2px 4px; border-radius: 4px; transition: background-color 0.1s; }
         .project-group-title-link:active { background: var(--md-surface-container-high); }
+        .project-group-card.is-fixed .project-group-title-link:active { background: rgba(255, 255, 255, 0.15); }
+        
         .project-group-count { font-weight: 700; color: var(--md-on-surface); font-size: 11px; background: var(--md-surface-container-high); padding: 1px 6px; border-radius: 8px; }
+        .project-group-card.is-fixed .project-group-count { color: var(--md-primary); background: #ffffff; }
         
         /* Botão Pin Fixar */
         .btn-project-pin { background: none; border: none; color: var(--md-outline); cursor: pointer; padding: 4px; border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: color 0.15s; }
         .btn-project-pin:active { background: var(--md-surface-variant); }
         .btn-project-pin.active { color: var(--md-primary); }
         .btn-project-pin .md-icon { font-size: 16px; }
+        
+        /* Ajuste do botão de pin quando o card está fixado */
+        .project-group-card.is-fixed .btn-project-pin.active { color: #ffffff; }
+        .project-group-card.is-fixed .btn-project-pin:active { background: rgba(255, 255, 255, 0.15); }
 
         /* Itens de Tarefa */
         .task-item { background: var(--md-surface); border: 1px solid var(--md-outline); border-radius: 8px; padding: 8px 10px; display: flex; align-items: center; gap: 10px; transition: background-color 0.2s, opacity 0.2s; position: relative; }
@@ -340,6 +361,7 @@
             <div class="progress-container"><div class="progress-bar" id="progress-bar"></div></div>
         </header>
 
+        <!-- FILTROS COMPACTOS -->
         <div class="date-filters">
             <button class="filter-btn active" id="f-btn-hoje" onclick="setFilter('hoje')" title="Hoje">
                 <span class="md-icon">today</span>
@@ -357,10 +379,12 @@
 
         <main class="task-list" id="task-list-container"></main>
 
+        <!-- BOTÃO FLUTUANTE -->
         <button class="fab-add-btn" id="fab-trigger" onclick="toggleInputPanel(true)" title="Nova Tarefa">
             <span class="md-icon">add</span>
         </button>
 
+        <!-- CAMADA DE INSERÇÃO REORGANIZADA COM ICONES E BADGES INLINE -->
         <div class="input-container" id="bottom-input-panel">
             <div class="meta-selectors-row">
                 <button class="selector-btn" onclick="openContextDrawer('projetos')" id="meta-project-btn" title="Definir Projeto">
@@ -410,11 +434,11 @@
         const $ = id => document.getElementById(id);
 
         let state = {
-            version: "4.10.0",
+            version: "4.10.1",
             changelog: [
+                { v: "4.10.1", date: "20/06/2026", desc: "Ajuste visual no card fixado: O container do projeto ganha fundo em tom azul escuro e textos em branco para maior destaque estrutural e alto contraste." },
                 { v: "4.10.0", date: "20/06/2026", desc: "Adicionado recurso de fixação de projetos. Containers de projetos agora podem ser fixados no topo da lista através de um ícone de alfinete discreto." },
-                { v: "4.9.1", date: "20/06/2026", desc: "Regra de isolamento estrito de tarefas: Atividades concluídas agora são filtradas e exibidas exclusivamente sob a aba 'Completas', sumindo inteiramente das demais listas e contextos de data." },
-                { v: "4.9.0", date: "19/06/2026", desc: "Fluxo de Baixa Fricção implementado: Clicar no texto de uma tarefa agora a chama de volta ao estado de rascunho na barra inferior para edição rápida e limpa." }
+                { v: "4.9.1", date: "20/06/2026", desc: "Regra de isolamento estrito de tarefas: Atividades concluídas agora são filtradas e exibidas exclusivamente sob a aba 'Completas', sumindo inteiramente das demais listas e contextos de data." }
             ],
             tasks: [], 
             projetos: [{ nome: "Trabalho", deleted: false, fixed: false }, { nome: "Estudos", deleted: false, fixed: false }],
