@@ -1,17 +1,10 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <!-- 
-      AVISO AO SISTEMA/IA:
-      SEMPRE QUE MODIFICAR ESTE ARQUIVO, VOCÊ DEVE:
-      1. Atualizar a versão no objeto 'state.version' e no texto do modal de informações.
-      2. Adicionar um item detalhado no array 'state.changelog'.
-    -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Portal Corporativo - Intranet</title>
     
-    <!-- Google Material Icons (Material Symbols Outlined) -->
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20,400,0,0" />
     
     <style>
@@ -93,10 +86,18 @@
         /* Listas e Cards Material */
         .task-list { padding: 4px 16px; display: flex; flex-direction: column; gap: 10px; }
         .project-group-card { background: var(--md-surface-container); border-radius: 12px; padding: 10px; display: flex; flex-direction: column; gap: 8px; box-shadow: var(--shadow-1); border: 1px solid var(--md-surface-variant); }
+        .project-group-card.is-fixed { border: 1.5px solid var(--md-primary); background: #f8fafc; }
         .project-group-header { display: flex; justify-content: space-between; align-items: center; font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--md-primary); letter-spacing: 0.5px; margin-bottom: 2px; }
+        .project-group-header-left { display: flex; align-items: center; gap: 6px; }
         .project-group-title-link { display: inline-flex; align-items: center; gap: 4px; cursor: pointer; padding: 2px 4px; border-radius: 4px; transition: background-color 0.1s; }
         .project-group-title-link:active { background: var(--md-surface-container-high); }
         .project-group-count { font-weight: 700; color: var(--md-on-surface); font-size: 11px; background: var(--md-surface-container-high); padding: 1px 6px; border-radius: 8px; }
+        
+        /* Botão Pin Fixar */
+        .btn-project-pin { background: none; border: none; color: var(--md-outline); cursor: pointer; padding: 4px; border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: color 0.15s; }
+        .btn-project-pin:active { background: var(--md-surface-variant); }
+        .btn-project-pin.active { color: var(--md-primary); }
+        .btn-project-pin .md-icon { font-size: 16px; }
 
         /* Itens de Tarefa */
         .task-item { background: var(--md-surface); border: 1px solid var(--md-outline); border-radius: 8px; padding: 8px 10px; display: flex; align-items: center; gap: 10px; transition: background-color 0.2s, opacity 0.2s; position: relative; }
@@ -339,7 +340,6 @@
             <div class="progress-container"><div class="progress-bar" id="progress-bar"></div></div>
         </header>
 
-        <!-- FILTROS COMPACTOS -->
         <div class="date-filters">
             <button class="filter-btn active" id="f-btn-hoje" onclick="setFilter('hoje')" title="Hoje">
                 <span class="md-icon">today</span>
@@ -357,12 +357,10 @@
 
         <main class="task-list" id="task-list-container"></main>
 
-        <!-- BOTÃO FLUTUANTE -->
         <button class="fab-add-btn" id="fab-trigger" onclick="toggleInputPanel(true)" title="Nova Tarefa">
             <span class="md-icon">add</span>
         </button>
 
-        <!-- CAMADA DE INSERÇÃO REORGANIZADA COM ICONES E BADGES INLINE -->
         <div class="input-container" id="bottom-input-panel">
             <div class="meta-selectors-row">
                 <button class="selector-btn" onclick="openContextDrawer('projetos')" id="meta-project-btn" title="Definir Projeto">
@@ -412,14 +410,14 @@
         const $ = id => document.getElementById(id);
 
         let state = {
-            version: "4.9.0",
+            version: "4.10.0",
             changelog: [
-                { v: "4.9.0", date: "19/06/2026", desc: "Fluxo de Baixa Fricção implementado: Clicar no texto de uma tarefa agora a chama de volta ao estado de rascunho na barra inferior para edição rápida e limpa." },
-                { v: "4.8.0", date: "19/06/2026", desc: "Implementado suporte à tarefas recorrentes sem poluição visual. Os seletores da barra inferior foram transformados em ícones compactos M3 e foi adicionado o indicador 'repeat' discreto diretamente nos cards de atividades." },
-                { v: "4.7.1", date: "19/06/2026", desc: "Corrigida a sincronização de data inline. Agora, alterações de data efetuadas diretamente no card atualizam corretamente o timestamp 'updatedAt' e propagam instantaneamente entre os dispositivos." }
+                { v: "4.10.0", date: "20/06/2026", desc: "Adicionado recurso de fixação de projetos. Containers de projetos agora podem ser fixados no topo da lista através de um ícone de alfinete discreto." },
+                { v: "4.9.1", date: "20/06/2026", desc: "Regra de isolamento estrito de tarefas: Atividades concluídas agora são filtradas e exibidas exclusivamente sob a aba 'Completas', sumindo inteiramente das demais listas e contextos de data." },
+                { v: "4.9.0", date: "19/06/2026", desc: "Fluxo de Baixa Fricção implementado: Clicar no texto de uma tarefa agora a chama de volta ao estado de rascunho na barra inferior para edição rápida e limpa." }
             ],
             tasks: [], 
-            projetos: [{ nome: "Trabalho", deleted: false }, { nome: "Estudos", deleted: false }],
+            projetos: [{ nome: "Trabalho", deleted: false, fixed: false }, { nome: "Estudos", deleted: false, fixed: false }],
             tags: [{ nome: "URGENTE", cor: "#ef4444", deleted: false }, { nome: "FOCO", cor: "#3b82f6", deleted: false }],
             filterType: 'hoje', selectedFilterValue: '', tempDate: '', tempProject: 'No project', tempTag: '', tempRecurrence: 'Nenhuma'
         };
@@ -465,7 +463,11 @@
             if(localProj) state.projetos = JSON.parse(localProj);
             if(localTags) state.tags = JSON.parse(localTags);
             
-            state.projetos = state.projetos.map(p => typeof p === 'string' ? { nome: p, deleted: false } : p);
+            state.projetos = state.projetos.map(p => {
+                if (typeof p === 'string') return { nome: p, deleted: false, fixed: false };
+                if (p.fixed === undefined) p.fixed = false;
+                return p;
+            });
             state.tags = state.tags.map(t => typeof t === 'string' ? { nome: t, cor: '#4f46e5', deleted: false } : t);
         }
 
@@ -519,11 +521,13 @@
             const projMap = new Map(); state.projetos.forEach(p => projMap.set(p.nome, p));
             if (Array.isArray(serverData.projetos)) {
                 serverData.projetos.forEach(sp => {
-                    const norm = typeof sp === 'string' ? { nome: sp, deleted: false } : sp;
+                    const norm = typeof sp === 'string' ? { nome: sp, deleted: false, fixed: false } : sp;
+                    if (norm.fixed === undefined) norm.fixed = false;
                     if (!projMap.has(norm.nome)) { projMap.set(norm.nome, norm); } 
                     else {
                         const local = projMap.get(norm.nome);
                         if (norm.deleted || local.deleted) { local.deleted = true; local.deletedAt = local.deletedAt || norm.deletedAt || Date.now(); }
+                        if (norm.fixed !== undefined && local.fixed !== norm.fixed) local.fixed = norm.fixed;
                     }
                 });
             }
@@ -648,26 +652,32 @@
         function callTaskBackToDraft(id) {
             const t = state.tasks.find(x => x.id === id); if(!t || t.completed) return;
             
-            // 1. Resgata os dados da tarefa antiga de volta para os estados de inserção
             $('new-task-input').value = t.text;
             state.tempDate = t.date;
             state.tempProject = t.project || 'No project';
             state.tempTag = t.tag || '';
             state.tempRecurrence = t.recurrence || 'Nenhuma';
             
-            // 2. Atualiza os metadados visuais da barra inferior e o datepicker
             updateBarMetaUi();
             updateSelectedDate(t.date);
             if ($('task-date-picker')) $('task-date-picker').value = t.date;
             
-            // 3. Deleta suavemente a tarefa atual
             t.deleted = true;
             t.deletedAt = Date.now();
             
-            // 4. Abre o painel e foca o cursor automaticamente
             toggleInputPanel(true);
             render();
             pushData();
+        }
+
+        function toggleProjectPin(projName) {
+            if (projName === 'Sem Projeto') return;
+            const p = state.projetos.find(x => x.nome === projName);
+            if (p) {
+                p.fixed = !p.fixed;
+                render();
+                pushData();
+            }
         }
 
         function opTask(id, type, val = '') {
@@ -723,7 +733,6 @@
             });
         }
 
-        // Suporte Mobile Touch
         let touchTargetEl = null;
         function handleTouchStart(e) {
             const item = e.target.closest('.task-item');
@@ -771,13 +780,19 @@
         function render() {
             const container = $('task-list-container'); container.innerHTML = '';
             let activeTasks = state.tasks.filter(t => !t.deleted);
-            let filtered = activeTasks.filter(t => 
-                state.filterType === 'hoje' ? (t.date === getISO(0) && !t.completed) :
-                state.filterType === 'amanha' ? (t.date === getISO(1) && !t.completed) :
-                state.filterType === 'completas' ? t.completed :
-                state.filterType === 'projeto' ? t.project === state.selectedFilterValue :
-                state.filterType === 'tag' ? t.tag === state.selectedFilterValue : true
-            );
+            
+            let filtered = activeTasks.filter(t => {
+                if (state.filterType === 'completas') {
+                    return t.completed;
+                } else {
+                    if (t.completed) return false;
+                    
+                    return state.filterType === 'hoje' ? t.date === getISO(0) :
+                           state.filterType === 'amanha' ? t.date === getISO(1) :
+                           state.filterType === 'projeto' ? t.project === state.selectedFilterValue :
+                           state.filterType === 'tag' ? t.tag === state.selectedFilterValue : true;
+                }
+            });
 
             if(!filtered.length) {
                 container.innerHTML = `<div style="text-align:center; color:var(--md-on-surface-variant); padding:30px 0; font-size:13px; font-weight: 500;">Nenhuma atividade localizada.</div>`;
@@ -790,18 +805,40 @@
                 if (!groups[projKey]) groups[projKey] = []; groups[projKey].push(t);
             });
 
+            // Ordena os nomes dos grupos colocando os fixados (fixed == true) estritamente na frente
+            const sortedGroupNames = Object.keys(groups).sort((a, b) => {
+                const projA = state.projetos.find(p => p.nome === a && !p.deleted);
+                const projB = state.projetos.find(p => p.nome === b && !p.deleted);
+                const aFixed = projA ? !!projA.fixed : false;
+                const bFixed = projB ? !!projB.fixed : false;
+                if (aFixed && !bFixed) return -1;
+                if (!aFixed && bFixed) return 1;
+                return a.localeCompare(b);
+            });
+
             const hojeIso = getISO(0);
 
-            Object.keys(groups).forEach(projName => {
-                const projTasks = groups[projName]; const groupCard = document.createElement('div');
-                groupCard.className = 'project-group-card';
+            sortedGroupNames.forEach(projName => {
+                const projTasks = groups[projName]; 
+                const projObj = state.projetos.find(p => p.nome === projName && !p.deleted);
+                const isFixed = projObj ? !!projObj.fixed : false;
+                
+                const groupCard = document.createElement('div');
+                groupCard.className = `project-group-card ${isFixed ? 'is-fixed' : ''}`;
                 
                 groupCard.innerHTML = `
                     <div class="project-group-header">
-                        <span class="project-group-title-link" onclick="togglePillFilter('projeto', '${projName === 'Sem Projeto' ? 'No project' : projName}')">
-                            ${projName}
-                        </span>
-                        <span class="project-group-count">${projTasks.length}</span>
+                        <div class="project-group-header-left">
+                            <span class="project-group-title-link" onclick="togglePillFilter('projeto', '${projName === 'Sem Projeto' ? 'No project' : projName}')">
+                                ${projName}
+                            </span>
+                            <span class="project-group-count">${projTasks.length}</span>
+                        </div>
+                        ${projName !== 'Sem Projeto' ? `
+                            <button class="btn-project-pin ${isFixed ? 'active' : ''}" onclick="toggleProjectPin('${projName}')" title="${isFixed ? 'Desafixar Projeto' : 'Fixar no Topo'}">
+                                <span class="md-icon">push_pin</span>
+                            </button>
+                        ` : ''}
                     </div>
                     <div class="project-group-tasks-container" style="display:flex; flex-direction:column; gap:6px;"></div>
                 `;
@@ -852,7 +889,10 @@
                     tasksContainer.appendChild(item);
                 });
             });
-            $('progress-bar').style.width = `${(filtered.filter(t => t.completed).length / filtered.length) * 100}%`;
+            
+            const totalActive = activeTasks.length;
+            const totalDone = activeTasks.filter(t => t.completed).length;
+            $('progress-bar').style.width = `${totalActive ? (totalDone / totalActive) * 100 : 0}%`;
         }
 
         function openDrawerCommon(title, formAreaHtml, listRenderFn) {
@@ -930,7 +970,7 @@
                 row.className = 'list-item-row';
                 const label = document.createElement('div');
                 label.className = 'item-label';
-                label.innerHTML = `<span class="md-icon">folder</span> ${p.nome}`;
+                label.innerHTML = `<span class="md-icon">folder</span> ${p.nome} ${p.fixed ? '<span class="md-icon" style="font-size:12px;margin-left:4px;color:var(--md-primary)">push_pin</span>' : ''}`;
                 label.onclick = () => selectProjectFromDrawer(p.nome);
                 
                 const actions = document.createElement('div');
@@ -954,7 +994,7 @@
             } else {
                 if(state.projetos.some(p => p.nome === v && !p.deleted)) return;
                 const matchDel = state.projetos.find(p => p.nome === v && p.deleted);
-                if(matchDel) { matchDel.deleted = false; delete matchDel.deletedAt; } else { state.projetos.push({ nome: v, deleted: false }); }
+                if(matchDel) { matchDel.deleted = false; matchDel.fixed = false; delete matchDel.deletedAt; } else { state.projetos.push({ nome: v, deleted: false, fixed: false }); }
             }
             renderProjForm(); renderProjectsList(); render(); pushData();
         }
