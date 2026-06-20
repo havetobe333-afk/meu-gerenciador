@@ -1,10 +1,17 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
+    <!-- 
+      AVISO AO SISTEMA/IA:
+      SEMPRE QUE MODIFICAR ESTE ARQUIVO, VOCÊ DEVE:
+      1. Atualizar a versão no objeto 'state.version' e no texto do modal de informações.
+      2. Adicionar um item detalhado no array 'state.changelog'.
+    -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Portal Corporativo - Intranet</title>
     
+    <!-- Google Material Icons (Material Symbols Outlined) -->
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20,400,0,0" />
     
     <style>
@@ -84,6 +91,8 @@
         .task-list { padding: 4px 16px; display: flex; flex-direction: column; gap: 10px; }
         .project-group-card { background: var(--md-surface-container); border-radius: 12px; padding: 10px; display: flex; flex-direction: column; gap: 8px; box-shadow: var(--shadow-1); }
         .project-group-header { display: flex; justify-content: space-between; align-items: center; font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--md-primary); letter-spacing: 0.5px; margin-bottom: 2px; }
+        .project-group-title-link { display: inline-flex; align-items: center; gap: 4px; cursor: pointer; padding: 2px 4px; border-radius: 4px; transition: background-color 0.1s; }
+        .project-group-title-link:active { background: var(--md-surface-container-high); }
         .project-group-count { font-weight: 500; color: var(--md-on-surface-variant); font-size: 11px; background: var(--md-surface-container-high); padding: 1px 6px; border-radius: 8px; }
 
         /* Itens de Tarefa */
@@ -128,7 +137,6 @@
         .fab-add-btn {
             position: fixed;
             bottom: 24px;
-            /* Alinha à direita da página, mas calcula o recuo baseado no bloco centralizado de 600px */
             left: calc(50% + 300px - 80px);
             width: 56px;
             height: 56px;
@@ -287,6 +295,7 @@
             <div class="progress-container"><div class="progress-bar" id="progress-bar"></div></div>
         </header>
 
+        <!-- FILTROS COMPACTOS -->
         <div class="date-filters">
             <button class="filter-btn active" id="f-btn-hoje" onclick="setFilter('hoje')" title="Hoje">
                 <span class="md-icon">today</span>
@@ -304,10 +313,12 @@
 
         <main class="task-list" id="task-list-container"></main>
 
+        <!-- BOTÃO FLUTUANTE REPOSICIONADO PARA USABILIDADE DESKTOP -->
         <button class="fab-add-btn" id="fab-trigger" onclick="toggleInputPanel(true)" title="Nova Tarefa">
             <span class="md-icon">add</span>
         </button>
 
+        <!-- CAMADA DE INSERÇÃO -->
         <div class="input-container" id="bottom-input-panel">
             <div class="meta-selectors-row">
                 <button class="selector-btn" onclick="openContextDrawer('projetos')" id="meta-project-label"><span class="md-icon">folder</span> Sem Projeto</button>
@@ -345,11 +356,11 @@
         const $ = id => document.getElementById(id);
 
         let state = {
-            version: "4.5.4",
+            version: "4.5.7",
             changelog: [
-                { v: "4.5.4", date: "19/06/2026", desc: "Reposicionamento do FAB de adição de tarefas no desktop para ficar contido nas margens internas do bloco principal do app, melhorando a ergonomia." },
-                { v: "4.5.3", date: "19/06/2026", desc: "Remoção de artefato visual (tarja laranja) de foco e active nos botões de filtro resetando outline e box-shadow." },
-                { v: "4.5.2", date: "19/06/2026", desc: "Substituição do ícone 'calendar_later' que quebrava como texto puro por 'next_week', nativo do Material Symbols." },
+                { v: "4.5.7", date: "19/06/2026", desc: "Removido o ícone de etiqueta (label) de dentro das pílulas de tags nos cards de tarefas." },
+                { v: "4.5.6", date: "19/06/2026", desc: "Removido o ícone de pasta do cabeçalho do projeto dentro dos cards de tarefas e do filtro de cabeçalho dinâmico para suavizar o visual." },
+                { v: "4.5.5", date: "19/06/2026", desc: "Implementada lógica de alternância (toggle) ao clicar nos cabeçalhos de projetos ou pílulas de tags. Se já estiverem ativos, o filtro é limpo e retorna para 'Hoje'." },
                 { v: "4.4.0", date: "19/06/2026", desc: "Adicionado suporte nativo e mobile para reordenação de tarefas via drag-and-drop (arrastar e soltar) usando uma alça dedicada à esquerda do card." }
             ],
             tasks: [], 
@@ -495,6 +506,14 @@
             if (el) el.innerText = getFriendlyDateText(val);
         }
 
+        function togglePillFilter(type, value) {
+            if (state.filterType === type && state.selectedFilterValue === value) {
+                setFilter('hoje');
+            } else {
+                setFilter(type, value);
+            }
+        }
+
         function setFilter(type, value = '') {
             state.filterType = type; state.selectedFilterValue = value;
             document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
@@ -505,7 +524,7 @@
             else if (type === 'amanha') headingContent = `<span class="md-icon" style="font-size:22px;">next_week</span> Amanhã`;
             else if (type === 'todos') headingContent = `<span class="md-icon" style="font-size:22px;">all_inbox</span> Todos os Itens`;
             else if (type === 'completas') headingContent = `<span class="md-icon" style="font-size:22px;">done_all</span> Completas`;
-            else if (type === 'projeto') headingContent = `<span class="md-icon" style="font-size:22px;">folder</span> ${value}`;
+            else if (type === 'projeto') headingContent = `${value}`;
             else if (type === 'tag') headingContent = `<span class="md-icon" style="font-size:22px;">label</span> ${value}`;
             
             $('current-view-title').innerHTML = headingContent;
@@ -659,7 +678,16 @@
             Object.keys(groups).forEach(projName => {
                 const projTasks = groups[projName]; const groupCard = document.createElement('div');
                 groupCard.className = 'project-group-card';
-                groupCard.innerHTML = `<div class="project-group-header"><span>${projName}</span><span class="project-group-count">${projTasks.length}</span></div><div class="project-group-tasks-container" style="display:flex; flex-direction:column; gap:6px;"></div>`;
+                
+                groupCard.innerHTML = `
+                    <div class="project-group-header">
+                        <span class="project-group-title-link" onclick="togglePillFilter('projeto', '${projName === 'Sem Projeto' ? 'No project' : projName}')">
+                            ${projName}
+                        </span>
+                        <span class="project-group-count">${projTasks.length}</span>
+                    </div>
+                    <div class="project-group-tasks-container" style="display:flex; flex-direction:column; gap:6px;"></div>
+                `;
                 container.appendChild(groupCard);
                 const tasksContainer = groupCard.querySelector('.project-group-tasks-container');
 
@@ -690,7 +718,7 @@
                                 `<span class="task-text" onclick="state.editingTaskId='${t.id}'; render(); $('inline-edit-${t.id}').focus();">${t.text}</span>`
                             }
                             <div class="task-meta-clickable-zone">
-                                ${t.tag && tTag ? `<span class="clickable-pill tag-pill" style="background:${tTag.cor}; color:#fff;" onclick="setFilter('tag', '${t.tag}')"><span class="md-icon" style="margin-right:2px;">label</span>${t.tag}</span>` : ''}
+                                ${t.tag && tTag ? `<span class="clickable-pill tag-pill" style="background:${tTag.cor}; color:#fff;" onclick="togglePillFilter('tag', '${t.tag}')">${t.tag}</span>` : ''}
                                 
                                 <span class="clickable-pill date-pill">
                                     <span class="task-card-date-text">${getFriendlyDateText(t.date)}</span>
