@@ -28,6 +28,8 @@
         
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Roboto', system-ui, -apple-system, sans-serif; -webkit-tap-highlight-color: transparent; }
         body { background: var(--md-surface); color: var(--md-on-surface); min-height: 100vh; display: flex; flex-direction: column; }
+        
+        /* Container centralizado */
         #app-container { width: 100%; max-width: 600px; margin: 0 auto; padding-bottom: 120px; position: relative; }
         
         /* Classe base para ícones do Google Fonts */
@@ -65,7 +67,7 @@
         .filter-btn { background: var(--md-surface); border: 1px solid var(--md-outline); width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s; color: var(--md-on-surface-variant); flex-shrink: 0; outline: none; }
         .filter-btn .md-icon { font-size: 22px; }
         
-        /* CORREÇÃO DO ESTADO ATIVO E FOCO PARA ELIMINAR MANCHAS */
+        /* Estado ativo e foco nos filtros */
         .filter-btn.active { 
             background: var(--md-primary-container) !important; 
             color: var(--md-on-primary-container) !important; 
@@ -78,13 +80,13 @@
             box-shadow: none !important;
         }
         
-        /* Listas e Cards Material - ESTILO MAGRINHO */
+        /* Listas e Cards Material */
         .task-list { padding: 4px 16px; display: flex; flex-direction: column; gap: 10px; }
         .project-group-card { background: var(--md-surface-container); border-radius: 12px; padding: 10px; display: flex; flex-direction: column; gap: 8px; box-shadow: var(--shadow-1); }
         .project-group-header { display: flex; justify-content: space-between; align-items: center; font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--md-primary); letter-spacing: 0.5px; margin-bottom: 2px; }
         .project-group-count { font-weight: 500; color: var(--md-on-surface-variant); font-size: 11px; background: var(--md-surface-container-high); padding: 1px 6px; border-radius: 8px; }
 
-        /* Itens de Tarefa Compactos e Reordenáveis */
+        /* Itens de Tarefa */
         .task-item { background: var(--md-surface); border: 1px solid var(--md-surface-variant); border-radius: 8px; padding: 8px 10px; display: flex; align-items: center; gap: 10px; transition: background-color 0.2s, opacity 0.2s; position: relative; }
         .task-item.dragging { opacity: 0.4; background: var(--md-surface-container-high); }
         .task-item.drag-over { border-top: 2px solid var(--md-primary); }
@@ -93,7 +95,7 @@
         .drag-handle { color: var(--md-outline); cursor: grab; display: flex; align-items: center; justify-content: center; padding: 4px 2px; user-select: none; touch-action: none; }
         .drag-handle:active { cursor: grabbing; color: var(--md-primary); }
         
-        /* Checkbox Material Estilizado */
+        /* Checkbox Material */
         .task-checkbox { appearance: none; -webkit-appearance: none; width: 18px; height: 18px; border: 2px solid var(--md-outline); border-radius: 4px; cursor: pointer; flex-shrink: 0; display: inline-flex; align-items: center; justify-content: center; transition: all 0.1s; }
         .task-checkbox:checked { background: var(--md-primary); border-color: var(--md-primary); }
         .task-checkbox:checked::after { content: "✓"; color: var(--md-on-primary); font-size: 11px; font-weight: bold; }
@@ -103,13 +105,13 @@
         .task-item.completed .task-text { text-decoration: line-through; color: var(--md-on-surface-variant); opacity: 0.6; }
         .task-edit-inline-input { width: 100%; border: none; border-bottom: 2px solid var(--md-primary); padding: 2px 0; font-size: 15px; outline: none; background: transparent; color: var(--md-on-surface); }
         
-        /* Badges e Pílulas Material */
+        /* Badges e Pílulas */
         .task-meta-clickable-zone { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
         .clickable-pill { position: relative; font-size: 10px; padding: 2px 8px; border-radius: 6px; font-weight: 500; cursor: pointer; border: 1px solid transparent; display: inline-flex; align-items: center; gap: 4px; }
         .clickable-pill.tag-pill { filter: saturate(0.8) brightness(0.9); font-weight: 600; }
         .clickable-pill .md-icon { font-size: 11px; }
         
-        /* Pílula de Data da Tarefa - Fina e Alinhada */
+        /* Pílula de Data */
         .clickable-pill.date-pill { background: transparent; padding: 0; border-radius: 0; display: inline-flex; align-items: center; gap: 4px; user-select: none; }
         .task-card-date-text { font-size: 11px; color: var(--md-on-primary-container); font-weight: 500; background: var(--md-primary-container); padding: 3px 6px; border-radius: 5px; }
         .task-card-date-icon { font-size: 13px; display: inline-flex; align-items: center; justify-content: center; color: var(--md-primary); pointer-events: none; }
@@ -122,11 +124,12 @@
         .btn-inline-edit { background: none; border: none; color: var(--md-primary); font-size: 11px; font-weight: 500; cursor: pointer; padding: 2px 6px; border-radius: 4px; }
         .btn-inline-edit:active { background: var(--md-primary-container); }
 
-        /* BOTÃO FLUTUANTE (FAB) PARA ADICIONAR TAREFA */
+        /* BOTÃO FLUTUANTE (FAB) - ADAPTADO PARA DESKTOP DENTRO DO BLOCO CONTEÚDO */
         .fab-add-btn {
             position: fixed;
             bottom: 24px;
-            right: 24px;
+            /* Alinha à direita da página, mas calcula o recuo baseado no bloco centralizado de 600px */
+            left: calc(50% + 300px - 80px);
             width: 56px;
             height: 56px;
             background: var(--md-primary-container);
@@ -139,7 +142,7 @@
             justify-content: center;
             cursor: pointer;
             z-index: 400;
-            transition: transform 0.2s, background-color 0.2s;
+            transition: transform 0.2s, background-color 0.2s, left 0.1s;
         }
         .fab-add-btn .md-icon { font-size: 24px; font-weight: bold; }
         .fab-add-btn:active { transform: scale(0.95); background: var(--md-primary); color: var(--md-on-primary); }
@@ -251,6 +254,14 @@
         .changelog-item { padding-bottom: 8px; border-bottom: 1px dashed var(--md-surface-variant); line-height: 1.4; color: var(--md-on-surface-variant); }
         .changelog-version { font-weight: 700; color: var(--md-primary); }
 
+        /* Ajustes responsivos para telas menores e smartphones */
+        @media screen and (max-width: 640px) {
+            .fab-add-btn {
+                left: auto;
+                right: 24px;
+            }
+        }
+
         @media screen and (max-width: 480px) {
             #app-container { padding-bottom: 120px; }
             .input-container { padding: 14px 16px 16px 16px; gap: 10px; }
@@ -334,11 +345,11 @@
         const $ = id => document.getElementById(id);
 
         let state = {
-            version: "4.5.3",
+            version: "4.5.4",
             changelog: [
+                { v: "4.5.4", date: "19/06/2026", desc: "Reposicionamento do FAB de adição de tarefas no desktop para ficar contido nas margens internas do bloco principal do app, melhorando a ergonomia." },
                 { v: "4.5.3", date: "19/06/2026", desc: "Remoção de artefato visual (tarja laranja) de foco e active nos botões de filtro resetando outline e box-shadow." },
                 { v: "4.5.2", date: "19/06/2026", desc: "Substituição do ícone 'calendar_later' que quebrava como texto puro por 'next_week', nativo do Material Symbols." },
-                { v: "4.5.1", date: "19/06/2026", desc: "Correção de layout e alinhamento dos botões de filtro com apenas ícones para evitar quebras visuais e aspecto bagunçado." },
                 { v: "4.4.0", date: "19/06/2026", desc: "Adicionado suporte nativo e mobile para reordenação de tarefas via drag-and-drop (arrastar e soltar) usando uma alça dedicada à esquerda do card." }
             ],
             tasks: [], 
