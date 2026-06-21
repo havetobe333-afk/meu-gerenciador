@@ -194,12 +194,13 @@
         .fab-add-btn .md-icon { font-size: 24px; font-weight: bold; }
         .fab-add-btn:active { transform: scale(0.95); background: var(--md-primary); }
         
-        /* LAYER DE TELA INTEIRA (MODAL COMPLETO) PARA INSERÇÃO/EDIÇÃO */
+        /* LAYER DE INSERÇÃO/EDIÇÃO CORRIGIDO PARA DESKTOP */
         .input-container { 
             position: fixed; 
             top: 0; 
-            left: 0; 
-            width: 100vw;
+            left: 50%; 
+            width: 100%;
+            max-width: 600px; /* Alinhado exatamente com o corpo da lista de tarefas */
             height: 100vh;
             background: var(--md-surface); 
             padding: 20px; 
@@ -207,11 +208,13 @@
             flex-direction: column; 
             gap: 16px; 
             z-index: 2000;
-            transform: translateY(100%);
+            transform: translate(-50%, 100%);
             transition: transform 0.28s cubic-bezier(0.2, 0.8, 0.3, 1);
+            border-left: 1px solid var(--md-surface-variant);
+            border-right: 1px solid var(--md-surface-variant);
         }
         .input-container.visible {
-            transform: translateY(0);
+            transform: translate(-50%, 0);
         }
         
         /* Grid de opções estilo barra horizontal/vertical */
@@ -303,7 +306,7 @@
         .changelog-item { padding-bottom: 8px; border-bottom: 1px dashed var(--md-outline); line-height: 1.4; color: var(--md-on-surface-variant); }
         .changelog-version { font-weight: 700; color: var(--md-primary); }
 
-        /* NOVO MODAL DE CALENDÁRIO CUSTOMIZADO (MATERIAL POP-UP) */
+        /* POP-UP DE CALENDÁRIO CUSTOMIZADO (MATERIAL POP-UP) */
         .calendar-popup-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0, 0, 0, 0.5); z-index: 5000; display: none; align-items: center; justify-content: center; padding: 20px; }
         .calendar-popup { background: var(--md-surface); border-radius: 16px; width: 100%; max-width: 320px; box-shadow: var(--shadow-2); overflow: hidden; display: flex; flex-direction: column; }
         .calendar-popup-header { background: var(--md-primary); color: var(--md-on-primary); padding: 16px; }
@@ -332,6 +335,7 @@
         /* Ajustes responsivos */
         @media screen and (max-width: 640px) {
             .fab-add-btn { left: auto; right: 24px; }
+            .input-container { border-left: none; border-right: none; }
         }
         @media screen and (max-width: 480px) {
             .task-text-row {
@@ -473,10 +477,10 @@
         const $ = id => document.getElementById(id);
 
         let state = {
-            version: "4.11.9",
+            version: "4.11.10",
             changelog: [
-                { v: "4.11.9", date: "21/06/2026", desc: "Calendário Customizado em Pop-Up: Substituído o seletor nativo por um componente Material estruturado de alto contraste, exibindo uma cortina escura de fundo e possibilitando navegação entre os meses." },
-                { v: "4.11.8", date: "21/06/2026", desc: "Painel reformulado para Layer de Tela Inteira: O rascunho e a edição agora se abrem em uma tela cheia imersiva, com campo de texto expandido." }
+                { v: "4.11.10", date: "21/06/2026", desc: "Ajuste de Responsividade: Limitada a largura do layer de criação/edição no desktop para bater com os 600px do app-container." },
+                { v: "4.11.9", date: "21/06/2026", desc: "Calendário Customizado em Pop-Up: Substituído o seletor nativo por um componente Material estruturado de alto contraste, exibindo uma cortina escura de fundo e possibilitando navegação entre os meses." }
             ],
             tasks: [], 
             projetos: [{ nome: "Trabalho", deleted: false, fixed: false }, { nome: "Estudos", deleted: false, fixed: false }],
@@ -485,9 +489,9 @@
         };
 
         let dragSrcEl = null;
-        let calCurrentViewDate = new Date(); // Controla o mês em exibição no modal
-        let calSelectedDateStr = '';        // Controla o dia selecionado temporariamente no modal
-        let calTargetMode = 'layer';        // Identifica se o alvo é o painel principal ou uma tarefa direta
+        let calCurrentViewDate = new Date();
+        let calSelectedDateStr = '';
+        let calTargetMode = 'layer';
         let calTargetTaskId = null;
 
         const getISOStringLocal = (dateObj) => {
@@ -777,7 +781,7 @@
             render(); pushData();
         }
 
-        /* MECANISMO COMPLETO DE MÓDULO CALENDÁRIO MATERIAL CUSTOMIZADO */
+        /* CALENDÁRIO CUSTOMIZADO */
         function openCalendarPopup(mode, taskId = null) {
             calTargetMode = mode;
             calTargetTaskId = taskId;
@@ -824,7 +828,6 @@
             
             $('cal-nav-title').innerText = `${mesesExtenso[ms]} ${yr}`;
             
-            // Renderiza cabeçalho interno do PopUp baseado no dia selecionado
             const activeSelDate = new Date(calSelectedDateStr + 'T00:00:00');
             $('cal-header-year').innerText = activeSelDate.getFullYear();
             $('cal-header-fulldate').innerText = `${diasSemanaExtenso[activeSelDate.getDay()]}, ${activeSelDate.getDate()} de ${mesesExtenso[activeSelDate.getMonth()].substr(0,3)}`;
@@ -836,14 +839,12 @@
             const totalDiasNoMes = new Date(yr, ms + 1, 0).getDate();
             const hojeIso = getISOStringLocal(new Date());
             
-            // Células vazias iniciais
             for(let i = 0; i < primeiroDiaMesaSemana; i++) {
                 const emptyCell = document.createElement('div');
                 emptyCell.className = 'calendar-day-cell empty';
                 gridContainer.appendChild(emptyCell);
             }
             
-            // Dias do mês reais
             for(let d = 1; d <= totalDiasNoMes; d++) {
                 const currentStr = `${yr}-${String(ms + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
                 const dayCell = document.createElement('div');
