@@ -171,19 +171,6 @@
         .task-item.completed .right-date-pilling-zone { opacity: 0.5; }
         .right-date-icon { display: inline-flex; align-items: center; justify-content: center; opacity: 0.8; }
         .right-date-icon .md-icon { font-size: 15px !important; }
-        
-        /* Input invisível expandido para alteração rápida */
-        .inline-date-picker-overlay { 
-            position: absolute; 
-            top: 0; 
-            left: 0; 
-            width: 100%; 
-            height: 100%; 
-            opacity: 0.01; 
-            cursor: pointer; 
-            z-index: 3;
-            font-size: 16px;
-        }
 
         /* BOTÃO FLUTUANTE */
         .fab-add-btn {
@@ -207,92 +194,80 @@
         .fab-add-btn .md-icon { font-size: 24px; font-weight: bold; }
         .fab-add-btn:active { transform: scale(0.95); background: var(--md-primary); }
         
-        /* BARRA INFERIOR DE INSERÇÃO INTEGRADA WITH ICONES COMPACTOS */
+        /* LAYER DE TELA INTEIRA (MODAL COMPLETO) PARA INSERÇÃO/EDIÇÃO */
         .input-container { 
             position: fixed; 
-            bottom: 0; 
-            left: 50%; 
-            transform: translateX(-50%) translateY(100%); 
-            width: 100%; 
-            max-width: 600px; 
-            background: var(--md-surface-container); 
-            padding: 12px 16px 16px 16px; 
-            border-top: 1px solid var(--md-outline); 
+            top: 0; 
+            left: 0; 
+            width: 100vw;
+            height: 100vh;
+            background: var(--md-surface); 
+            padding: 20px; 
             display: flex; 
             flex-direction: column; 
-            gap: 8px; 
-            box-shadow: var(--shadow-2); 
-            z-index: 500;
-            transition: transform 0.25s cubic-bezier(0.2, 0.8, 0.4, 1);
+            gap: 16px; 
+            z-index: 2000;
+            transform: translateY(100%);
+            transition: transform 0.28s cubic-bezier(0.2, 0.8, 0.3, 1);
         }
         .input-container.visible {
-            transform: translateX(-50%) translateY(0);
+            transform: translateY(0);
         }
         
-        .meta-selectors-row { display: flex; align-items: center; gap: 8px; overflow-x: auto; padding-bottom: 2px; scrollbar-width: none; }
-        .meta-selectors-row::-webkit-scrollbar { display: none; }
+        /* Grid de opções estilo barra horizontal/vertical */
+        .meta-selectors-row { display: flex; flex-direction: column; gap: 10px; width: 100%; }
         
-        /* Seletores baseados estritamente em Ícones Material M3 Compactos */
-        .selector-btn { background: var(--md-surface); border: 1px solid var(--md-outline); width: 34px; height: 34px; border-radius: 8px; display: inline-flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0; transition: all 0.2s; position: relative; }
-        .selector-btn .md-icon { font-size: 18px; color: var(--md-on-surface-variant); }
-        .selector-btn:active { background: var(--md-surface-container-high); }
-        
-        /* Estado Ativo/Preenchido do Seletor Compacto */
-        .selector-btn.has-value { border-color: var(--md-primary); background: #eff6ff; }
-        .selector-btn.has-value .md-icon { color: var(--md-primary); }
-        
-        /* Botão específico para deletar a tarefa selecionada na barra inferior */
-        .btn-meta-delete { border-color: var(--error-color); background: #fef2f2; display: none; }
-        .btn-meta-delete .md-icon { color: var(--error-color); }
-        .btn-meta-delete:active { background: var(--error-container); }
-
-        /* Pequeno balão informativo complementar ao lado dos ícones */
-        .meta-badge-text { font-size: 11px; font-weight: 700; color: var(--md-primary); background: #eff6ff; padding: 4px 8px; border-radius: 6px; border: 1px solid var(--md-surface-variant); display: none; max-width: 120px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-
-        .main-input-block { display: flex; align-items: center; gap: 10px; width: 100%; }
-        .input-row { position: relative; display: flex; align-items: center; flex-grow: 1; }
-        
-        .task-input { 
-            width: 100%; 
-            border: 1px solid var(--md-outline); 
-            background: var(--md-surface); 
-            padding: 10px 95px 10px 14px; 
-            border-radius: 10px; 
-            font-size: 14px; 
-            color: var(--md-on-surface);
-            outline: none; 
-            transition: border-color 0.2s;
-        }
-        .task-input:focus { border-color: var(--md-primary); border-width: 2px; padding-bottom: 9px; padding-top: 9px; }
-        
-        .datepicker-wrapper { position: absolute; right: 10px; display: inline-flex; align-items: center; gap: 4px; cursor: pointer; user-select: none; }
-        .datepicker-text { font-size: 11px; color: var(--md-on-surface); font-weight: 600; background: var(--md-surface-container-high); padding: 3px 6px; border-radius: 5px; border: 1px solid var(--md-surface-variant); }
-        .datepicker-icon { font-size: 15px; display: inline-flex; align-items: center; justify-content: center; color: var(--md-primary); pointer-events: none; }
-        .datepicker-wrapper input[type="date"] { position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0.01; cursor: pointer; z-index: 3; }
-
-        .action-buttons-group { display: flex; gap: 6px; align-items: center; }
-
-        .btn-cancel-task {
-            background: none;
-            border: 1px solid var(--md-outline);
-            color: var(--md-on-surface-variant);
-            width: 38px;
-            height: 38px;
-            border-radius: 10px;
+        .selector-row-item {
             display: flex;
             align-items: center;
-            justify-content: center;
+            gap: 12px;
+            background: var(--md-surface-container);
+            padding: 12px 14px;
+            border-radius: 12px;
+            border: 1px solid var(--md-surface-variant);
             cursor: pointer;
+            transition: background-color 0.15s;
         }
-        .btn-cancel-task:active { background: var(--md-surface-container-high); }
+        .selector-row-item:active { background: var(--md-surface-container-high); }
+
+        .selector-btn-icon { width: 32px; height: 32px; display: inline-flex; align-items: center; justify-content: center; color: var(--md-on-surface-variant); }
+        .selector-btn-icon .md-icon { font-size: 20px; }
+        .selector-row-label { font-size: 14px; font-weight: 600; color: var(--md-on-surface); flex-grow: 1; }
+
+        /* Estado Ativo/Preenchido do Seletor */
+        .meta-badge-text { font-size: 12px; font-weight: 700; color: var(--md-primary); background: #eff6ff; padding: 4px 10px; border-radius: 8px; border: 1px solid #bfdbfe; max-width: 150px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        
+        /* Botão específico para deletar a tarefa selecionada na barra inferior */
+        .btn-meta-delete { border: 1px solid var(--error-color); background: #fef2f2; width: 100%; height: 48px; border-radius: 12px; display: none; align-items: center; justify-content: center; gap: 8px; font-size: 14px; font-weight: 700; color: var(--error-color); cursor: pointer; margin-top: auto; }
+        .btn-meta-delete .md-icon { font-size: 18px; }
+        .btn-meta-delete:active { background: var(--error-container); }
+
+        .task-input { 
+            width: 100%; 
+            height: 110px;
+            border: 1px solid var(--md-surface-variant); 
+            background: var(--md-surface-container); 
+            padding: 14px; 
+            border-radius: 12px; 
+            font-size: 15px; 
+            color: var(--md-on-surface);
+            outline: none; 
+            resize: none;
+            font-weight: 500;
+            transition: border-color 0.2s;
+        }
+        .task-input:focus { border-color: var(--md-primary); }
+        
+        .datepicker-wrapper { position: relative; display: inline-flex; align-items: center; user-select: none; }
+        .datepicker-text { font-size: 12px; color: var(--md-primary); font-weight: 700; background: #eff6ff; padding: 4px 10px; border-radius: 8px; border: 1px solid #bfdbfe; }
 
         .blue-add-action-btn { 
             background: var(--md-primary); 
             color: var(--md-on-primary); 
             border: none; 
-            width: 38px; 
-            height: 38px; 
-            border-radius: 10px; 
+            width: 40px; 
+            height: 40px; 
+            border-radius: 50%; 
             display: flex; 
             align-items: center; 
             justify-content: center; 
@@ -305,8 +280,8 @@
         .blue-add-action-btn:active { opacity: 0.9; transform: scale(0.95); box-shadow: none; }
         
         /* DRAWERS MATERIAL M3 BOTTOM SHEET */
-        .drawer-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); z-index: 1000; display: none; }
-        .drawer { position: fixed; bottom: 0; left: 50%; width: 100%; max-width: 600px; background: var(--md-surface-container); border-radius: 16px 16px 0 0; padding: 12px 14px; z-index: 1001; transform: translate(-50%, 100%); transition: transform 0.25s cubic-bezier(0.2, 0.8, 0.4, 1); box-shadow: var(--shadow-2); border-top: 1px solid var(--md-outline); }
+        .drawer-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); z-index: 3000; display: none; }
+        .drawer { position: fixed; bottom: 0; left: 50%; width: 100%; max-width: 600px; background: var(--md-surface-container); border-radius: 16px 16px 0 0; padding: 12px 14px; z-index: 3001; transform: translate(-50%, 100%); transition: transform 0.25s cubic-bezier(0.2, 0.8, 0.4, 1); box-shadow: var(--shadow-2); border-top: 1px solid var(--md-outline); }
         .drawer.open { transform: translate(-50%, 0); }
         .drawer-handle { width: 28px; height: 4px; background: var(--md-outline); opacity: 0.5; border-radius: 2px; margin: 0 auto 10px auto; }
         .drawer-title { font-size: 13px; font-weight: 700; margin-bottom: 8px; text-align: center; color: var(--md-on-surface); text-transform: uppercase; letter-spacing: 0.3px; }
@@ -328,17 +303,37 @@
         .changelog-item { padding-bottom: 8px; border-bottom: 1px dashed var(--md-outline); line-height: 1.4; color: var(--md-on-surface-variant); }
         .changelog-version { font-weight: 700; color: var(--md-primary); }
 
+        /* NOVO MODAL DE CALENDÁRIO CUSTOMIZADO (MATERIAL POP-UP) */
+        .calendar-popup-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0, 0, 0, 0.5); z-index: 5000; display: none; align-items: center; justify-content: center; padding: 20px; }
+        .calendar-popup { background: var(--md-surface); border-radius: 16px; width: 100%; max-width: 320px; box-shadow: var(--shadow-2); overflow: hidden; display: flex; flex-direction: column; }
+        .calendar-popup-header { background: var(--md-primary); color: var(--md-on-primary); padding: 16px; }
+        .calendar-popup-year { font-size: 12px; font-weight: 500; opacity: 0.8; margin-bottom: 2px; letter-spacing: 0.5px; }
+        .calendar-popup-full-date { font-size: 20px; font-weight: 700; }
+        .calendar-popup-body { padding: 12px; display: flex; flex-direction: column; gap: 8px; }
+        .calendar-nav-row { display: flex; align-items: center; justify-content: space-between; padding: 0 4px; }
+        .calendar-nav-title { font-size: 14px; font-weight: 700; color: var(--md-on-surface); }
+        .calendar-nav-btn { background: none; border: none; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--md-on-surface-variant); }
+        .calendar-nav-btn:active { background: var(--md-surface-container-high); }
+        .calendar-nav-btn .md-icon { font-size: 20px; }
+        
+        .calendar-grid-weekdays, .calendar-grid-days { display: grid; grid-template-columns: repeat(7, 1fr); text-align: center; }
+        .calendar-weekday { font-size: 11px; font-weight: 700; color: var(--md-outline); padding: 6px 0; }
+        .calendar-day-cell { font-size: 13px; font-weight: 600; height: 36px; display: flex; align-items: center; justify-content: center; cursor: pointer; border-radius: 50%; color: var(--md-on-surface); position: relative; margin: 1px; user-select: none; }
+        .calendar-day-cell:active { background: var(--md-surface-container-high); }
+        .calendar-day-cell.empty { cursor: default; }
+        .calendar-day-cell.empty:active { background: none; }
+        .calendar-day-cell.selected { background: var(--md-primary) !important; color: var(--md-on-primary) !important; }
+        .calendar-day-cell.today-marker::after { content: ''; position: absolute; bottom: 4px; width: 4px; height: 4px; background: currentColor; border-radius: 50%; }
+        
+        .calendar-popup-actions { display: flex; justify-content: flex-end; gap: 8px; padding: 8px 12px 12px 12px; }
+        .calendar-action-btn { background: none; border: none; padding: 8px 12px; font-size: 13px; font-weight: 700; color: var(--md-primary); cursor: pointer; border-radius: 6px; }
+        .calendar-action-btn:active { background: var(--md-surface-container); }
+
         /* Ajustes responsivos */
         @media screen and (max-width: 640px) {
             .fab-add-btn { left: auto; right: 24px; }
         }
         @media screen and (max-width: 480px) {
-            #app-container { padding-bottom: 120px; }
-            .input-container { padding: 14px 16px 16px 16px; gap: 10px; }
-            .task-input { padding: 12px 100px 12px 14px; font-size: 15px; border-radius: 12px; }
-            .main-input-block { gap: 8px; }
-            
-            /* REORGANIZAÇÃO EM COLUNA: Texto por cima, tag por baixo */
             .task-text-row {
                 flex-direction: column;
                 align-items: flex-start;
@@ -390,41 +385,51 @@
         </button>
 
         <div class="input-container" id="bottom-input-panel">
-            <div class="meta-selectors-row">
-                <button class="selector-btn" onclick="openContextDrawer('projetos')" id="meta-project-btn" title="Definir Projeto">
-                    <span class="md-icon">folder</span>
+            <div style="display: flex; align-items: center; justify-content: space-between; padding-bottom: 4px;">
+                <button onclick="toggleInputPanel(false)" style="background: none; border: none; cursor: pointer; color: var(--md-on-surface-variant); display: flex; align-items: center;" title="Cancelar">
+                    <span class="md-icon" style="font-size: 24px;">close</span>
                 </button>
-                <div class="meta-badge-text" id="badge-project-text"></div>
-
-                <button class="selector-btn" onclick="openContextDrawer('tags')" id="meta-tag-btn" title="Definir Tag">
-                    <span class="md-icon">label</span>
-                </button>
-                <div class="meta-badge-text" id="badge-tag-text"></div>
-
-                <button class="selector-btn" onclick="openContextDrawer('recorrencia')" id="meta-recurrence-btn" title="Definir Recorrência">
-                    <span class="md-icon">repeat</span>
-                </button>
-                <div class="meta-badge-text" id="badge-recurrence-text"></div>
-                
-                <button class="selector-btn btn-meta-delete" id="meta-delete-btn" onclick="triggerDeleteSelectedTask()" title="Deletar Tarefa Ativa">
-                    <span class="md-icon">delete</span>
+                <div id="layer-title" style="font-size: 16px; font-weight: 700; color: var(--md-on-surface);">Nova Atividade</div>
+                <button class="blue-add-action-btn" id="main-action-trigger-btn" onclick="triggerSubmitTask()" title="Confirmar e Salvar">
+                    <span class="md-icon">check</span>
                 </button>
             </div>
             
-            <div class="main-input-block">
-                <div class="input-row">
-                    <input type="text" class="task-input" id="new-task-input" placeholder="Nova atividade..." onkeypress="handleInputKey(event)">
-                    <div class="datepicker-wrapper" id="datepicker-trigger-zone">
+            <textarea class="task-input" id="new-task-input" placeholder="O que precisa ser feito?" onkeypress="handleInputKey(event)"></textarea>
+            
+            <div style="font-size: 11px; font-weight: 700; color: var(--md-outline); text-transform: uppercase; letter-spacing: 0.5px; margin-top: 4px;">Configurações da Tarefa</div>
+
+            <div class="meta-selectors-row">
+                <div class="selector-row-item" onclick="openCalendarPopup('layer')">
+                    <div class="selector-btn-icon"><span class="md-icon">calendar_today</span></div>
+                    <div class="selector-row-label">Data Limite</div>
+                    <div class="datepicker-wrapper">
                         <span class="datepicker-text" id="meta-date-text">Hoje</span>
-                        <span class="datepicker-icon class-icon-adjust"><span class="md-icon">calendar_today</span></span>
-                        <input type="date" id="task-date-picker" onchange="updateSelectedDate(this.value)">
                     </div>
                 </div>
-                <div class="action-buttons-group">
-                    <button class="btn-cancel-task" onclick="toggleInputPanel(false)" title="Cancelar"><span class="md-icon">close</span></button>
-                    <button class="blue-add-action-btn" id="main-action-trigger-btn" onclick="triggerSubmitTask()" title="Confirmar e Salvar"><span class="md-icon">check</span></button>
+
+                <div class="selector-row-item" onclick="openContextDrawer('projetos')">
+                    <div class="selector-btn-icon" id="meta-project-btn"><span class="md-icon">folder</span></div>
+                    <div class="selector-row-label">Projeto</div>
+                    <div class="meta-badge-text" id="badge-project-text">Nenhum</div>
+                </div>
+
+                <div class="selector-row-item" onclick="openContextDrawer('tags')">
+                    <div class="selector-btn-icon" id="meta-tag-btn"><span class="md-icon">label</span></div>
+                    <div class="selector-row-label">Etiqueta / Tag</div>
+                    <div class="meta-badge-text" id="badge-tag-text">Nenhuma</div>
+                </div>
+
+                <div class="selector-row-item" onclick="openContextDrawer('recorrencia')">
+                    <div class="selector-btn-icon" id="meta-recurrence-btn"><span class="md-icon">repeat</span></div>
+                    <div class="selector-row-label">Repetição</div>
+                    <div class="meta-badge-text" id="badge-recurrence-text">Nenhuma</div>
                 </div>
             </div>
+            
+            <button class="btn-meta-delete" id="meta-delete-btn" onclick="triggerDeleteSelectedTask()">
+                <span class="md-icon">delete</span> Excluir esta Atividade
+            </button>
         </div>
     </div>
 
@@ -436,20 +441,42 @@
         <div class="drawer-list-items items-list-scroll" id="drawer-list-items"></div>
     </div>
 
+    <div class="calendar-popup-overlay" id="calendar-popup-overlay" onclick="closeCalendarPopup()">
+        <div class="calendar-popup" id="calendar-popup-box" onclick="event.stopPropagation()">
+            <div class="calendar-popup-header">
+                <div class="calendar-popup-year" id="cal-header-year">2026</div>
+                <div class="calendar-popup-full-date" id="cal-header-fulldate">Dom, 21 de Jun</div>
+            </div>
+            <div class="calendar-popup-body">
+                <div class="calendar-nav-row">
+                    <button class="calendar-nav-btn" onclick="navigateCalendarMonth(-1)"><span class="md-icon">chevron_left</span></button>
+                    <div class="calendar-nav-title" id="cal-nav-title">Junho 2026</div>
+                    <button class="calendar-nav-btn" onclick="navigateCalendarMonth(1)"><span class="md-icon">chevron_right</span></button>
+                </div>
+                <div class="calendar-grid-weekdays">
+                    <div class="calendar-weekday">D</div><div class="calendar-weekday">S</div><div class="calendar-weekday">T</div>
+                    <div class="calendar-weekday">Q</div><div class="calendar-weekday">Q</div><div class="calendar-weekday">S</div>
+                    <div class="calendar-weekday">S</div>
+                </div>
+                <div class="calendar-grid-days" id="calendar-days-grid"></div>
+            </div>
+            <div class="calendar-popup-actions">
+                <button class="calendar-action-btn" onclick="closeCalendarPopup()">Cancelar</button>
+                <button class="calendar-action-btn" onclick="confirmCalendarSelection()">OK</button>
+            </div>
+        </div>
+    </div>
+
     <script>
         const BIN_ID = '6937666aae596e708f8c6683', API_KEY = '$2a$10$V0UFHZ8bHEdDdwGEpXjEYeR1.ZL9oIiMUY//5YbHFHc7yjai/WHpy';
         const JSONBIN_URL = `https://api.jsonbin.io/v3/b/${BIN_ID}`;
         const $ = id => document.getElementById(id);
 
         let state = {
-            version: "4.11.7",
+            version: "4.11.9",
             changelog: [
-                { v: "4.11.7", date: "21/06/2026", desc: "Adicionado botão de exclusão rápido (ícone de lixeira) na barra inferior de inserção, localizado estrategicamente ao lado dos seletores de metadados, permitindo apagar a tarefa ativa em edição com um único toque." },
-                { v: "4.11.6", date: "21/06/2026", desc: "Mecanismo de preservação de dados ativado: Modificadas as funções deleteProj e deleteTag para que, ao excluir um projeto ou tag, as tarefas correspondentes nunca sejam deletadas; em vez disso, elas mantêm seu status ativo e caem automaticamente na listagem Sem Projeto." },
-                { v: "4.11.5", date: "21/06/2026", desc: "Corregido erro de inversão temporal: Ajustado o algoritmo estrito de ordenação hierárquica na exibição 'Todos os Itens' para certificar que a linha do tempo cronológica linear (Hoje > Amanhã) se sobressaia às tags." },
-                { v: "4.11.4", date: "21/06/2026", desc: "Ação de clique adicionada ao indicador de sincronização corporativo (.sync-status): Ao clicar/tocar no status, a página é recarregada de forma limpa, servindo como um botão de refresh manual." },
-                { v: "4.11.3", date: "21/06/2026", desc: "Prioridade para tarefas atrasadas adicionada: Atividades com data vencida agora rompem a regra geral e ganham o topo absoluto de cada bloco de projeto. A ordenação secundária por tags idênticas se preserva em ambos os sub-blocos (vencidas e normais)." },
-                { v: "4.11.2", date: "20/06/2026", desc: "Ordenação por tags ativada: Dentro de cada grupo de projeto, as tarefas agora são agrupadas por suas respectivas tags. Tarefas com as mesmas marcas ficam juntas automaticamente." }
+                { v: "4.11.9", date: "21/06/2026", desc: "Calendário Customizado em Pop-Up: Substituído o seletor nativo por um componente Material estruturado de alto contraste, exibindo uma cortina escura de fundo e possibilitando navegação entre os meses." },
+                { v: "4.11.8", date: "21/06/2026", desc: "Painel reformulado para Layer de Tela Inteira: O rascunho e a edição agora se abrem em uma tela cheia imersiva, com campo de texto expandido." }
             ],
             tasks: [], 
             projetos: [{ nome: "Trabalho", deleted: false, fixed: false }, { nome: "Estudos", deleted: false, fixed: false }],
@@ -458,18 +485,17 @@
         };
 
         let dragSrcEl = null;
+        let calCurrentViewDate = new Date(); // Controla o mês em exibição no modal
+        let calSelectedDateStr = '';        // Controla o dia selecionado temporariamente no modal
+        let calTargetMode = 'layer';        // Identifica se o alvo é o painel principal ou uma tarefa direta
+        let calTargetTaskId = null;
 
-        const getISO = (offset = 0) => {
-            const d = new Date(); d.setDate(d.getDate() + offset);
-            return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0 flights')}`;
-        };
-        
         const getISOStringLocal = (dateObj) => {
             return `${dateObj.getFullYear()}-${String(dateObj.getMonth() + 1).padStart(2, '0')}-${String(dateObj.getDate()).padStart(2, '0')}`;
         };
 
         function getFriendlyDateText(dateStr) {
-            if (!dateStr) return 'No date';
+            if (!dateStr) return 'Sem data';
             const hoje = getISOStringLocal(new Date());
             
             const dOntem = new Date(); dOntem.setDate(dOntem.getDate() - 1);
@@ -477,15 +503,15 @@
             const ontem = getISOStringLocal(dOntem);
             const amanha = getISOStringLocal(dAmanha);
             
-            if (dateStr === hoje) return 'Today';
-            if (dateStr === ontem) return 'Yesterday';
-            if (dateStr === amanha) return 'Tomorrow';
+            if (dateStr === hoje) return 'Hoje';
+            if (dateStr === ontem) return 'Ontem';
+            if (dateStr === amanha) return 'Amanhã';
             
-            const meses = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+            const meses = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
             const partes = dateStr.split('-');
             const mesIndex = parseInt(partes[1], 10) - 1;
             const dia = parseInt(partes[2], 10);
-            return `${meses[mesIndex]} ${dia}`;
+            return `${dia} de ${meses[mesIndex]}`;
         }
 
         function setSyncStatus(text, color) {
@@ -497,6 +523,7 @@
             const panel = $('bottom-input-panel');
             const fab = $('fab-trigger');
             if(show) {
+                $('layer-title').innerText = state.activeTaskId ? "Editar Atividade" : "Nova Atividade";
                 panel.classList.add('visible');
                 fab.style.display = 'none';
                 $('new-task-input').focus();
@@ -532,7 +559,6 @@
 
         function initApp() {
             state.tempDate = getISOStringLocal(new Date());
-            if ($('task-date-picker')) $('task-date-picker').value = state.tempDate;
             updateSelectedDate(state.tempDate);
             loadLocalStorageFallback();
             clearExpiredSoftDeletes();
@@ -652,50 +678,39 @@
         }
 
         function handleInputKey(e) {
-            if(e.key === 'Enter') { triggerSubmitTask(); }
+            if(e.key === 'Enter' && !e.shiftKey) { 
+                e.preventDefault();
+                triggerSubmitTask(); 
+            }
         }
 
         function updateBarMetaUi() {
-            const pBtn = $('meta-project-btn'); const pBadge = $('badge-project-text');
-            if(state.tempProject && state.tempProject !== 'No project') {
-                pBtn.classList.add('has-value'); pBadge.innerText = state.tempProject; pBadge.style.display = 'inline-block';
-            } else {
-                pBtn.classList.remove('has-value'); pBadge.style.display = 'none';
-            }
-            const tBtn = $('meta-tag-btn'); const tBadge = $('badge-tag-text');
-            if(state.tempTag) {
-                tBtn.classList.add('has-value'); tBadge.innerText = state.tempTag; tBadge.style.display = 'inline-block';
-            } else {
-                tBtn.classList.remove('has-value'); tBadge.style.display = 'none';
-            }
-            const rBtn = $('meta-recurrence-btn'); const rBadge = $('badge-recurrence-text');
-            if(state.tempRecurrence && state.tempRecurrence !== 'Nenhuma') {
-                rBtn.classList.add('has-value'); rBadge.innerText = state.tempRecurrence; rBadge.style.display = 'inline-block';
-            } else {
-                rBtn.classList.remove('has-value'); rBadge.style.display = 'none';
-            }
+            const pBadge = $('badge-project-text');
+            if(state.tempProject && state.tempProject !== 'No project') pBadge.innerText = state.tempProject;
+            else pBadge.innerText = 'Nenhum';
             
-            // Exibe ou oculta o botão de apagar com base no id ativo de edição
+            const tBadge = $('badge-tag-text');
+            if(state.tempTag) tBadge.innerText = state.tempTag;
+            else tBadge.innerText = 'Nenhuma';
+            
+            const rBadge = $('badge-recurrence-text');
+            if(state.tempRecurrence && state.tempRecurrence !== 'Nenhuma') rBadge.innerText = state.tempRecurrence;
+            else rBadge.innerText = 'Nenhuma';
+            
             const dBtn = $('meta-delete-btn');
-            if (dBtn) dBtn.style.display = state.activeTaskId ? 'inline-flex' : 'none';
+            if (dBtn) dBtn.style.display = state.activeTaskId ? 'flex' : 'none';
         }
 
         function triggerSubmitTask() {
             const inputElement = $('new-task-input'); const val = inputElement.value.trim();
             if(val) {
                 if (state.activeTaskId) {
-                    // Modo Edição: Atualiza os dados da tarefa ativa
                     const t = state.tasks.find(x => x.id === state.activeTaskId);
                     if (t) {
-                        t.text = val;
-                        t.date = state.tempDate;
-                        t.project = state.tempProject;
-                        t.tag = state.tempTag;
-                        t.recurrence = state.tempRecurrence || 'Nenhuma';
-                        t.updatedAt = Date.now();
+                        t.text = val; t.date = state.tempDate; t.project = state.tempProject;
+                        t.tag = state.tempTag; t.recurrence = state.tempRecurrence || 'Nenhuma'; t.updatedAt = Date.now();
                     }
                 } else {
-                    // Modo Criação: Adiciona uma nova tarefa ao vetor
                     state.tasks.push({ 
                         id: 'task_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5), 
                         text: val, completed: false, date: state.tempDate, project: state.tempProject, 
@@ -704,20 +719,16 @@
                 }
                 
                 inputElement.value = ''; state.tempProject = 'No project'; state.tempTag = ''; state.tempRecurrence = 'Nenhuma'; state.activeTaskId = null;
-                updateBarMetaUi();
-                toggleInputPanel(false);
-                render(); pushData();
+                updateBarMetaUi(); toggleInputPanel(false); render(); pushData();
             }
         }
 
         function triggerDeleteSelectedTask() {
             if (state.activeTaskId) {
                 opTask(state.activeTaskId, 'delete');
-                const inputElement = $('new-task-input');
-                if (inputElement) inputElement.value = '';
+                const inputElement = $('new-task-input'); if (inputElement) inputElement.value = '';
                 state.tempProject = 'No project'; state.tempTag = ''; state.tempRecurrence = 'Nenhuma'; state.activeTaskId = null;
-                updateBarMetaUi();
-                toggleInputPanel(false);
+                updateBarMetaUi(); toggleInputPanel(false);
             }
         }
 
@@ -728,8 +739,7 @@
             else if(type === 'Semanal') d.setDate(d.getDate() + 7);
             else if(type === 'Mensal') d.setMonth(d.getMonth() + 1);
             else if(type === 'Anual') d.setFullYear(d.getFullYear() + 1);
-            
-            return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+            return getISOStringLocal(d);
         }
 
         function callTaskBackToDraft(id) {
@@ -744,8 +754,6 @@
             
             updateBarMetaUi();
             updateSelectedDate(t.date);
-            if ($('task-date-picker')) $('task-date-picker').value = t.date;
-            
             toggleInputPanel(true);
             render();
         }
@@ -753,22 +761,15 @@
         function toggleProjectPin(projName) {
             if (projName === 'Sem Projeto') return;
             const p = state.projetos.find(x => x.nome === projName);
-            if (p) {
-                p.fixed = !p.fixed;
-                render();
-                pushData();
-            }
+            if (p) { p.fixed = !p.fixed; render(); pushData(); }
         }
 
         function opTask(id, type, val = '') {
             const t = state.tasks.find(x => x.id === id); if(!t) return;
             if (type === 'toggle') { 
                 if(!t.completed && t.recurrence && t.recurrence !== 'Nenhuma') {
-                    t.date = calculateNextRecurrentDate(t.date, t.recurrence);
-                    t.completed = false;
-                } else {
-                    t.completed = !t.completed; 
-                }
+                    t.date = calculateNextRecurrentDate(t.date, t.recurrence); t.completed = false;
+                } else { t.completed = !t.completed; }
                 t.updatedAt = Date.now(); 
             }
             if (type === 'change-date') { if(val) t.date = val; t.updatedAt = Date.now(); }
@@ -776,103 +777,144 @@
             render(); pushData();
         }
 
+        /* MECANISMO COMPLETO DE MÓDULO CALENDÁRIO MATERIAL CUSTOMIZADO */
+        function openCalendarPopup(mode, taskId = null) {
+            calTargetMode = mode;
+            calTargetTaskId = taskId;
+            
+            let baseDateStr = (mode === 'layer') ? state.tempDate : state.tasks.find(x => x.id === taskId).date;
+            if(!baseDateStr) baseDateStr = getISOStringLocal(new Date());
+            
+            calSelectedDateStr = baseDateStr;
+            calCurrentViewDate = new Date(baseDateStr + 'T00:00:00');
+            
+            $('calendar-popup-overlay').style.display = 'flex';
+            buildCalendarGrid();
+        }
+
+        function closeCalendarPopup() {
+            $('calendar-popup-overlay').style.display = 'none';
+        }
+
+        function navigateCalendarMonth(step) {
+            calCurrentViewDate.setMonth(calCurrentViewDate.getMonth() + step);
+            buildCalendarGrid();
+        }
+
+        function selectCalendarDay(fullDateStr) {
+            calSelectedDateStr = fullDateStr;
+            buildCalendarGrid();
+        }
+
+        function confirmCalendarSelection() {
+            if(calTargetMode === 'layer') {
+                updateSelectedDate(calSelectedDateStr);
+            } else if(calTargetMode === 'inline' && calTargetTaskId) {
+                opTask(calTargetTaskId, 'change-date', calSelectedDateStr);
+            }
+            closeCalendarPopup();
+        }
+
+        function buildCalendarGrid() {
+            const yr = calCurrentViewDate.getFullYear();
+            const ms = calCurrentViewDate.getMonth();
+            
+            const mesesExtenso = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
+            const diasSemanaExtenso = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
+            
+            $('cal-nav-title').innerText = `${mesesExtenso[ms]} ${yr}`;
+            
+            // Renderiza cabeçalho interno do PopUp baseado no dia selecionado
+            const activeSelDate = new Date(calSelectedDateStr + 'T00:00:00');
+            $('cal-header-year').innerText = activeSelDate.getFullYear();
+            $('cal-header-fulldate').innerText = `${diasSemanaExtenso[activeSelDate.getDay()]}, ${activeSelDate.getDate()} de ${mesesExtenso[activeSelDate.getMonth()].substr(0,3)}`;
+            
+            const gridContainer = $('calendar-days-grid');
+            gridContainer.innerHTML = '';
+            
+            const primeiroDiaMesaSemana = new Date(yr, ms, 1).getDay();
+            const totalDiasNoMes = new Date(yr, ms + 1, 0).getDate();
+            const hojeIso = getISOStringLocal(new Date());
+            
+            // Células vazias iniciais
+            for(let i = 0; i < primeiroDiaMesaSemana; i++) {
+                const emptyCell = document.createElement('div');
+                emptyCell.className = 'calendar-day-cell empty';
+                gridContainer.appendChild(emptyCell);
+            }
+            
+            // Dias do mês reais
+            for(let d = 1; d <= totalDiasNoMes; d++) {
+                const currentStr = `${yr}-${String(ms + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+                const dayCell = document.createElement('div');
+                dayCell.className = 'calendar-day-cell';
+                dayCell.innerText = d;
+                
+                if(currentStr === calSelectedDateStr) dayCell.classList.add('selected');
+                if(currentStr === hojeIso) dayCell.classList.add('today-marker');
+                
+                dayCell.onclick = () => selectCalendarDay(currentStr);
+                gridContainer.appendChild(dayCell);
+            }
+        }
+
         /* DRAG & DROP REORDENAÇÃO */
         function handleDragStart(e) {
-            dragSrcEl = this;
-            this.classList.add('dragging');
-            e.dataTransfer.effectAllowed = 'move';
-            e.dataTransfer.setData('text/plain', this.getAttribute('data-id'));
+            dragSrcEl = this; this.classList.add('dragging');
+            e.dataTransfer.effectAllowed = 'move'; e.dataTransfer.setData('text/plain', this.getAttribute('data-id'));
         }
-
         function handleDragOver(e) {
-            if (e.preventDefault) { e.preventDefault(); }
-            e.dataTransfer.dropEffect = 'move';
-            if (this !== dragSrcEl && this.getAttribute('data-project') === dragSrcEl.getAttribute('data-project')) {
-                this.classList.add('drag-over');
-            }
+            if (e.preventDefault) e.preventDefault(); e.dataTransfer.dropEffect = 'move';
+            if (this !== dragSrcEl && this.getAttribute('data-project') === dragSrcEl.getAttribute('data-project')) this.classList.add('drag-over');
             return false;
         }
-
         function handleDragLeave() { this.classList.remove('drag-over'); }
-
         function handleDrop(e) {
-            if (e.stopPropagation) { e.stopPropagation(); }
-            this.classList.remove('drag-over');
-            const srcId = e.dataTransfer.getData('text/plain') || dragSrcEl.getAttribute('data-id');
-            const targetId = this.getAttribute('data-id');
-            if (srcId !== targetId && this.getAttribute('data-project') === dragSrcEl.getAttribute('data-project')) {
-                reorderTasks(srcId, targetId);
-            }
+            if (e.stopPropagation) e.stopPropagation(); this.classList.remove('drag-over');
+            const srcId = e.dataTransfer.getData('text/plain') || dragSrcEl.getAttribute('data-id'); const targetId = this.getAttribute('data-id');
+            if (srcId !== targetId && this.getAttribute('data-project') === dragSrcEl.getAttribute('data-project')) reorderTasks(srcId, targetId);
             return false;
         }
-
-        function handleDragEnd() {
-            document.querySelectorAll('.task-item').forEach(item => {
-                item.classList.remove('dragging');
-                item.classList.remove('drag-over');
-            });
-        }
+        function handleDragEnd() { document.querySelectorAll('.task-item').forEach(i => { i.classList.remove('dragging'); i.classList.remove('drag-over'); }); }
 
         let touchTargetEl = null;
         function handleTouchStart(e) {
             const item = e.target.closest('.task-item');
-            if (e.target.closest('.drag-handle') && item) {
-                dragSrcEl = item;
-                item.classList.add('dragging');
-            }
+            if (e.target.closest('.drag-handle') && item) { dragSrcEl = item; item.classList.add('dragging'); }
         }
-
         function handleTouchMove(e) {
-            if (!dragSrcEl) return;
-            e.preventDefault();
-            const touch = e.touches[0];
-            const target = document.elementFromPoint(touch.clientX, touch.clientY);
-            if (!target) return;
+            if (!dragSrcEl) return; e.preventDefault();
+            const touch = e.touches[0]; const target = document.elementFromPoint(touch.clientX, touch.clientY); if (!target) return;
             const itemOver = target.closest('.task-item');
             document.querySelectorAll('.task-item').forEach(i => i.classList.remove('drag-over'));
             if (itemOver && itemOver !== dragSrcEl && itemOver.getAttribute('data-project') === dragSrcEl.getAttribute('data-project')) {
-                itemOver.classList.add('drag-over');
-                touchTargetEl = itemOver;
+                itemOver.classList.add('drag-over'); touchTargetEl = itemOver;
             } else { touchTargetEl = null; }
         }
-
         function handleTouchEnd() {
-            if (!dragSrcEl) return;
-            dragSrcEl.classList.remove('dragging');
-            if (touchTargetEl) {
-                touchTargetEl.classList.remove('drag-over');
-                reorderTasks(dragSrcEl.getAttribute('data-id'), touchTargetEl.getAttribute('data-id'));
-            }
-            dragSrcEl = null; touchTargetEl = null;
-            document.querySelectorAll('.task-item').forEach(i => i.classList.remove('drag-over'));
+            if (!dragSrcEl) return; dragSrcEl.classList.remove('dragging');
+            if (touchTargetEl) { touchTargetEl.classList.remove('drag-over'); reorderTasks(dragSrcEl.getAttribute('data-id'), touchTargetEl.getAttribute('data-id')); }
+            dragSrcEl = null; touchTargetEl = null; document.querySelectorAll('.task-item').forEach(i => i.classList.remove('drag-over'));
         }
 
         function reorderTasks(srcId, targetId) {
-            const srcIndex = state.tasks.findIndex(t => t.id === srcId);
-            const targetIndex = state.tasks.findIndex(t => t.id === targetId);
+            const srcIndex = state.tasks.findIndex(t => t.id === srcId); const targetIndex = state.tasks.findIndex(t => t.id === targetId);
             if (srcIndex !== -1 && targetIndex !== -1) {
-                const [removed] = state.tasks.splice(srcIndex, 1);
-                state.tasks.splice(targetIndex, 0, removed);
-                render(); pushData();
+                const [removed] = state.tasks.splice(srcIndex, 1); state.tasks.splice(targetIndex, 0, removed); render(); pushData();
             }
         }
 
         function render() {
             const container = $('task-list-container'); container.innerHTML = '';
-            let activeTasks = state.tasks.filter(t => !t.deleted);
-            const hojeIso = getISOStringLocal(new Date());
+            let activeTasks = state.tasks.filter(t => !t.deleted); const hojeIso = getISOStringLocal(new Date());
             
             let filtered = activeTasks.filter(t => {
-                if (state.filterType === 'completas') {
-                    return t.completed;
-                } else {
-                    if (t.completed) return false;
-                    
-                    return state.filterType === 'hoje' ? t.date === hojeIso :
-                           state.filterType === 'amanha' ? t.date === getISOStringLocal(new Date(Date.now() + 86400000)) :
-                           state.filterType === 'projeto' ? t.project === state.selectedFilterValue :
-                           state.filterType === 'tag' ? t.tag === state.selectedFilterValue : true;
-                }
+                if (state.filterType === 'completas') return t.completed;
+                if (t.completed) return false;
+                return state.filterType === 'hoje' ? t.date === hojeIso :
+                       state.filterType === 'amanha' ? t.date === getISOStringLocal(new Date(Date.now() + 86400000)) :
+                       state.filterType === 'projeto' ? t.project === state.selectedFilterValue :
+                       state.filterType === 'tag' ? t.tag === state.selectedFilterValue : true;
             });
 
             if(!filtered.length) {
@@ -887,84 +929,47 @@
             });
 
             const sortedGroupNames = Object.keys(groups).sort((a, b) => {
-                const projA = state.projetos.find(p => p.nome === a && !p.deleted);
-                const projB = state.projetos.find(p => p.nome === b && !p.deleted);
-                const aFixed = projA ? !!projA.fixed : false;
-                const bFixed = projB ? !!projB.fixed : false;
-                if (aFixed && !bFixed) return -1;
-                if (!aFixed && bFixed) return 1;
-                return a.localeCompare(b);
+                const projA = state.projetos.find(p => p.nome === a && !p.deleted); const projB = state.projetos.find(p => p.nome === b && !p.deleted);
+                const aFixed = projA ? !!projA.fixed : false; const bFixed = projB ? !!projB.fixed : false;
+                if (aFixed && !bFixed) return -1; if (!aFixed && bFixed) return 1; return a.localeCompare(b);
             });
 
             sortedGroupNames.forEach(projName => {
                 const projTasks = groups[projName]; 
-                
                 projTasks.sort((x, y) => {
-                    const isOverdueX = x.date && x.date < hojeIso && !x.completed ? 1 : 0;
-                    const isOverdueY = y.date && y.date < hojeIso && !y.completed ? 1 : 0;
-                    
-                    if (isOverdueX !== isOverdueY) {
-                        return isOverdueY - isOverdueX;
-                    }
-                    
-                    if (x.date !== y.date) {
-                        return x.date.localeCompare(y.date);
-                    }
-                    
-                    const tagX = x.tag || '';
-                    const tagY = y.tag || '';
-                    if (tagX === '' && tagY !== '') return 1;  
-                    if (tagX !== '' && tagY === '') return -1; 
-                    return tagX.localeCompare(tagY);           
+                    const isOverdueX = x.date && x.date < hojeIso && !x.completed ? 1 : 0; const isOverdueY = y.date && y.date < hojeIso && !y.completed ? 1 : 0;
+                    if (isOverdueX !== isOverdueY) return isOverdueY - isOverdueX;
+                    if (x.date !== y.date) return x.date.localeCompare(y.date);
+                    const tagX = x.tag || ''; const tagY = y.tag || '';
+                    if (tagX === '' && tagY !== '') return 1; if (tagX !== '' && tagY === '') return -1; return tagX.localeCompare(tagY);           
                 });
 
-                const projObj = state.projetos.find(p => p.nome === projName && !p.deleted);
-                const isFixed = projObj ? !!projObj.fixed : false;
-                
-                const groupCard = document.createElement('div');
-                groupCard.className = `project-group-card ${isFixed ? 'is-fixed' : ''}`;
+                const projObj = state.projetos.find(p => p.nome === projName && !p.deleted); const isFixed = projObj ? !!projObj.fixed : false;
+                const groupCard = document.createElement('div'); groupCard.className = `project-group-card ${isFixed ? 'is-fixed' : ''}`;
                 
                 groupCard.innerHTML = `
                     <div class="project-group-header">
                         <div class="project-group-header-left">
-                            <span class="project-group-title-link" onclick="togglePillFilter('projeto', '${projName === 'Sem Projeto' ? 'No project' : projName}')">
-                                ${projName}
-                            </span>
+                            <span class="project-group-title-link" onclick="togglePillFilter('projeto', '${projName === 'Sem Projeto' ? 'No project' : projName}')">${projName}</span>
                             <span class="project-group-count">${projTasks.length}</span>
                         </div>
-                        ${projName !== 'Sem Projeto' ? `
-                            <button class="btn-project-pin ${isFixed ? 'active' : ''}" onclick="toggleProjectPin('${projName}')" title="${isFixed ? 'Desafixar Projeto' : 'Fixar no Topo'}">
-                                <span class="md-icon">push_pin</span>
-                            </button>
-                        ` : ''}
+                        ${projName !== 'Sem Projeto' ? `<button class="btn-project-pin ${isFixed ? 'active' : ''}" onclick="toggleProjectPin('${projName}')"><span class="md-icon">push_pin</span></button>` : ''}
                     </div>
                     <div class="project-group-tasks-container" style="display:flex; flex-direction:column; gap:6px;"></div>
                 `;
-                container.appendChild(groupCard);
-                const tasksContainer = groupCard.querySelector('.project-group-tasks-container');
+                container.appendChild(groupCard); const tasksContainer = groupCard.querySelector('.project-group-tasks-container');
 
                 projTasks.forEach(t => {
-                    const isOverdue = t.date && t.date < hojeIso && !t.completed;
-                    const item = document.createElement('div'); 
+                    const isOverdue = t.date && t.date < hojeIso && !t.completed; const item = document.createElement('div'); 
                     item.className = `task-item ${t.completed ? 'completed' : ''} ${isOverdue ? 'overdue' : ''}`;
-                    item.setAttribute('draggable', 'true');
-                    item.setAttribute('data-id', t.id);
-                    item.setAttribute('data-project', projName);
+                    item.setAttribute('draggable', 'true'); item.setAttribute('data-id', t.id); item.setAttribute('data-project', projName);
                     
-                    item.addEventListener('dragstart', handleDragStart);
-                    item.addEventListener('dragover', handleDragOver);
-                    item.addEventListener('dragleave', handleDragLeave);
-                    item.addEventListener('drop', handleDrop);
-                    item.addEventListener('dragend', handleDragEnd);
+                    item.addEventListener('dragstart', handleDragStart); item.addEventListener('dragover', handleDragOver);
+                    item.addEventListener('dragleave', handleDragLeave); item.addEventListener('drop', handleDrop); item.addEventListener('dragend', handleDragEnd);
+                    item.addEventListener('touchstart', handleTouchStart, {passive: true}); item.addEventListener('touchmove', handleTouchMove, {passive: false}); item.addEventListener('touchend', handleTouchEnd);
+
+                    const tTag = state.tags.find(g => g.nome === t.tag && !g.deleted); const isRecurrent = t.recurrence && t.recurrence !== 'Nenhuma';
                     
-                    item.addEventListener('touchstart', handleTouchStart, {passive: true});
-                    item.addEventListener('touchmove', handleTouchMove, {passive: false});
-                    item.addEventListener('touchend', handleTouchEnd);
-
-                    const tTag = state.tags.find(g => g.nome === t.tag && !g.deleted);
-                    const isRecurrent = t.recurrence && t.recurrence !== 'Nenhuma';
-                    const dateIconHtml = isRecurrent ? 'repeat' : 'calendar_today';
-
                     item.innerHTML = `
                         <div class="drag-handle"><span class="md-icon" style="font-size:18px;">drag_indicator</span></div>
                         <input type="checkbox" class="task-checkbox" ${t.completed ? 'checked' : ''} onchange="opTask('${t.id}', 'toggle')">
@@ -973,11 +978,9 @@
                                 <span class="task-text" onclick="${t.completed ? '' : `callTaskBackToDraft('${t.id}')`}">${t.text}</span>
                                 ${t.tag && tTag ? `<span class="inline-tag-badge" style="background:${tTag.cor}; color:#fff;" onclick="togglePillFilter('tag', '${t.tag}')">${t.tag}</span>` : ''}
                             </div>
-                            
-                            <span class="right-date-pilling-zone">
+                            <span class="right-date-pilling-zone" onclick="event.stopPropagation(); openCalendarPopup('inline', '${t.id}')">
                                 <span>${getFriendlyDateText(t.date)}</span>
-                                <span class="right-date-icon"><span class="md-icon">${dateIconHtml}</span></span>
-                                <input type="date" class="inline-date-picker-overlay" value="${t.date}" onchange="opTask('${t.id}', 'change-date', this.value)">
+                                <span class="right-date-icon"><span class="md-icon">${isRecurrent ? 'repeat' : 'calendar_today'}</span></span>
                             </span>
                         </div>
                     `;
@@ -985,8 +988,7 @@
                 });
             });
             
-            const totalActive = activeTasks.length;
-            const totalDone = activeTasks.filter(t => t.completed).length;
+            const totalActive = activeTasks.length; const totalDone = activeTasks.filter(t => t.completed).length;
             $('progress-bar').style.width = `${totalActive ? (totalDone / totalActive) * 100 : 0}%`;
         }
 
@@ -1004,50 +1006,21 @@
 
         function openContextDrawer(mode) {
             state.editingTagIndex = null; state.editingProjIndex = null;
-            if(mode === 'projetos') { 
-                openDrawerCommon("Gerenciar Projetos", '', () => { renderProjForm(); renderProjectsList(); }); 
-            } else if(mode === 'tags') { 
-                openDrawerCommon("Gerenciar Tags", '', () => { renderTagForm(); renderTagsList(); }); 
-            } else if(mode === 'recorrencia') {
-                openDrawerCommon("Definir Recorrência", '<div style="font-size:12px;color:var(--md-on-surface-variant);text-align:center;padding:4px 0;">Selecione o intervalo de repetição da tarefa:</div>', renderRecurrenceList);
-            }
+            if(mode === 'projetos') openDrawerCommon("Gerenciar Projetos", '', () => { renderProjForm(); renderProjectsList(); }); 
+            else if(mode === 'tags') openDrawerCommon("Gerenciar Tags", '', () => { renderTagForm(); renderTagsList(); }); 
+            else if(mode === 'recorrencia') openDrawerCommon("Definir Recorrência", '<div style="font-size:12px;color:var(--md-on-surface-variant);text-align:center;padding:4px 0;">Selecione o intervalo de repetição da tarefa:</div>', renderRecurrenceList);
         }
 
-        function selectProjectFromDrawer(name) {
-            state.tempProject = name; 
-            updateBarMetaUi();
-            closeDrawer();
-        }
-
-        function selectTagFromDrawer(name) {
-            state.tempTag = name; 
-            updateBarMetaUi();
-            closeDrawer();
-        }
-
-        function selectRecurrenceFromDrawer(type) {
-            state.tempRecurrence = type;
-            updateBarMetaUi();
-            closeDrawer();
-        }
+        function selectProjectFromDrawer(name) { state.tempProject = name; updateBarMetaUi(); closeDrawer(); }
+        function selectTagFromDrawer(name) { state.tempTag = name; updateBarMetaUi(); closeDrawer(); }
+        function selectRecurrenceFromDrawer(type) { state.tempRecurrence = type; updateBarMetaUi(); closeDrawer(); }
 
         function renderRecurrenceList() {
-            const options = ['Nenhuma', 'Diária', 'Semanal', 'Mensal', 'Anual'];
-            const itemsContainer = $('drawer-list-items');
-            itemsContainer.innerHTML = '';
-            
+            const options = ['Nenhuma', 'Diária', 'Semanal', 'Mensal', 'Anual']; const itemsContainer = $('drawer-list-items'); itemsContainer.innerHTML = '';
             options.forEach(opt => {
-                const row = document.createElement('div');
-                row.className = 'list-item-row';
-                row.style.cursor = 'pointer';
-                row.onclick = () => selectRecurrenceFromDrawer(opt);
-                
-                const label = document.createElement('div');
-                label.className = 'item-label';
-                label.innerHTML = `<span class="md-icon">repeat</span> ${opt}`;
-                
-                row.appendChild(label);
-                itemsContainer.appendChild(row);
+                const row = document.createElement('div'); row.className = 'list-item-row'; row.style.cursor = 'pointer'; row.onclick = () => selectRecurrenceFromDrawer(opt);
+                const label = document.createElement('div'); label.className = 'item-label'; label.innerHTML = `<span class="md-icon">repeat</span> ${opt}`;
+                row.appendChild(label); itemsContainer.appendChild(row);
             });
         }
 
@@ -1056,27 +1029,14 @@
         }
 
         function renderProjectsList() {
-            const activeProj = state.projetos.filter(p => !p.deleted);
-            const itemsContainer = $('drawer-list-items');
-            itemsContainer.innerHTML = '';
-            
+            const activeProj = state.projetos.filter(p => !p.deleted); const itemsContainer = $('drawer-list-items'); itemsContainer.innerHTML = '';
             activeProj.forEach(p => {
-                const row = document.createElement('div');
-                row.className = 'list-item-row';
-                const label = document.createElement('div');
-                label.className = 'item-label';
+                const row = document.createElement('div'); row.className = 'list-item-row'; const label = document.createElement('div'); label.className = 'item-label';
                 label.innerHTML = `<span class="md-icon">folder</span> ${p.nome} ${p.fixed ? '<span class="md-icon" style="font-size:12px;margin-left:4px;color:var(--md-primary)">push_pin</span>' : ''}`;
                 label.onclick = () => selectProjectFromDrawer(p.nome);
-                
-                const actions = document.createElement('div');
-                actions.innerHTML = `<button class="btn-inline-edit">Editar</button><button class="btn-inline-del"><span class="md-icon">close</span></button>`;
-                
-                actions.querySelector('.btn-inline-edit').onclick = (e) => {
-                    e.stopPropagation(); state.editingProjIndex = state.projetos.indexOf(p); renderProjForm(p.nome, 'Salvar');
-                };
-                actions.querySelector('.btn-inline-del').onclick = (e) => {
-                    e.stopPropagation(); deleteProj(p.nome);
-                };
+                const actions = document.createElement('div'); actions.innerHTML = `<button class="btn-inline-edit">Editar</button><button class="btn-inline-del"><span class="md-icon">close</span></button>`;
+                actions.querySelector('.btn-inline-edit').onclick = (e) => { e.stopPropagation(); state.editingProjIndex = state.projetos.indexOf(p); renderProjForm(p.nome, 'Salvar'); };
+                actions.querySelector('.btn-inline-del').onclick = (e) => { e.stopPropagation(); deleteProj(p.nome); };
                 row.appendChild(label); row.appendChild(actions); itemsContainer.appendChild(row);
             });
         }
@@ -1096,12 +1056,7 @@
 
         function deleteProj(name) {
             const p = state.projetos.find(x => x.nome === name); if(p) { p.deleted = true; p.deletedAt = Date.now(); }
-            state.tasks.forEach(x => { 
-                if(x.project === name) { 
-                    x.project = 'No project'; 
-                    x.updatedAt = Date.now();
-                } 
-            });
+            state.tasks.forEach(x => { if(x.project === name) { x.project = 'No project'; x.updatedAt = Date.now(); } });
             renderProjectsList(); render(); pushData();
         }
 
@@ -1110,27 +1065,14 @@
         }
 
         function renderTagsList() {
-            const activeTags = state.tags.filter(t => !t.deleted);
-            const itemsContainer = $('drawer-list-items');
-            itemsContainer.innerHTML = '';
-
+            const activeTags = state.tags.filter(t => !t.deleted); const itemsContainer = $('drawer-list-items'); itemsContainer.innerHTML = '';
             activeTags.forEach(t => {
-                const row = document.createElement('div');
-                row.className = 'list-item-row';
-                const label = document.createElement('div');
-                label.className = 'item-label';
+                const row = document.createElement('div'); row.className = 'list-item-row'; const label = document.createElement('div'); label.className = 'item-label';
                 label.innerHTML = `<span style="width:10px;height:10px;background:${t.cor};border-radius:50%;display:inline-block;margin-right:2px;"></span><strong>${t.nome}</strong>`;
                 label.onclick = () => selectTagFromDrawer(t.nome);
-                
-                const actions = document.createElement('div');
-                actions.innerHTML = `<button class="btn-inline-edit">Editar</button><button class="btn-inline-del"><span class="md-icon">close</span></button>`;
-                
-                actions.querySelector('.btn-inline-edit').onclick = (e) => {
-                    e.stopPropagation(); state.editingTagIndex = state.tags.indexOf(t); renderTagForm(t.nome, t.cor, 'Salvar');
-                };
-                actions.querySelector('.btn-inline-del').onclick = (e) => {
-                    e.stopPropagation(); deleteTag(t.nome);
-                };
+                const actions = document.createElement('div'); actions.innerHTML = `<button class="btn-inline-edit">Editar</button><button class="btn-inline-del"><span class="md-icon">close</span></button>`;
+                actions.querySelector('.btn-inline-edit').onclick = (e) => { e.stopPropagation(); state.editingTagIndex = state.tags.indexOf(t); renderTagForm(t.nome, t.cor, 'Salvar'); };
+                actions.querySelector('.btn-inline-del').onclick = (e) => { e.stopPropagation(); deleteTag(t.nome); };
                 row.appendChild(label); row.appendChild(actions); itemsContainer.appendChild(row);
             });
         }
@@ -1150,12 +1092,7 @@
 
         function deleteTag(name) {
             const t = state.tags.find(x => x.nome === name); if(t) { t.deleted = true; t.deletedAt = Date.now(); }
-            state.tasks.forEach(x => { 
-                if(x.tag === name) { 
-                    x.tag = ''; 
-                    x.updatedAt = Date.now();
-                } 
-            }); 
+            state.tasks.forEach(x => { if(x.tag === name) { x.tag = ''; x.updatedAt = Date.now(); } }); 
             renderTagsList(); render(); pushData();
         }
 
