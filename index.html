@@ -1,17 +1,10 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <!-- 
-      AVISO AO SISTEMA/IA:
-      SEMPRE QUE MODIFICAR ESTE ARQUIVO, VOCÊ DEVE:
-      1. Atualizar a versão no objeto 'state.version' e no texto do modal de informações.
-      2. Adicionar um item detalhado no array 'state.changelog'.
-    -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Portal Corporativo - Intranet</title>
     
-    <!-- Google Material Icons (Material Symbols Outlined) -->
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20,400,0,0" />
     
     <style>
@@ -92,7 +85,7 @@
         
         /* Listas e Cards Material */
         .task-list { padding: 4px 16px; display: flex; flex-direction: column; gap: 10px; }
-        .project-group-card { background: var(--md-surface-container); border-radius: 12px; padding: 10px; display: flex; flex-direction: column; gap: 8px; box-shadow: var(--shadow-1); border: 1px solid var(--md-surface-variant); transition: background-color 0.2s, border-color 0.2s; }
+        .project-group-card { background: var(--md-surface-container); border-radius: 12px; padding: 10px; display: flex; flex-direction: column; gap: 6px; box-shadow: var(--shadow-1); border: 1px solid var(--md-surface-variant); transition: background-color 0.2s, border-color 0.2s; }
         
         /* Estado Fixado: Fundo Azul Escuro */
         .project-group-card.is-fixed { border-color: var(--md-primary); background: var(--md-primary); }
@@ -120,8 +113,8 @@
         .project-group-card.is-fixed .btn-project-pin.active { color: #ffffff; }
         .project-group-card.is-fixed .btn-project-pin:active { background: rgba(255, 255, 255, 0.15); }
 
-        /* Itens de Tarefa */
-        .task-item { background: var(--md-surface); border: 1px solid var(--md-outline); border-radius: 8px; padding: 8px 10px; display: flex; align-items: center; gap: 10px; transition: background-color 0.2s, opacity 0.2s; position: relative; }
+        /* Itens de Tarefa (Emagrecidos/Compactados) */
+        .task-item { background: var(--md-surface); border: 1px solid var(--md-outline); border-radius: 8px; padding: 4px 10px; display: flex; align-items: center; gap: 10px; transition: background-color 0.2s, opacity 0.2s; position: relative; }
         .task-item.dragging { opacity: 0.4; background: var(--md-surface-container-high); }
         .task-item.drag-over { border-top: 2px solid var(--md-primary); }
         
@@ -132,51 +125,51 @@
         }
         .task-item.overdue .task-text {
             color: #991b1b;
-            font-weight: 500;
         }
-        .task-item.overdue .task-card-date-text {
-            background: #fee2e2;
-            color: #991b1b;
-        }
-        .task-item.overdue .task-card-date-icon {
-            color: #991b1b;
+        .task-item.overdue .right-date-pilling-zone {
+            color: #ef4444 !important;
         }
 
         /* Alça de Arraste (Drag Handle) */
-        .drag-handle { color: var(--md-outline); cursor: grab; display: flex; align-items: center; justify-content: center; padding: 4px 2px; user-select: none; touch-action: none; }
+        .drag-handle { color: var(--md-outline); cursor: grab; display: flex; align-items: center; justify-content: center; padding: 4px 0; user-select: none; touch-action: none; }
         .drag-handle:active { cursor: grabbing; color: var(--md-primary); }
         
         /* Checkbox Material */
-        .task-checkbox { appearance: none; -webkit-appearance: none; width: 18px; height: 18px; border: 2px solid var(--md-outline); border-radius: 4px; cursor: pointer; flex-shrink: 0; display: inline-flex; align-items: center; justify-content: center; transition: all 0.1s; }
+        .task-checkbox { appearance: none; -webkit-appearance: none; width: 16px; height: 16px; border: 2px solid var(--md-outline); border-radius: 4px; cursor: pointer; flex-shrink: 0; display: inline-flex; align-items: center; justify-content: center; transition: all 0.1s; }
         .task-checkbox:checked { background: var(--md-primary); border-color: var(--md-primary); }
-        .task-checkbox:checked::after { content: "✓"; color: var(--md-on-primary); font-size: 11px; font-weight: bold; }
+        .task-checkbox:checked::after { content: "✓"; color: var(--md-on-primary); font-size: 10px; font-weight: bold; }
         .task-item.overdue .task-checkbox { border-color: #ef4444; }
         .task-item.overdue .task-checkbox:checked { background: var(--md-primary); border-color: var(--md-primary); }
         
-        .task-content { flex-grow: 1; display: flex; flex-direction: column; gap: 4px; overflow: hidden; }
-        .task-text-row { display: flex; align-items: center; gap: 6px; width: 100%; }
-        .task-text { font-size: 15px; font-weight: 500; line-height: 1.3; word-break: break-word; cursor: pointer; color: var(--md-on-surface); }
+        .task-content { flex-grow: 1; display: flex; justify-content: space-between; align-items: center; gap: 12px; overflow: hidden; }
+        
+        /* Ajuste do Bloco de Texto e Tag para evitar amassamento */
+        .task-text-row { display: flex; align-items: center; gap: 6px; flex-grow: 1; overflow: hidden; }
+        .task-text { font-size: 14px; font-weight: 500; line-height: 1.3; word-break: break-word; cursor: pointer; color: var(--md-on-surface); }
         .task-item.completed .task-text { text-decoration: line-through; color: var(--md-outline) !important; opacity: 0.6; font-weight: 400; cursor: default; }
         
-        /* Ícone indicador de recorrência na própria tarefa */
-        .task-recurrence-icon { color: var(--md-outline); display: inline-flex; align-items: center; justify-content: center; }
-        .task-recurrence-icon .md-icon { font-size: 15px; font-weight: bold; }
+        /* Tags Inline ao lado do texto */
+        .inline-tag-badge { font-size: 9px; padding: 1px 5px; border-radius: 4px; font-weight: 700; cursor: pointer; flex-shrink: 0; text-transform: uppercase; }
+
+        /* Nova Estrutura de Data Clean na Direita */
+        .right-date-pilling-zone { 
+            position: relative; 
+            display: inline-flex; 
+            align-items: center; 
+            gap: 4px; 
+            color: var(--md-on-surface-variant); 
+            font-size: 13px; 
+            font-weight: 500; 
+            white-space: nowrap; 
+            flex-shrink: 0;
+            cursor: pointer;
+            user-select: none;
+        }
+        .task-item.completed .right-date-pilling-zone { opacity: 0.5; }
+        .right-date-icon { display: inline-flex; align-items: center; justify-content: center; opacity: 0.8; }
+        .right-date-icon .md-icon { font-size: 15px !important; }
         
-        /* Badges e Pílulas */
-        .task-meta-clickable-zone { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
-        .clickable-pill { position: relative; font-size: 10px; padding: 2px 8px; border-radius: 6px; font-weight: 500; cursor: pointer; border: 1px solid transparent; display: inline-flex; align-items: center; gap: 4px; }
-        .clickable-pill.tag-pill { filter: saturate(0.9) brightness(0.85); font-weight: 700; }
-        .clickable-pill .md-icon { font-size: 11px; }
-        
-        /* Pílula de Data Redimensionada */
-        .clickable-pill.date-pill { background: transparent; padding: 2px 0; border-radius: 0; display: inline-flex; align-items: center; gap: 6px; user-select: none; }
-        .task-card-date-text { font-size: 12px; color: var(--md-on-surface); font-weight: 600; background: var(--md-surface-container-high); padding: 5px 9px; border-radius: 6px; border: 1px solid var(--md-surface-variant); }
-        
-        /* Ícone de calendário nos cards */
-        .task-card-date-icon { display: inline-flex; align-items: center; justify-content: center; color: var(--md-primary); pointer-events: none; }
-        .task-card-date-icon .md-icon { font-size: 16px !important; }
-        
-        /* Input invisível expandido */
+        /* Input invisível expandido para alteração rápida */
         .inline-date-picker-overlay { 
             position: absolute; 
             top: 0; 
@@ -188,11 +181,6 @@
             z-index: 3;
             font-size: 16px;
         }
-        
-        /* Botões Inline */
-        .btn-inline-del { background: none; border: none; color: var(--md-outline); cursor: pointer; padding: 4px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
-        .btn-inline-del .md-icon { font-size: 16px; }
-        .btn-inline-del:active { background: var(--md-surface-variant); color: var(--error-color); }
 
         /* BOTÃO FLUTUANTE */
         .fab-add-btn {
@@ -341,6 +329,17 @@
             .input-container { padding: 14px 16px 16px 16px; gap: 10px; }
             .task-input { padding: 12px 100px 12px 14px; font-size: 15px; border-radius: 12px; }
             .main-input-block { gap: 8px; }
+            
+            /* REORGANIZAÇÃO EM COLUNA: Texto por cima, tag por baixo */
+            .task-text-row {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 4px;
+                width: 100%;
+            }
+            .inline-tag-badge {
+                align-self: flex-start;
+            }
         }
     </style>
 </head>
@@ -361,7 +360,6 @@
             <div class="progress-container"><div class="progress-bar" id="progress-bar"></div></div>
         </header>
 
-        <!-- FILTROS COMPACTOS -->
         <div class="date-filters">
             <button class="filter-btn active" id="f-btn-hoje" onclick="setFilter('hoje')" title="Hoje">
                 <span class="md-icon">today</span>
@@ -379,12 +377,10 @@
 
         <main class="task-list" id="task-list-container"></main>
 
-        <!-- BOTÃO FLUTUANTE -->
         <button class="fab-add-btn" id="fab-trigger" onclick="toggleInputPanel(true)" title="Nova Tarefa">
             <span class="md-icon">add</span>
         </button>
 
-        <!-- CAMADA DE INSERÇÃO REORGANIZADA COM ICONES E BADGES INLINE -->
         <div class="input-container" id="bottom-input-panel">
             <div class="meta-selectors-row">
                 <button class="selector-btn" onclick="openContextDrawer('projetos')" id="meta-project-btn" title="Definir Projeto">
@@ -434,11 +430,11 @@
         const $ = id => document.getElementById(id);
 
         let state = {
-            version: "4.10.1",
+            version: "4.11.1",
             changelog: [
-                { v: "4.10.1", date: "20/06/2026", desc: "Ajuste visual no card fixado: O container do projeto ganha fundo em tom azul escuro e textos em branco para maior destaque estrutural e alto contraste." },
-                { v: "4.10.0", date: "20/06/2026", desc: "Adicionado recurso de fixação de projetos. Containers de projetos agora podem ser fixados no topo da lista através de um ícone de alfinete discreto." },
-                { v: "4.9.1", date: "20/06/2026", desc: "Regra de isolamento estrito de tarefas: Atividades concluídas agora são filtradas e exibidas exclusivamente sob a aba 'Completas', sumindo inteiramente das demais listas e contextos de data." }
+                { v: "4.11.1", date: "20/06/2026", desc: "Correção de layout responsivo: O bloco interno de textos (.task-text-row) agora se reorganiza automaticamente em coluna no mobile, mantendo o texto por cima e a tag logo abaixo para evitar amassamento." },
+                { v: "4.11.0", date: "20/06/2026", desc: "Redesenho minimalista do card: Atividades emagrecidas com menor espaçamento interno. Remoção temporária do botão de exclusão rápido e realocação da exibição da data para um texto simples na extrema direita integrado ao ícone condicional de repetição." },
+                { v: "4.10.1", date: "20/06/2026", desc: "Ajuste visual no card fixado: O container do projeto ganha fundo em tom azul escuro e textos em branco para maior destaque estrutural e alto contraste." }
             ],
             tasks: [], 
             projetos: [{ nome: "Trabalho", deleted: false, fixed: false }, { nome: "Estudos", deleted: false, fixed: false }],
@@ -452,13 +448,22 @@
             const d = new Date(); d.setDate(d.getDate() + offset);
             return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
         };
-        const formatDisplayDate = str => str ? `${str.split('-')[2]}/${str.split('-')[1]}` : 'Sem Data';
-
+        
         function getFriendlyDateText(dateStr) {
-            if (!dateStr) return 'Sem Data';
-            if (dateStr === getISO(0)) return 'Hoje';
-            if (dateStr === getISO(1)) return 'Amanhã';
-            return formatDisplayDate(dateStr);
+            if (!dateStr) return 'No date';
+            const hoje = getISO(0);
+            const ontem = getISO(-1);
+            const amanha = getISO(1);
+            
+            if (dateStr === hoje) return 'Today';
+            if (dateStr === ontem) return 'Yesterday';
+            if (dateStr === amanha) return 'Tomorrow';
+            
+            const meses = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+            const partes = dateStr.split('-');
+            const mesIndex = parseInt(partes[1], 10) - 1;
+            const dia = parseInt(partes[2], 10);
+            return `${meses[mesIndex]} ${dia}`;
         }
 
         function setSyncStatus(text, color) {
@@ -829,7 +834,6 @@
                 if (!groups[projKey]) groups[projKey] = []; groups[projKey].push(t);
             });
 
-            // Ordena os nomes dos grupos colocando os fixados (fixed == true) estritamente na frente
             const sortedGroupNames = Object.keys(groups).sort((a, b) => {
                 const projA = state.projetos.find(p => p.nome === a && !p.deleted);
                 const projB = state.projetos.find(p => p.nome === b && !p.deleted);
@@ -889,6 +893,7 @@
 
                     const tTag = state.tags.find(g => g.nome === t.tag && !g.deleted);
                     const isRecurrent = t.recurrence && t.recurrence !== 'Nenhuma';
+                    const dateIconHtml = isRecurrent ? 'repeat' : 'calendar_today';
 
                     item.innerHTML = `
                         <div class="drag-handle"><span class="md-icon" style="font-size:18px;">drag_indicator</span></div>
@@ -896,19 +901,15 @@
                         <div class="task-content">
                             <div class="task-text-row">
                                 <span class="task-text" onclick="${t.completed ? '' : `callTaskBackToDraft('${t.id}')`}">${t.text}</span>
-                                ${isRecurrent ? `<span class="task-recurrence-icon" title="Recorrência: ${t.recurrence}"><span class="md-icon">repeat</span></span>` : ''}
+                                ${t.tag && tTag ? `<span class="inline-tag-badge" style="background:${tTag.cor}; color:#fff;" onclick="togglePillFilter('tag', '${t.tag}')">${t.tag}</span>` : ''}
                             </div>
-                            <div class="task-meta-clickable-zone">
-                                ${t.tag && tTag ? `<span class="clickable-pill tag-pill" style="background:${tTag.cor}; color:#fff;" onclick="togglePillFilter('tag', '${t.tag}')">${t.tag}</span>` : ''}
-                                
-                                <span class="clickable-pill date-pill">
-                                    <span class="task-card-date-text">${getFriendlyDateText(t.date)}</span>
-                                    <span class="task-card-date-icon"><span class="md-icon">calendar_today</span></span>
-                                    <input type="date" class="inline-date-picker-overlay" value="${t.date}" onchange="opTask('${t.id}', 'change-date', this.value)">
-                                </span>
-                            </div>
+                            
+                            <span class="right-date-pilling-zone">
+                                <span>${getFriendlyDateText(t.date)}</span>
+                                <span class="right-date-icon"><span class="md-icon">${dateIconHtml}</span></span>
+                                <input type="date" class="inline-date-picker-overlay" value="${t.date}" onchange="opTask('${t.id}', 'change-date', this.value)">
+                            </span>
                         </div>
-                        <button class="btn-inline-del" onclick="opTask('${t.id}', 'delete')"><span class="md-icon">close</span></button>
                     `;
                     tasksContainer.appendChild(item);
                 });
