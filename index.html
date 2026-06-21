@@ -307,7 +307,7 @@
         .drawer-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); z-index: 1000; display: none; }
         .drawer { position: fixed; bottom: 0; left: 50%; width: 100%; max-width: 600px; background: var(--md-surface-container); border-radius: 16px 16px 0 0; padding: 12px 14px; z-index: 1001; transform: translate(-50%, 100%); transition: transform 0.25s cubic-bezier(0.2, 0.8, 0.4, 1); box-shadow: var(--shadow-2); border-top: 1px solid var(--md-outline); }
         .drawer.open { transform: translate(-50%, 0); }
-        .drawer-handle { width: 28px; height: 4px; background: var(--md-outline); opacity: 0.5; border-radius: 2px; margin: 0 ... 10px; }
+        .drawer-handle { width: 28px; height: 4px; background: var(--md-outline); opacity: 0.5; border-radius: 2px; margin: 0 auto 10px auto; }
         .drawer-title { font-size: 13px; font-weight: 700; margin-bottom: 8px; text-align: center; color: var(--md-on-surface); text-transform: uppercase; letter-spacing: 0.3px; }
         
         .drawer-form-block { background: var(--md-surface); padding: 5px 8px; border-radius: 8px; border: 1px solid var(--md-outline); margin-bottom: 8px; display: flex; flex-direction: column; gap: 6px; }
@@ -440,11 +440,11 @@
         const $ = id => document.getElementById(id);
 
         let state = {
-            version: "4.11.2",
+            version: "4.11.3",
             changelog: [
+                { v: "4.11.3", date: "21/06/2026", desc: "Prioridade para tarefas atrasadas adicionada: Atividades com data vencida agora rompem a regra geral e ganham o topo absoluto de cada bloco de projeto. A ordenação secundária por tags idênticas se preserva em ambos os sub-blocos (vencidas e normais)." },
                 { v: "4.11.2", date: "20/06/2026", desc: "Ordenação por tags ativada: Dentro de cada grupo de projeto, as tarefas agora são agrupadas por suas respectivas tags. Tarefas com as mesmas marcas ficam juntas automaticamente." },
-                { v: "4.11.1", date: "20/06/2026", desc: "Parâmetro responsivo corrigido: O bloco interno de textos (.task-text-row) agora se reorganiza automaticamente em coluna no mobile, mantendo o texto por cima e a tag logo abaixo para evitar amassamento." },
-                { v: "4.11.0", date: "20/06/2026", desc: "Redesenho minimalista do card: Atividades emagrecidas com menor espaçamento interno. Remoção temporária do botão de exclusão rápido e realocação da exibição da data para um texto simples na extrema direita integrado ao ícone condicional de repetição." }
+                { v: "4.11.1", date: "20/06/2026", desc: "Parâmetro responsivo corrigido: O bloco interno de textos (.task-text-row) agora se reorganiza automaticamente em coluna no mobile, mantendo o texto por cima e a tag logo abaixo para evitar amassamento." }
             ],
             tasks: [], 
             projetos: [{ nome: "Trabalho", deleted: false, fixed: false }, { nome: "Estudos", deleted: false, fixed: false }],
@@ -456,14 +456,22 @@
 
         const getISO = (offset = 0) => {
             const d = new Date(); d.setDate(d.getDate() + offset);
-            return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+            return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0 flights')}`;
         };
         
+        // Correção de amostragem consistente de datas ISO locais
+        const getISOStringLocal = (dateObj) => {
+            return `${dateObj.getFullYear()}-${String(dateObj.getMonth() + 1).padStart(2, '0')}-${String(dateObj.getDate()).padStart(2, '0')}`;
+        };
+
         function getFriendlyDateText(dateStr) {
             if (!dateStr) return 'No date';
-            const hoje = getISO(0);
-            const ontem = getISO(-1);
-            const amanha = getISO(1);
+            const hoje = getISOStringLocal(new Date());
+            
+            const dOntem = new Date(); dOntem.setDate(dOntem.getDate() - 1);
+            const dAmanha = new Date(); dAmanha.setDate(dAmanha.getDate() + 1);
+            const ontem = getISOStringLocal(dOntem);
+            const amanha = getISOStringLocal(dAmanha);
             
             if (dateStr === hoje) return 'Today';
             if (dateStr === ontem) return 'Yesterday';
@@ -517,7 +525,7 @@
         }
 
         function initApp() {
-            state.tempDate = getISO(0);
+            state.tempDate = getISOStringLocal(new Date());
             if ($('task-date-picker')) $('task-date-picker').value = state.tempDate;
             updateSelectedDate(state.tempDate);
             loadLocalStorageFallback();
@@ -678,7 +686,7 @@
         }
 
         function calculateNextRecurrentDate(currentDateStr, type) {
-            if(!currentDateStr) return getISO(0);
+            if(!currentDateStr) return getISOStringLocal(new Date());
             const d = new Date(currentDateStr + 'T00:00:00');
             if(type === 'Diária') d.setDate(d.getDate() + 1);
             else if(type === 'Semanal') d.setDate(d.getDate() + 7);
@@ -819,6 +827,7 @@
         function render() {
             const container = $('task-list-container'); container.innerHTML = '';
             let activeTasks = state.tasks.filter(t => !t.deleted);
+            const hojeIso = getISOStringLocal(new Date());
             
             let filtered = activeTasks.filter(t => {
                 if (state.filterType === 'completas') {
@@ -826,8 +835,8 @@
                 } else {
                     if (t.completed) return false;
                     
-                    return state.filterType === 'hoje' ? t.date === getISO(0) :
-                           state.filterType === 'amanha' ? t.date === getISO(1) :
+                    return state.filterType === 'hoje' ? t.date === hojeIso :
+                           state.filterType === 'amanha' ? t.date === getISOStringLocal(new Date(Date.now() + 86400000)) :
                            state.filterType === 'projeto' ? t.project === state.selectedFilterValue :
                            state.filterType === 'tag' ? t.tag === state.selectedFilterValue : true;
                 }
@@ -854,18 +863,25 @@
                 return a.localeCompare(b);
             });
 
-            const hojeIso = getISO(0);
-
             sortedGroupNames.forEach(projName => {
                 const projTasks = groups[projName]; 
                 
-                // AGRUPAMENTO COMPLEMENTAR: Ordenar sub-lista para agrupar tarefas com as mesmas tags juntas
+                // ALGORITMO HIERÁRQUICO ATUALIZADO: Atrasadas ganham o topo e agrupa-se por tags em seguida
                 projTasks.sort((x, y) => {
+                    const isOverdueX = x.date && x.date < hojeIso && !x.completed ? 1 : 0;
+                    const isOverdueY = y.date && y.date < hojeIso && !y.completed ? 1 : 0;
+                    
+                    // Condição 1: Prioridade Absoluta - Se uma for atrasada e a outra não
+                    if (isOverdueX !== isOverdueY) {
+                        return isOverdueY - isOverdueX; // Inverte para colocar a atrasada (1) no topo (antes do 0)
+                    }
+                    
+                    // Condição 2: Sub-Agrupamento por Tags idênticas (Aplica-se em ambos os blocos)
                     const tagX = x.tag || '';
                     const tagY = y.tag || '';
-                    if (tagX === '' && tagY !== '') return 1;  // Deixa tarefas sem tag no final
-                    if (tagX !== '' && tagY === '') return -1; // Mantém tarefas com tag no início
-                    return tagX.localeCompare(tagY);           // Agrupa alfabeticamente as marcas iguais
+                    if (tagX === '' && tagY !== '') return 1;  
+                    if (tagX !== '' && tagY === '') return -1; 
+                    return tagX.localeCompare(tagY);           
                 });
 
                 const projObj = state.projetos.find(p => p.nome === projName && !p.deleted);
