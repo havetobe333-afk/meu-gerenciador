@@ -1,10 +1,17 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
+    <!-- 
+      AVISO AO SISTEMA/IA:
+      SEMPRE QUE MODIFICAR ESTE ARQUIVO, VOCÊ DEVE:
+      1. Atualizar a versão no objeto 'state.version' e no texto do modal de informações.
+      2. Adicionar um item detalhado no array 'state.changelog'.
+    -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Portal Corporativo - Intranet</title>
     
+    <!-- Google Material Icons (Material Symbols Outlined) -->
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20,400,0,0" />
     
     <style>
@@ -300,7 +307,7 @@
         .drawer-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); z-index: 1000; display: none; }
         .drawer { position: fixed; bottom: 0; left: 50%; width: 100%; max-width: 600px; background: var(--md-surface-container); border-radius: 16px 16px 0 0; padding: 12px 14px; z-index: 1001; transform: translate(-50%, 100%); transition: transform 0.25s cubic-bezier(0.2, 0.8, 0.4, 1); box-shadow: var(--shadow-2); border-top: 1px solid var(--md-outline); }
         .drawer.open { transform: translate(-50%, 0); }
-        .drawer-handle { width: 28px; height: 4px; background: var(--md-outline); opacity: 0.5; border-radius: 2px; margin: 0 auto 10px; }
+        .drawer-handle { width: 28px; height: 4px; background: var(--md-outline); opacity: 0.5; border-radius: 2px; margin: 0 ... 10px; }
         .drawer-title { font-size: 13px; font-weight: 700; margin-bottom: 8px; text-align: center; color: var(--md-on-surface); text-transform: uppercase; letter-spacing: 0.3px; }
         
         .drawer-form-block { background: var(--md-surface); padding: 5px 8px; border-radius: 8px; border: 1px solid var(--md-outline); margin-bottom: 8px; display: flex; flex-direction: column; gap: 6px; }
@@ -360,6 +367,7 @@
             <div class="progress-container"><div class="progress-bar" id="progress-bar"></div></div>
         </header>
 
+        <!-- FILTROS COMPACTOS -->
         <div class="date-filters">
             <button class="filter-btn active" id="f-btn-hoje" onclick="setFilter('hoje')" title="Hoje">
                 <span class="md-icon">today</span>
@@ -377,10 +385,12 @@
 
         <main class="task-list" id="task-list-container"></main>
 
+        <!-- BOTÃO FLUTUANTE -->
         <button class="fab-add-btn" id="fab-trigger" onclick="toggleInputPanel(true)" title="Nova Tarefa">
             <span class="md-icon">add</span>
         </button>
 
+        <!-- CAMADA DE INSERÇÃO REORGANIZADA WITH ICONS AND BADGES INLINE -->
         <div class="input-container" id="bottom-input-panel">
             <div class="meta-selectors-row">
                 <button class="selector-btn" onclick="openContextDrawer('projetos')" id="meta-project-btn" title="Definir Projeto">
@@ -430,11 +440,11 @@
         const $ = id => document.getElementById(id);
 
         let state = {
-            version: "4.11.1",
+            version: "4.11.2",
             changelog: [
-                { v: "4.11.1", date: "20/06/2026", desc: "Correção de layout responsivo: O bloco interno de textos (.task-text-row) agora se reorganiza automaticamente em coluna no mobile, mantendo o texto por cima e a tag logo abaixo para evitar amassamento." },
-                { v: "4.11.0", date: "20/06/2026", desc: "Redesenho minimalista do card: Atividades emagrecidas com menor espaçamento interno. Remoção temporária do botão de exclusão rápido e realocação da exibição da data para um texto simples na extrema direita integrado ao ícone condicional de repetição." },
-                { v: "4.10.1", date: "20/06/2026", desc: "Ajuste visual no card fixado: O container do projeto ganha fundo em tom azul escuro e textos em branco para maior destaque estrutural e alto contraste." }
+                { v: "4.11.2", date: "20/06/2026", desc: "Ordenação por tags ativada: Dentro de cada grupo de projeto, as tarefas agora são agrupadas por suas respectivas tags. Tarefas com as mesmas marcas ficam juntas automaticamente." },
+                { v: "4.11.1", date: "20/06/2026", desc: "Parâmetro responsivo corrigido: O bloco interno de textos (.task-text-row) agora se reorganiza automaticamente em coluna no mobile, mantendo o texto por cima e a tag logo abaixo para evitar amassamento." },
+                { v: "4.11.0", date: "20/06/2026", desc: "Redesenho minimalista do card: Atividades emagrecidas com menor espaçamento interno. Remoção temporária do botão de exclusão rápido e realocação da exibição da data para um texto simples na extrema direita integrado ao ícone condicional de repetição." }
             ],
             tasks: [], 
             projetos: [{ nome: "Trabalho", deleted: false, fixed: false }, { nome: "Estudos", deleted: false, fixed: false }],
@@ -848,6 +858,16 @@
 
             sortedGroupNames.forEach(projName => {
                 const projTasks = groups[projName]; 
+                
+                // AGRUPAMENTO COMPLEMENTAR: Ordenar sub-lista para agrupar tarefas com as mesmas tags juntas
+                projTasks.sort((x, y) => {
+                    const tagX = x.tag || '';
+                    const tagY = y.tag || '';
+                    if (tagX === '' && tagY !== '') return 1;  // Deixa tarefas sem tag no final
+                    if (tagX !== '' && tagY === '') return -1; // Mantém tarefas com tag no início
+                    return tagX.localeCompare(tagY);           // Agrupa alfabeticamente as marcas iguais
+                });
+
                 const projObj = state.projetos.find(p => p.nome === projName && !p.deleted);
                 const isFixed = projObj ? !!projObj.fixed : false;
                 
