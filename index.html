@@ -1,17 +1,10 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <!-- 
-      AVISO AO SISTEMA/IA:
-      SEMPRE QUE MODIFICAR ESTE ARQUIVO, VOCÊ DEVE:
-      1. Atualizar a versão no objeto 'state.version' e no texto do modal de informações.
-      2. Adicionar um item detalhado no array 'state.changelog'.
-    -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Portal Corporativo - Intranet</title>
     
-    <!-- Google Material Icons (Material Symbols Outlined) -->
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20,400,0,0" />
     
     <style>
@@ -67,7 +60,10 @@
         .info-btn { background: none; border: none; cursor: pointer; color: var(--md-on-surface-variant); padding: 4px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
         .info-btn .md-icon { font-size: 20px; }
         .info-btn:active { background: var(--md-surface-variant); }
-        .sync-status { font-size: 11px; color: var(--md-on-surface-variant); font-weight: 600; }
+        
+        /* Indicador de Sincronização clicável para recarregar */
+        .sync-status { font-size: 11px; color: var(--md-on-surface-variant); font-weight: 600; cursor: pointer; user-select: none; padding: 4px 6px; border-radius: 6px; transition: background-color 0.15s; }
+        .sync-status:active { background: var(--md-surface-variant); opacity: 0.8; }
         .status-dot { width: 6px; height: 6px; background: var(--success-color); border-radius: 50%; }
         .progress-container { width: 100%; background: var(--md-surface-variant); height: 3px; border-radius: 1.5px; overflow: hidden; }
         .progress-bar { width: 0%; height: 100%; background: var(--md-primary); transition: width 0.3s; }
@@ -211,7 +207,7 @@
         .fab-add-btn .md-icon { font-size: 24px; font-weight: bold; }
         .fab-add-btn:active { transform: scale(0.95); background: var(--md-primary); }
         
-        /* BARRA INFERIOR DE INSERÇÃO INTEGRADA COM ICONES COMPACTOS */
+        /* BARRA INFERIOR DE INSERÇÃO INTEGRADA WITH ICONES COMPACTOS */
         .input-container { 
             position: fixed; 
             bottom: 0; 
@@ -359,7 +355,7 @@
                     <div class="app-title" id="current-view-title"><span class="md-icon" style="font-size:22px;">today</span> Hoje</div>
                     <button class="info-btn" onclick="openInfoDrawer()"><span class="md-icon">info</span></button>
                 </div>
-                <div class="sync-status">
+                <div class="sync-status" onclick="window.location.reload();" title="Toque para recarregar a página">
                     <div class="status-dot" id="status-dot"></div>
                     <span id="status-text">Sincronizando...</span>
                 </div>
@@ -367,7 +363,6 @@
             <div class="progress-container"><div class="progress-bar" id="progress-bar"></div></div>
         </header>
 
-        <!-- FILTROS COMPACTOS -->
         <div class="date-filters">
             <button class="filter-btn active" id="f-btn-hoje" onclick="setFilter('hoje')" title="Hoje">
                 <span class="md-icon">today</span>
@@ -385,12 +380,10 @@
 
         <main class="task-list" id="task-list-container"></main>
 
-        <!-- BOTÃO FLUTUANTE -->
         <button class="fab-add-btn" id="fab-trigger" onclick="toggleInputPanel(true)" title="Nova Tarefa">
             <span class="md-icon">add</span>
         </button>
 
-        <!-- CAMADA DE INSERÇÃO REORGANIZADA WITH ICONS AND BADGES INLINE -->
         <div class="input-container" id="bottom-input-panel">
             <div class="meta-selectors-row">
                 <button class="selector-btn" onclick="openContextDrawer('projetos')" id="meta-project-btn" title="Definir Projeto">
@@ -440,11 +433,11 @@
         const $ = id => document.getElementById(id);
 
         let state = {
-            version: "4.11.3",
+            version: "4.11.4",
             changelog: [
+                { v: "4.11.4", date: "21/06/2026", desc: "Ação de clique adicionada ao indicador de sincronização corporativo (.sync-status): Ao clicar/tocar no status, a página é recarregada de forma limpa, servindo como um botão de refresh manual." },
                 { v: "4.11.3", date: "21/06/2026", desc: "Prioridade para tarefas atrasadas adicionada: Atividades com data vencida agora rompem a regra geral e ganham o topo absoluto de cada bloco de projeto. A ordenação secundária por tags idênticas se preserva em ambos os sub-blocos (vencidas e normais)." },
-                { v: "4.11.2", date: "20/06/2026", desc: "Ordenação por tags ativada: Dentro de cada grupo de projeto, as tarefas agora são agrupadas por suas respectivas tags. Tarefas com as mesmas marcas ficam juntas automaticamente." },
-                { v: "4.11.1", date: "20/06/2026", desc: "Parâmetro responsivo corrigido: O bloco interno de textos (.task-text-row) agora se reorganiza automaticamente em coluna no mobile, mantendo o texto por cima e a tag logo abaixo para evitar amassamento." }
+                { v: "4.11.2", date: "20/06/2026", desc: "Ordenação por tags ativada: Dentro de cada grupo de projeto, as tarefas agora são agrupadas por suas respectivas tags. Tarefas com as mesmas marcas ficam juntas automaticamente." }
             ],
             tasks: [], 
             projetos: [{ nome: "Trabalho", deleted: false, fixed: false }, { nome: "Estudos", deleted: false, fixed: false }],
