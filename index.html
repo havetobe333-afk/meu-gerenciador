@@ -433,8 +433,9 @@
         const $ = id => document.getElementById(id);
 
         let state = {
-            version: "4.11.4",
+            version: "4.11.5",
             changelog: [
+                { v: "4.11.5", date: "21/06/2026", desc: "Corregido erro de inversão temporal: Ajustado o algoritmo estrito de ordenação hierárquica na exibição 'Todos os Itens' para certificar que a linha do tempo cronológica linear (Hoje > Amanhã) se sobressaia às tags." },
                 { v: "4.11.4", date: "21/06/2026", desc: "Ação de clique adicionada ao indicador de sincronização corporativo (.sync-status): Ao clicar/tocar no status, a página é recarregada de forma limpa, servindo como um botão de refresh manual." },
                 { v: "4.11.3", date: "21/06/2026", desc: "Prioridade para tarefas atrasadas adicionada: Atividades com data vencida agora rompem a regra geral e ganham o topo absoluto de cada bloco de projeto. A ordenação secundária por tags idênticas se preserva em ambos os sub-blocos (vencidas e normais)." },
                 { v: "4.11.2", date: "20/06/2026", desc: "Ordenação por tags ativada: Dentro de cada grupo de projeto, as tarefas agora são agrupadas por suas respectivas tags. Tarefas com as mesmas marcas ficam juntas automaticamente." }
@@ -859,17 +860,22 @@
             sortedGroupNames.forEach(projName => {
                 const projTasks = groups[projName]; 
                 
-                // ALGORITMO HIERÁRQUICO ATUALIZADO: Atrasadas ganham o topo e agrupa-se por tags em seguida
+                // ALGORITMO HIERÁRQUICO ATUALIZADO: Atrasadas no topo absoluto -> Linha Cronológica (Hoje > Amanhã) -> Desempate por Tags
                 projTasks.sort((x, y) => {
                     const isOverdueX = x.date && x.date < hojeIso && !x.completed ? 1 : 0;
                     const isOverdueY = y.date && y.date < hojeIso && !y.completed ? 1 : 0;
                     
                     // Condição 1: Prioridade Absoluta - Se uma for atrasada e a outra não
                     if (isOverdueX !== isOverdueY) {
-                        return isOverdueY - isOverdueX; // Inverte para colocar a atrasada (1) no topo (antes do 0)
+                        return isOverdueY - isOverdueX; // Coloca a atrasada (1) antes da normal (0)
                     }
                     
-                    // Condição 2: Sub-Agrupamento por Tags idênticas (Aplica-se em ambos os blocos)
+                    // Condição 2: Linha Cronológica Linear Estrita (Corrige "Tomorrow" listada antes de "Today")
+                    if (x.date !== y.date) {
+                        return x.date.localeCompare(y.date);
+                    }
+                    
+                    // Condição 3: Sub-Agrupamento por Tags idênticas (Apenas em caso de datas idênticas)
                     const tagX = x.tag || '';
                     const tagY = y.tag || '';
                     if (tagX === '' && tagY !== '') return 1;  
