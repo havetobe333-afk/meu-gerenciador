@@ -241,6 +241,11 @@
         .selector-btn.has-value { border-color: var(--md-primary); background: #eff6ff; }
         .selector-btn.has-value .md-icon { color: var(--md-primary); }
         
+        /* Botão específico para deletar a tarefa selecionada na barra inferior */
+        .btn-meta-delete { border-color: var(--error-color); background: #fef2f2; display: none; }
+        .btn-meta-delete .md-icon { color: var(--error-color); }
+        .btn-meta-delete:active { background: var(--error-container); }
+
         /* Pequeno balão informativo complementar ao lado dos ícones */
         .meta-badge-text { font-size: 11px; font-weight: 700; color: var(--md-primary); background: #eff6ff; padding: 4px 8px; border-radius: 6px; border: 1px solid var(--md-surface-variant); display: none; max-width: 120px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
@@ -400,6 +405,10 @@
                     <span class="md-icon">repeat</span>
                 </button>
                 <div class="meta-badge-text" id="badge-recurrence-text"></div>
+                
+                <button class="selector-btn btn-meta-delete" id="meta-delete-btn" onclick="triggerDeleteSelectedTask()" title="Deletar Tarefa Ativa">
+                    <span class="md-icon">delete</span>
+                </button>
             </div>
             
             <div class="main-input-block">
@@ -433,8 +442,10 @@
         const $ = id => document.getElementById(id);
 
         let state = {
-            version: "4.11.5",
+            version: "4.11.7",
             changelog: [
+                { v: "4.11.7", date: "21/06/2026", desc: "Adicionado botão de exclusão rápido (ícone de lixeira) na barra inferior de inserção, localizado estrategicamente ao lado dos seletores de metadados, permitindo apagar a tarefa ativa em edição com um único toque." },
+                { v: "4.11.6", date: "21/06/2026", desc: "Mecanismo de preservação de dados ativado: Modificadas as funções deleteProj e deleteTag para que, ao excluir um projeto ou tag, as tarefas correspondentes nunca sejam deletadas; em vez disso, elas mantêm seu status ativo e caem automaticamente na listagem Sem Projeto." },
                 { v: "4.11.5", date: "21/06/2026", desc: "Corregido erro de inversão temporal: Ajustado o algoritmo estrito de ordenação hierárquica na exibição 'Todos os Itens' para certificar que a linha do tempo cronológica linear (Hoje > Amanhã) se sobressaia às tags." },
                 { v: "4.11.4", date: "21/06/2026", desc: "Ação de clique adicionada ao indicador de sincronização corporativo (.sync-status): Ao clicar/tocar no status, a página é recarregada de forma limpa, servindo como um botão de refresh manual." },
                 { v: "4.11.3", date: "21/06/2026", desc: "Prioridade para tarefas atrasadas adicionada: Atividades com data vencida agora rompem a regra geral e ganham o topo absoluto de cada bloco de projeto. A ordenação secundária por tags idênticas se preserva em ambos os sub-blocos (vencidas e normais)." },
@@ -443,7 +454,7 @@
             tasks: [], 
             projetos: [{ nome: "Trabalho", deleted: false, fixed: false }, { nome: "Estudos", deleted: false, fixed: false }],
             tags: [{ nome: "URGENTE", cor: "#ef4444", deleted: false }, { nome: "FOCO", cor: "#3b82f6", deleted: false }],
-            filterType: 'hoje', selectedFilterValue: '', tempDate: '', tempProject: 'No project', tempTag: '', tempRecurrence: 'Nenhuma'
+            filterType: 'hoje', selectedFilterValue: '', tempDate: '', tempProject: 'No project', tempTag: '', tempRecurrence: 'Nenhuma', activeTaskId: null
         };
 
         let dragSrcEl = null;
@@ -453,7 +464,6 @@
             return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0 flights')}`;
         };
         
-        // Correção de amostragem consistente de datas ISO locais
         const getISOStringLocal = (dateObj) => {
             return `${dateObj.getFullYear()}-${String(dateObj.getMonth() + 1).padStart(2, '0')}-${String(dateObj.getDate()).padStart(2, '0')}`;
         };
@@ -493,6 +503,8 @@
             } else {
                 panel.classList.remove('visible');
                 fab.style.display = 'flex';
+                state.activeTaskId = null;
+                if ($('meta-delete-btn')) $('meta-delete-btn').style.display = 'none';
             }
         }
 
@@ -662,20 +674,50 @@
             } else {
                 rBtn.classList.remove('has-value'); rBadge.style.display = 'none';
             }
+            
+            // Exibe ou oculta o botão de apagar com base no id ativo de edição
+            const dBtn = $('meta-delete-btn');
+            if (dBtn) dBtn.style.display = state.activeTaskId ? 'inline-flex' : 'none';
         }
 
         function triggerSubmitTask() {
             const inputElement = $('new-task-input'); const val = inputElement.value.trim();
             if(val) {
-                state.tasks.push({ 
-                    id: 'task_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5), 
-                    text: val, completed: false, date: state.tempDate, project: state.tempProject, 
-                    tag: state.tempTag, recurrence: state.tempRecurrence || 'Nenhuma', deleted: false, updatedAt: Date.now() 
-                });
-                inputElement.value = ''; state.tempProject = 'No project'; state.tempTag = ''; state.tempRecurrence = 'Nenhuma';
+                if (state.activeTaskId) {
+                    // Modo Edição: Atualiza os dados da tarefa ativa
+                    const t = state.tasks.find(x => x.id === state.activeTaskId);
+                    if (t) {
+                        t.text = val;
+                        t.date = state.tempDate;
+                        t.project = state.tempProject;
+                        t.tag = state.tempTag;
+                        t.recurrence = state.tempRecurrence || 'Nenhuma';
+                        t.updatedAt = Date.now();
+                    }
+                } else {
+                    // Modo Criação: Adiciona uma nova tarefa ao vetor
+                    state.tasks.push({ 
+                        id: 'task_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5), 
+                        text: val, completed: false, date: state.tempDate, project: state.tempProject, 
+                        tag: state.tempTag, recurrence: state.tempRecurrence || 'Nenhuma', deleted: false, updatedAt: Date.now() 
+                    });
+                }
+                
+                inputElement.value = ''; state.tempProject = 'No project'; state.tempTag = ''; state.tempRecurrence = 'Nenhuma'; state.activeTaskId = null;
                 updateBarMetaUi();
                 toggleInputPanel(false);
                 render(); pushData();
+            }
+        }
+
+        function triggerDeleteSelectedTask() {
+            if (state.activeTaskId) {
+                opTask(state.activeTaskId, 'delete');
+                const inputElement = $('new-task-input');
+                if (inputElement) inputElement.value = '';
+                state.tempProject = 'No project'; state.tempTag = ''; state.tempRecurrence = 'Nenhuma'; state.activeTaskId = null;
+                updateBarMetaUi();
+                toggleInputPanel(false);
             }
         }
 
@@ -693,6 +735,7 @@
         function callTaskBackToDraft(id) {
             const t = state.tasks.find(x => x.id === id); if(!t || t.completed) return;
             
+            state.activeTaskId = t.id;
             $('new-task-input').value = t.text;
             state.tempDate = t.date;
             state.tempProject = t.project || 'No project';
@@ -703,12 +746,8 @@
             updateSelectedDate(t.date);
             if ($('task-date-picker')) $('task-date-picker').value = t.date;
             
-            t.deleted = true;
-            t.deletedAt = Date.now();
-            
             toggleInputPanel(true);
             render();
-            pushData();
         }
 
         function toggleProjectPin(projName) {
@@ -860,22 +899,18 @@
             sortedGroupNames.forEach(projName => {
                 const projTasks = groups[projName]; 
                 
-                // ALGORITMO HIERÁRQUICO ATUALIZADO: Atrasadas no topo absoluto -> Linha Cronológica (Hoje > Amanhã) -> Desempate por Tags
                 projTasks.sort((x, y) => {
                     const isOverdueX = x.date && x.date < hojeIso && !x.completed ? 1 : 0;
                     const isOverdueY = y.date && y.date < hojeIso && !y.completed ? 1 : 0;
                     
-                    // Condição 1: Prioridade Absoluta - Se uma for atrasada e a outra não
                     if (isOverdueX !== isOverdueY) {
-                        return isOverdueY - isOverdueX; // Coloca a atrasada (1) antes da normal (0)
+                        return isOverdueY - isOverdueX;
                     }
                     
-                    // Condição 2: Linha Cronológica Linear Estrita (Corrige "Tomorrow" listada antes de "Today")
                     if (x.date !== y.date) {
                         return x.date.localeCompare(y.date);
                     }
                     
-                    // Condição 3: Sub-Agrupamento por Tags idênticas (Apenas em caso de datas idênticas)
                     const tagX = x.tag || '';
                     const tagY = y.tag || '';
                     if (tagX === '' && tagY !== '') return 1;  
@@ -1061,7 +1096,12 @@
 
         function deleteProj(name) {
             const p = state.projetos.find(x => x.nome === name); if(p) { p.deleted = true; p.deletedAt = Date.now(); }
-            state.tasks.forEach(x => { if(x.project === name) { x.deleted = true; x.deletedAt = Date.now(); } });
+            state.tasks.forEach(x => { 
+                if(x.project === name) { 
+                    x.project = 'No project'; 
+                    x.updatedAt = Date.now();
+                } 
+            });
             renderProjectsList(); render(); pushData();
         }
 
@@ -1110,7 +1150,13 @@
 
         function deleteTag(name) {
             const t = state.tags.find(x => x.nome === name); if(t) { t.deleted = true; t.deletedAt = Date.now(); }
-            state.tasks.forEach(x => { if(x.tag === name) x.tag = ''; }); renderTagsList(); render(); pushData();
+            state.tasks.forEach(x => { 
+                if(x.tag === name) { 
+                    x.tag = ''; 
+                    x.updatedAt = Date.now();
+                } 
+            }); 
+            renderTagsList(); render(); pushData();
         }
 
         window.addEventListener('DOMContentLoaded', initApp);
