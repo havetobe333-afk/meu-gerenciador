@@ -18,15 +18,15 @@
             --md-surface-variant: #e2e8f0; /* Cinza claro para bordas estruturais */
             --md-on-surface: #0f172a; /* Texto principal quase preto */
             --md-on-surface-variant: #334155; /* Texto secundário escuro */
-            --md-outline: #64748b; /* Borda visível */
-            --md-surface-container: #f1f5f9; /* Containers internos em tom cinza suave */
+            --md-outline: #cbd5e1; /* Borda visível mais suave para harmonizar com a imagem */
+            --md-surface-container: #f8fafc; /* Fundo cinza claro idêntico ao bloco da imagem */
             --md-surface-container-high: #e2e8f0;
             --success-color: #166534;
             --error-color: #991b1b;
             --error-container: #fee2e2;
             --on-error-container: #7f1d1d;
-            --shadow-1: 0px 2px 4px rgba(0, 0, 0, 0.08), 0px 1px 2px rgba(0, 0, 0, 0.12);
-            --shadow-2: 0px 4px 12px rgba(0, 0, 0, 0.12), 0px 2px 4px rgba(0, 0, 0, 0.08);
+            --shadow-1: 0px 1px 3px rgba(0, 0, 0, 0.05);
+            --shadow-2: 0px 4px 12px rgba(0, 0, 0, 0.12);
         }
         
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Roboto', system-ui, -apple-system, sans-serif; -webkit-tap-highlight-color: transparent; }
@@ -53,7 +53,7 @@
         }
 
         /* Header Estilo Material App Bar */
-        header { background: var(--md-surface-container); padding: 12px 16px; border-bottom: 1px solid var(--md-surface-variant); position: sticky; top: 0; z-index: 100; display: flex; flex-direction: column; gap: 8px; }
+        header { background: #f1f5f9; padding: 12px 16px; border-bottom: 1px solid var(--md-surface-variant); position: sticky; top: 0; z-index: 100; display: flex; flex-direction: column; gap: 8px; }
         .header-top, .header-left, .sync-status { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
         .header-left { justify-content: flex-start; }
         .app-title { font-size: 20px; font-weight: 600; color: var(--md-on-surface); display: flex; align-items: center; gap: 8px; }
@@ -81,80 +81,95 @@
             outline: none !important;
             box-shadow: none !important;
         }
-        .filter-btn:focus, .filter-btn:focus-visible {
-            outline: none !important;
-            box-shadow: none !important;
+        
+        /* Listas e Cards Baseados na Nova Imagem Enviada */
+        .task-list { padding: 4px 16px; display: flex; flex-direction: column; gap: 14px; }
+        
+        /* Container Unificado do Projeto (Igual ao Bloco Sólido da Foto) */
+        .project-group-card { 
+            background: var(--md-surface-container); 
+            border-radius: 14px; 
+            padding: 4px 0 0 0; /* Padding interno controlado para as linhas encostarem nas laterais */
+            display: flex; 
+            flex-direction: column; 
+            box-shadow: var(--shadow-1); 
+            border: 1px solid var(--md-surface-variant); 
+            overflow: hidden;
+            transition: background-color 0.2s, border-color 0.2s; 
         }
         
-        /* Listas e Cards Material */
-        .task-list { padding: 4px 16px; display: flex; flex-direction: column; gap: 10px; }
-        .project-group-card { background: var(--md-surface-container); border-radius: 12px; padding: 10px; display: flex; flex-direction: column; gap: 6px; box-shadow: var(--shadow-1); border: 1px solid var(--md-surface-variant); transition: background-color 0.2s, border-color 0.2s; }
+        /* Estado Fixado: Mantém a estrutura limpa trocando apenas o tom da borda ou sutil destaque */
+        .project-group-card.is-fixed { border-color: var(--md-primary); border-width: 1.5px; }
         
-        /* Estado Fixado: Fundo Azul Escuro */
-        .project-group-card.is-fixed { border-color: var(--md-primary); background: var(--md-primary); }
-        
-        .project-group-header { display: flex; justify-content: space-between; align-items: center; font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--md-primary); letter-spacing: 0.5px; margin-bottom: 2px; }
-        
-        /* Modificações do header quando fixado */
-        .project-group-card.is-fixed .project-group-header { color: #ffffff; }
+        .project-group-header { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            font-size: 12px; 
+            font-weight: 700; 
+            text-transform: uppercase; 
+            color: var(--md-primary); 
+            letter-spacing: 0.5px; 
+            padding: 10px 14px 6px 14px;
+        }
         
         .project-group-header-left { display: flex; align-items: center; gap: 6px; }
-        .project-group-title-link { display: inline-flex; align-items: center; gap: 4px; cursor: pointer; padding: 2px 4px; border-radius: 4px; transition: background-color 0.1s; }
+        .project-group-title-link { display: inline-flex; align-items: center; gap: 4px; cursor: pointer; padding: 2px 4px; border-radius: 4px; }
         .project-group-title-link:active { background: var(--md-surface-container-high); }
-        .project-group-card.is-fixed .project-group-title-link:active { background: rgba(255, 255, 255, 0.15); }
         
-        .project-group-count { font-weight: 700; color: var(--md-on-surface); font-size: 11px; background: var(--md-surface-container-high); padding: 1px 6px; border-radius: 8px; }
-        .project-group-card.is-fixed .project-group-count { color: var(--md-primary); background: #ffffff; }
+        .project-group-count { font-weight: 700; color: var(--md-on-surface-variant); font-size: 11px; background: var(--md-surface-container-high); padding: 1px 6px; border-radius: 8px; }
         
         /* Botão Pin Fixar */
-        .btn-project-pin { background: none; border: none; color: var(--md-outline); cursor: pointer; padding: 4px; border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: color 0.15s; }
-        .btn-project-pin:active { background: var(--md-surface-variant); }
+        .btn-project-pin { background: none; border: none; color: var(--md-outline); cursor: pointer; padding: 4px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
         .btn-project-pin.active { color: var(--md-primary); }
         .btn-project-pin .md-icon { font-size: 16px; }
-        
-        /* Ajuste do botão de pin quando o card está fixado */
-        .project-group-card.is-fixed .btn-project-pin.active { color: #ffffff; }
-        .project-group-card.is-fixed .btn-project-pin:active { background: rgba(255, 255, 255, 0.15); }
 
-        /* Itens de Tarefa (Emagrecidos/Compactados) */
-        .task-item { background: var(--md-surface); border: 1px solid var(--md-outline); border-radius: 8px; padding: 4px 10px; display: flex; align-items: center; gap: 10px; transition: background-color 0.2s, opacity 0.2s; position: relative; }
+        /* Itens de Tarefa Modificados (Sem fundo individual, com bordas internas divisórias) */
+        .task-item { 
+            background: transparent; /* Transparente para herdar o fundo cinza do bloco */
+            border: none; /* Remove borda externa individual */
+            border-radius: 0; 
+            padding: 12px 14px; 
+            display: flex; 
+            align-items: center; 
+            gap: 12px; 
+            transition: background-color 0.2s, opacity 0.2s; 
+            position: relative; 
+        }
+        
+        /* Linha divisória interna entre tarefas (Diretriz de bordas internas da imagem) */
+        .task-item:not(:last-child) {
+            border-bottom: 1px solid #e2e8f0; 
+        }
+        
         .task-item.dragging { opacity: 0.4; background: var(--md-surface-container-high); }
         .task-item.drag-over { border-top: 2px solid var(--md-primary); }
         
-        /* Estado Atrasado (Avermelhado de alto contraste) */
-        .task-item.overdue {
-            background: #fff5f5;
-            border-color: #ef4444;
-        }
-        .task-item.overdue .task-text {
-            color: #991b1b;
-        }
-        .task-item.overdue .right-date-pilling-zone {
-            color: #ef4444 !important;
-        }
+        /* Estado Atrasado dentro do container integrado */
+        .task-item.overdue { background: #fff5f5; }
+        .task-item.overdue .task-text { color: #991b1b; }
+        .task-item.overdue .right-date-pilling-zone { color: #ef4444 !important; }
 
         /* Alça de Arraste (Drag Handle) */
         .drag-handle { color: var(--md-outline); cursor: grab; display: flex; align-items: center; justify-content: center; padding: 4px 0; user-select: none; touch-action: none; }
         .drag-handle:active { cursor: grabbing; color: var(--md-primary); }
         
         /* Checkbox Material */
-        .task-checkbox { appearance: none; -webkit-appearance: none; width: 16px; height: 16px; border: 2px solid var(--md-outline); border-radius: 4px; cursor: pointer; flex-shrink: 0; display: inline-flex; align-items: center; justify-content: center; transition: all 0.1s; }
+        .task-checkbox { appearance: none; -webkit-appearance: none; width: 18px; height: 18px; border: 2px solid #cbd5e1; border-radius: 5px; cursor: pointer; flex-shrink: 0; display: inline-flex; align-items: center; justify-content: center; transition: all 0.1s; background: #ffffff; }
         .task-checkbox:checked { background: var(--md-primary); border-color: var(--md-primary); }
-        .task-checkbox:checked::after { content: "✓"; color: var(--md-on-primary); font-size: 10px; font-weight: bold; }
-        .task-item.overdue .task-checkbox { border-color: #ef4444; }
-        .task-item.overdue .task-checkbox:checked { background: var(--md-primary); border-color: var(--md-primary); }
+        .task-checkbox:checked::after { content: "✓"; color: var(--md-on-primary); font-size: 11px; font-weight: bold; }
         
         .task-content { flex-grow: 1; display: flex; justify-content: space-between; align-items: center; gap: 12px; overflow: hidden; }
         
-        /* Ajuste do Bloco de Texto e Tag para evitar amassamento */
+        /* Ajuste do Bloco de Texto e Tag */
         .task-text-row { display: flex; align-items: center; gap: 6px; flex-grow: 1; overflow: hidden; }
-        .task-text { font-size: 14px; font-weight: 500; line-height: 1.3; word-break: break-word; cursor: pointer; color: var(--md-on-surface); }
+        .task-text { font-size: 14.5px; font-weight: 500; line-height: 1.4; word-break: break-word; cursor: pointer; color: var(--md-on-surface); }
         .task-item.completed .task-text { text-decoration: line-through; color: var(--md-outline) !important; opacity: 0.6; font-weight: 400; cursor: default; }
         
         /* Tags Inline ao lado do texto */
         .inline-tag-badge { font-size: 9px; padding: 1px 5px; border-radius: 4px; font-weight: 700; cursor: pointer; flex-shrink: 0; text-transform: uppercase; }
 
-        /* Nova Estrutura de Data Clean na Direita */
+        /* Estrutura de Data Clean na Direita */
         .right-date-pilling-zone { 
             position: relative; 
             display: inline-flex; 
@@ -169,7 +184,7 @@
             user-select: none;
         }
         .task-item.completed .right-date-pilling-zone { opacity: 0.5; }
-        .right-date-icon { display: inline-flex; align-items: center; justify-content: center; opacity: 0.8; }
+        .right-date-icon { display: inline-flex; align-items: center; justify-content: center; opacity: 0.7; }
         .right-date-icon .md-icon { font-size: 15px !important; }
 
         /* BOTÃO FLUTUANTE */
@@ -189,18 +204,18 @@
             justify-content: center;
             cursor: pointer;
             z-index: 400;
-            transition: transform 0.2s, background-color 0.2s, left 0.1s;
+            transition: transform 0.2s, background-color 0.2s;
         }
         .fab-add-btn .md-icon { font-size: 24px; font-weight: bold; }
         .fab-add-btn:active { transform: scale(0.95); background: var(--md-primary); }
         
-        /* LAYER DE INSERÇÃO/EDIÇÃO CORRIGIDO PARA DESKTOP */
+        /* LAYER DE INSERÇÃO/EDIÇÃO */
         .input-container { 
             position: fixed; 
             top: 0; 
             left: 50%; 
             width: 100%;
-            max-width: 600px; /* Alinhado exatamente com o corpo da lista de tarefas */
+            max-width: 600px;
             height: 100vh;
             background: var(--md-surface); 
             padding: 20px; 
@@ -217,19 +232,17 @@
             transform: translate(-50%, 0);
         }
         
-        /* Grid de opções estilo barra horizontal/vertical */
         .meta-selectors-row { display: flex; flex-direction: column; gap: 10px; width: 100%; }
         
         .selector-row-item {
             display: flex;
             align-items: center;
             gap: 12px;
-            background: var(--md-surface-container);
+            background: #f1f5f9;
             padding: 12px 14px;
             border-radius: 12px;
             border: 1px solid var(--md-surface-variant);
             cursor: pointer;
-            transition: background-color 0.15s;
         }
         .selector-row-item:active { background: var(--md-surface-container-high); }
 
@@ -237,19 +250,16 @@
         .selector-btn-icon .md-icon { font-size: 20px; }
         .selector-row-label { font-size: 14px; font-weight: 600; color: var(--md-on-surface); flex-grow: 1; }
 
-        /* Estado Ativo/Preenchido do Seletor */
         .meta-badge-text { font-size: 12px; font-weight: 700; color: var(--md-primary); background: #eff6ff; padding: 4px 10px; border-radius: 8px; border: 1px solid #bfdbfe; max-width: 150px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         
-        /* Botão específico para deletar a tarefa selecionada na barra inferior */
         .btn-meta-delete { border: 1px solid var(--error-color); background: #fef2f2; width: 100%; height: 48px; border-radius: 12px; display: none; align-items: center; justify-content: center; gap: 8px; font-size: 14px; font-weight: 700; color: var(--error-color); cursor: pointer; margin-top: auto; }
         .btn-meta-delete .md-icon { font-size: 18px; }
-        .btn-meta-delete:active { background: var(--error-container); }
 
         .task-input { 
             width: 100%; 
             height: 110px;
             border: 1px solid var(--md-surface-variant); 
-            background: var(--md-surface-container); 
+            background: #f1f5f9; 
             padding: 14px; 
             border-radius: 12px; 
             font-size: 15px; 
@@ -257,11 +267,9 @@
             outline: none; 
             resize: none;
             font-weight: 500;
-            transition: border-color 0.2s;
         }
-        .task-input:focus { border-color: var(--md-primary); }
         
-        .datepicker-wrapper { position: relative; display: inline-flex; align-items: center; user-select: none; }
+        .datepicker-wrapper { position: relative; display: inline-flex; align-items: center; }
         .datepicker-text { font-size: 12px; color: var(--md-primary); font-weight: 700; background: #eff6ff; padding: 4px 10px; border-radius: 8px; border: 1px solid #bfdbfe; }
 
         .blue-add-action-btn { 
@@ -277,36 +285,55 @@
             cursor: pointer; 
             box-shadow: var(--shadow-1); 
             flex-shrink: 0;
-            transition: all 0.2s;
         }
         .blue-add-action-btn .md-icon { font-size: 20px; font-weight: bold; }
-        .blue-add-action-btn:active { opacity: 0.9; transform: scale(0.95); box-shadow: none; }
         
         /* DRAWERS MATERIAL M3 BOTTOM SHEET */
         .drawer-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); z-index: 3000; display: none; }
-        .drawer { position: fixed; bottom: 0; left: 50%; width: 100%; max-width: 600px; background: var(--md-surface-container); border-radius: 16px 16px 0 0; padding: 12px 14px; z-index: 3001; transform: translate(-50%, 100%); transition: transform 0.25s cubic-bezier(0.2, 0.8, 0.4, 1); box-shadow: var(--shadow-2); border-top: 1px solid var(--md-outline); }
+        .drawer { position: fixed; bottom: 0; left: 50%; width: 100%; max-width: 600px; background: #f1f5f9; border-radius: 16px 16px 0 0; padding: 12px 14px; z-index: 3001; transform: translate(-50%, 100%); transition: transform 0.25s cubic-bezier(0.2, 0.8, 0.4, 1); box-shadow: var(--shadow-2); border-top: 1px solid #cbd5e1; }
         .drawer.open { transform: translate(-50%, 0); }
-        .drawer-handle { width: 28px; height: 4px; background: var(--md-outline); opacity: 0.5; border-radius: 2px; margin: 0 auto 10px auto; }
+        .drawer-handle { width: 28px; height: 4px; background: #94a3b8; opacity: 0.5; border-radius: 2px; margin: 0 auto 10px auto; }
         .drawer-title { font-size: 13px; font-weight: 700; margin-bottom: 8px; text-align: center; color: var(--md-on-surface); text-transform: uppercase; letter-spacing: 0.3px; }
         
-        .drawer-form-block { background: var(--md-surface); padding: 5px 8px; border-radius: 8px; border: 1px solid var(--md-outline); margin-bottom: 8px; display: flex; flex-direction: column; gap: 6px; }
-        .drawer-input { width: 100%; padding: 6px 8px; border: 1px solid var(--md-outline); border-radius: 6px; font-size: 13px; background: var(--md-surface); color: var(--md-on-surface); outline: none; }
-        .drawer-input:focus { border-color: var(--md-primary); border-width: 1.5px; padding-bottom: 5.5px; padding-top: 5.5px; }
-        .action-submit-btn { background: var(--md-primary); color: var(--md-on-primary); border: none; padding: 6px; border-radius: 6px; font-weight: 700; font-size: 11px; cursor: pointer; box-shadow: var(--shadow-1); }
+        .drawer-form-block { background: var(--md-surface); padding: 5px 8px; border-radius: 8px; border: 1px solid #cbd5e1; margin-bottom: 8px; display: flex; flex-direction: column; gap: 6px; }
+        .drawer-input { width: 100%; padding: 6px 8px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 13px; background: var(--md-surface); color: var(--md-on-surface); outline: none; }
+        .action-submit-btn { background: var(--md-primary); color: var(--md-on-primary); border: none; padding: 6px; border-radius: 6px; font-weight: 700; font-size: 11px; cursor: pointer; }
         
-        .items-list-scroll { max-height: 200px; overflow-y: auto; display: flex; flex-direction: column; gap: 4px; }
+        .items-list-scroll { max-height: 280px; overflow-y: auto; display: flex; flex-direction: column; gap: 4px; }
         
-        .list-item-row { display: flex; justify-content: space-between; align-items: center; padding: 3px 8px; border: 1px solid var(--md-outline); border-radius: 6px; background: var(--md-surface); font-size: 13px; }
-        .item-label { display: flex; align-items: center; gap: 5px; cursor: pointer; flex-grow: 1; color: var(--md-on-surface); padding: 2px 0; font-weight: 500; }
-        .item-label .md-icon { font-size: 13px; }
-        .list-item-row .btn-inline-del { padding: 2px; }
-        .list-item-row .btn-inline-del .md-icon { font-size: 14px; }
+        .list-item-row { display: flex; justify-content: space-between; align-items: center; padding: 12px 14px; border: 1px solid var(--md-surface-variant); border-radius: 12px; background: var(--md-surface); font-size: 14px; }
+        .item-label { display: flex; align-items: center; gap: 8px; cursor: pointer; flex-grow: 1; color: var(--md-on-surface); padding: 2px 0; font-weight: 600; }
+        .item-label .md-icon { font-size: 16px; }
+
+        .drawer-radio-input {
+            appearance: none;
+            -webkit-appearance: none;
+            width: 20px;
+            height: 20px;
+            border: 2px solid #cbd5e1;
+            border-radius: 50%;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .drawer-radio-input:checked {
+            border-color: var(--md-primary);
+        }
+        .drawer-radio-input:checked::after {
+            content: '';
+            width: 10px;
+            height: 10px;
+            background-color: var(--md-primary);
+            border-radius: 50%;
+            display: block;
+        }
         
         .changelog-list { list-style: none; display: flex; flex-direction: column; gap: 10px; margin-top: 8px; font-size: 12px; }
-        .changelog-item { padding-bottom: 8px; border-bottom: 1px dashed var(--md-outline); line-height: 1.4; color: var(--md-on-surface-variant); }
+        .changelog-item { padding-bottom: 8px; border-bottom: 1px dashed #cbd5e1; line-height: 1.4; color: var(--md-on-surface-variant); }
         .changelog-version { font-weight: 700; color: var(--md-primary); }
 
-        /* POP-UP DE CALENDÁRIO CUSTOMIZADO (MATERIAL POP-UP) */
+        /* POP-UP DE CALENDÁRIO */
         .calendar-popup-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0, 0, 0, 0.5); z-index: 5000; display: none; align-items: center; justify-content: center; padding: 20px; }
         .calendar-popup { background: var(--md-surface); border-radius: 16px; width: 100%; max-width: 320px; box-shadow: var(--shadow-2); overflow: hidden; display: flex; flex-direction: column; }
         .calendar-popup-header { background: var(--md-primary); color: var(--md-on-primary); padding: 16px; }
@@ -315,24 +342,18 @@
         .calendar-popup-body { padding: 12px; display: flex; flex-direction: column; gap: 8px; }
         .calendar-nav-row { display: flex; align-items: center; justify-content: space-between; padding: 0 4px; }
         .calendar-nav-title { font-size: 14px; font-weight: 700; color: var(--md-on-surface); }
-        .calendar-nav-btn { background: none; border: none; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--md-on-surface-variant); }
-        .calendar-nav-btn:active { background: var(--md-surface-container-high); }
-        .calendar-nav-btn .md-icon { font-size: 20px; }
+        .calendar-nav-btn { background: none; border: none; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: var(--md-on-surface-variant); }
         
         .calendar-grid-weekdays, .calendar-grid-days { display: grid; grid-template-columns: repeat(7, 1fr); text-align: center; }
-        .calendar-weekday { font-size: 11px; font-weight: 700; color: var(--md-outline); padding: 6px 0; }
+        .calendar-weekday { font-size: 11px; font-weight: 700; color: #94a3b8; padding: 6px 0; }
         .calendar-day-cell { font-size: 13px; font-weight: 600; height: 36px; display: flex; align-items: center; justify-content: center; cursor: pointer; border-radius: 50%; color: var(--md-on-surface); position: relative; margin: 1px; user-select: none; }
-        .calendar-day-cell:active { background: var(--md-surface-container-high); }
         .calendar-day-cell.empty { cursor: default; }
-        .calendar-day-cell.empty:active { background: none; }
         .calendar-day-cell.selected { background: var(--md-primary) !important; color: var(--md-on-primary) !important; }
         .calendar-day-cell.today-marker::after { content: ''; position: absolute; bottom: 4px; width: 4px; height: 4px; background: currentColor; border-radius: 50%; }
         
         .calendar-popup-actions { display: flex; justify-content: flex-end; gap: 8px; padding: 8px 12px 12px 12px; }
         .calendar-action-btn { background: none; border: none; padding: 8px 12px; font-size: 13px; font-weight: 700; color: var(--md-primary); cursor: pointer; border-radius: 6px; }
-        .calendar-action-btn:active { background: var(--md-surface-container); }
 
-        /* Ajustes responsivos */
         @media screen and (max-width: 640px) {
             .fab-add-btn { left: auto; right: 24px; }
             .input-container { border-left: none; border-right: none; }
@@ -401,7 +422,7 @@
             
             <textarea class="task-input" id="new-task-input" placeholder="O que precisa ser feito?" onkeypress="handleInputKey(event)"></textarea>
             
-            <div style="font-size: 11px; font-weight: 700; color: var(--md-outline); text-transform: uppercase; letter-spacing: 0.5px; margin-top: 4px;">Configurações da Tarefa</div>
+            <div style="font-size: 11px; font-weight: 700; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.5px; margin-top: 4px;">Configurações da Tarefa</div>
 
             <div class="meta-selectors-row">
                 <div class="selector-row-item" onclick="openCalendarPopup('layer')">
@@ -427,7 +448,7 @@
                 <div class="selector-row-item" onclick="openContextDrawer('recorrencia')">
                     <div class="selector-btn-icon" id="meta-recurrence-btn"><span class="md-icon">repeat</span></div>
                     <div class="selector-row-label">Repetição</div>
-                    <div class="meta-badge-text" id="badge-recurrence-text">Nenhuma</div>
+                    <div class="meta-badge-text" id="badge-recurrence-text">Não se repete</div>
                 </div>
             </div>
             
@@ -477,15 +498,15 @@
         const $ = id => document.getElementById(id);
 
         let state = {
-            version: "4.11.10",
+            version: "4.11.12",
             changelog: [
-                { v: "4.11.10", date: "21/06/2026", desc: "Ajuste de Responsividade: Limitada a largura do layer de criação/edição no desktop para bater com os 600px do app-container." },
-                { v: "4.11.9", date: "21/06/2026", desc: "Calendário Customizado em Pop-Up: Substituído o seletor nativo por um componente Material estruturado de alto contraste, exibindo uma cortina escura de fundo e possibilitando navegação entre os meses." }
+                { v: "4.11.12", date: "21/06/2026", desc: "Harmonização de Cards de Projeto: Removidos fundos e bordas individuais das tarefas. Agora elas flutuam integradas sobre o bloco sólido cinza claro do projeto, divididas apenas por finas linhas internas horizontais, combinando perfeitamente com a foto de referência." },
+                { v: "4.11.11", date: "21/06/2026", desc: "Ajuste na Seleção de Recorrência: Atualizado o layout de repetição com base nos modelos reais enviados, implementando lista vertical de toque limpo com Radio Buttons estilizados à direita." }
             ],
             tasks: [], 
             projetos: [{ nome: "Trabalho", deleted: false, fixed: false }, { nome: "Estudos", deleted: false, fixed: false }],
             tags: [{ nome: "URGENTE", cor: "#ef4444", deleted: false }, { nome: "FOCO", cor: "#3b82f6", deleted: false }],
-            filterType: 'hoje', selectedFilterValue: '', tempDate: '', tempProject: 'No project', tempTag: '', tempRecurrence: 'Nenhuma', activeTaskId: null
+            filterType: 'hoje', selectedFilterValue: '', tempDate: '', tempProject: 'No project', tempTag: '', tempRecurrence: 'Não se repete', activeTaskId: null
         };
 
         let dragSrcEl = null;
@@ -698,8 +719,8 @@
             else tBadge.innerText = 'Nenhuma';
             
             const rBadge = $('badge-recurrence-text');
-            if(state.tempRecurrence && state.tempRecurrence !== 'Nenhuma') rBadge.innerText = state.tempRecurrence;
-            else rBadge.innerText = 'Nenhuma';
+            if(state.tempRecurrence) rBadge.innerText = state.tempRecurrence;
+            else rBadge.innerText = 'Não se repete';
             
             const dBtn = $('meta-delete-btn');
             if (dBtn) dBtn.style.display = state.activeTaskId ? 'flex' : 'none';
@@ -712,17 +733,17 @@
                     const t = state.tasks.find(x => x.id === state.activeTaskId);
                     if (t) {
                         t.text = val; t.date = state.tempDate; t.project = state.tempProject;
-                        t.tag = state.tempTag; t.recurrence = state.tempRecurrence || 'Nenhuma'; t.updatedAt = Date.now();
+                        t.tag = state.tempTag; t.recurrence = state.tempRecurrence || 'Não se repete'; t.updatedAt = Date.now();
                     }
                 } else {
                     state.tasks.push({ 
                         id: 'task_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5), 
                         text: val, completed: false, date: state.tempDate, project: state.tempProject, 
-                        tag: state.tempTag, recurrence: state.tempRecurrence || 'Nenhuma', deleted: false, updatedAt: Date.now() 
+                        tag: state.tempTag, recurrence: state.tempRecurrence || 'Não se repete', deleted: false, updatedAt: Date.now() 
                     });
                 }
                 
-                inputElement.value = ''; state.tempProject = 'No project'; state.tempTag = ''; state.tempRecurrence = 'Nenhuma'; state.activeTaskId = null;
+                inputElement.value = ''; state.tempProject = 'No project'; state.tempTag = ''; state.tempRecurrence = 'Não se repete'; state.activeTaskId = null;
                 updateBarMetaUi(); toggleInputPanel(false); render(); pushData();
             }
         }
@@ -731,7 +752,7 @@
             if (state.activeTaskId) {
                 opTask(state.activeTaskId, 'delete');
                 const inputElement = $('new-task-input'); if (inputElement) inputElement.value = '';
-                state.tempProject = 'No project'; state.tempTag = ''; state.tempRecurrence = 'Nenhuma'; state.activeTaskId = null;
+                state.tempProject = 'No project'; state.tempTag = ''; state.tempRecurrence = 'Não se repete'; state.activeTaskId = null;
                 updateBarMetaUi(); toggleInputPanel(false);
             }
         }
@@ -739,10 +760,10 @@
         function calculateNextRecurrentDate(currentDateStr, type) {
             if(!currentDateStr) return getISOStringLocal(new Date());
             const d = new Date(currentDateStr + 'T00:00:00');
-            if(type === 'Diária') d.setDate(d.getDate() + 1);
-            else if(type === 'Semanal') d.setDate(d.getDate() + 7);
-            else if(type === 'Mensal') d.setMonth(d.getMonth() + 1);
-            else if(type === 'Anual') d.setFullYear(d.getFullYear() + 1);
+            if(type === 'Todos os dias') d.setDate(d.getDate() + 1);
+            else if(type === 'Toda semana') d.setDate(d.getDate() + 7);
+            else if(type === 'Todo mês') d.setMonth(d.getMonth() + 1);
+            else if(type === 'Todo ano') d.setFullYear(d.getFullYear() + 1);
             return getISOStringLocal(d);
         }
 
@@ -754,7 +775,7 @@
             state.tempDate = t.date;
             state.tempProject = t.project || 'No project';
             state.tempTag = t.tag || '';
-            state.tempRecurrence = t.recurrence || 'Nenhuma';
+            state.tempRecurrence = t.recurrence || 'Não se repete';
             
             updateBarMetaUi();
             updateSelectedDate(t.date);
@@ -771,7 +792,7 @@
         function opTask(id, type, val = '') {
             const t = state.tasks.find(x => x.id === id); if(!t) return;
             if (type === 'toggle') { 
-                if(!t.completed && t.recurrence && t.recurrence !== 'Nenhuma') {
+                if(!t.completed && t.recurrence && t.recurrence !== 'Não se repete') {
                     t.date = calculateNextRecurrentDate(t.date, t.recurrence); t.completed = false;
                 } else { t.completed = !t.completed; }
                 t.updatedAt = Date.now(); 
@@ -905,6 +926,7 @@
             }
         }
 
+        /* EQUIVALENTE DE RENDERIZAÇÃO HARMONIZADA COM A IMAGEM */
         function render() {
             const container = $('task-list-container'); container.innerHTML = '';
             let activeTasks = state.tasks.filter(t => !t.deleted); const hojeIso = getISOStringLocal(new Date());
@@ -946,7 +968,10 @@
                 });
 
                 const projObj = state.projetos.find(p => p.nome === projName && !p.deleted); const isFixed = projObj ? !!projObj.fixed : false;
-                const groupCard = document.createElement('div'); groupCard.className = `project-group-card ${isFixed ? 'is-fixed' : ''}`;
+                
+                // Card do projeto como bloco sólido único conforme a diretriz da foto
+                const groupCard = document.createElement('div'); 
+                groupCard.className = `project-group-card ${isFixed ? 'is-fixed' : ''}`;
                 
                 groupCard.innerHTML = `
                     <div class="project-group-header">
@@ -956,12 +981,13 @@
                         </div>
                         ${projName !== 'Sem Projeto' ? `<button class="btn-project-pin ${isFixed ? 'active' : ''}" onclick="toggleProjectPin('${projName}')"><span class="md-icon">push_pin</span></button>` : ''}
                     </div>
-                    <div class="project-group-tasks-container" style="display:flex; flex-direction:column; gap:6px;"></div>
+                    <div class="project-group-tasks-container"></div>
                 `;
                 container.appendChild(groupCard); const tasksContainer = groupCard.querySelector('.project-group-tasks-container');
 
                 projTasks.forEach(t => {
-                    const isOverdue = t.date && t.date < hojeIso && !t.completed; const item = document.createElement('div'); 
+                    const isOverdue = t.date && t.date < hojeIso && !t.completed; 
+                    const item = document.createElement('div'); 
                     item.className = `task-item ${t.completed ? 'completed' : ''} ${isOverdue ? 'overdue' : ''}`;
                     item.setAttribute('draggable', 'true'); item.setAttribute('data-id', t.id); item.setAttribute('data-project', projName);
                     
@@ -969,7 +995,7 @@
                     item.addEventListener('dragleave', handleDragLeave); item.addEventListener('drop', handleDrop); item.addEventListener('dragend', handleDragEnd);
                     item.addEventListener('touchstart', handleTouchStart, {passive: true}); item.addEventListener('touchmove', handleTouchMove, {passive: false}); item.addEventListener('touchend', handleTouchEnd);
 
-                    const tTag = state.tags.find(g => g.nome === t.tag && !g.deleted); const isRecurrent = t.recurrence && t.recurrence !== 'Nenhuma';
+                    const tTag = state.tags.find(g => g.nome === t.tag && !g.deleted); const isRecurrent = t.recurrence && t.recurrence !== 'Não se repete' && t.recurrence !== 'Nenhuma';
                     
                     item.innerHTML = `
                         <div class="drag-handle"><span class="md-icon" style="font-size:18px;">drag_indicator</span></div>
@@ -1009,7 +1035,7 @@
             state.editingTagIndex = null; state.editingProjIndex = null;
             if(mode === 'projetos') openDrawerCommon("Gerenciar Projetos", '', () => { renderProjForm(); renderProjectsList(); }); 
             else if(mode === 'tags') openDrawerCommon("Gerenciar Tags", '', () => { renderTagForm(); renderTagsList(); }); 
-            else if(mode === 'recorrencia') openDrawerCommon("Definir Recorrência", '<div style="font-size:12px;color:var(--md-on-surface-variant);text-align:center;padding:4px 0;">Selecione o intervalo de repetição da tarefa:</div>', renderRecurrenceList);
+            else if(mode === 'recorrencia') openDrawerCommon("Repetir", '', renderRecurrenceList);
         }
 
         function selectProjectFromDrawer(name) { state.tempProject = name; updateBarMetaUi(); closeDrawer(); }
@@ -1017,11 +1043,31 @@
         function selectRecurrenceFromDrawer(type) { state.tempRecurrence = type; updateBarMetaUi(); closeDrawer(); }
 
         function renderRecurrenceList() {
-            const options = ['Nenhuma', 'Diária', 'Semanal', 'Mensal', 'Anual']; const itemsContainer = $('drawer-list-items'); itemsContainer.innerHTML = '';
+            const options = ['Não se repete', 'Todos os dias', 'Toda semana', 'Todo mês', 'Todo ano']; 
+            const itemsContainer = $('drawer-list-items'); 
+            itemsContainer.innerHTML = '';
+            
             options.forEach(opt => {
-                const row = document.createElement('div'); row.className = 'list-item-row'; row.style.cursor = 'pointer'; row.onclick = () => selectRecurrenceFromDrawer(opt);
-                const label = document.createElement('div'); label.className = 'item-label'; label.innerHTML = `<span class="md-icon">repeat</span> ${opt}`;
-                row.appendChild(label); itemsContainer.appendChild(row);
+                const row = document.createElement('div'); 
+                row.className = 'list-item-row'; 
+                row.style.cursor = 'pointer'; 
+                row.style.marginBottom = '6px';
+                row.onclick = () => selectRecurrenceFromDrawer(opt);
+                
+                const label = document.createElement('div'); 
+                label.className = 'item-label'; 
+                label.innerText = opt;
+                
+                const radio = document.createElement('input');
+                radio.type = 'radio';
+                radio.className = 'drawer-radio-input';
+                radio.name = 'recurrence-selection';
+                radio.checked = (state.tempRecurrence === opt);
+                radio.onclick = (e) => { e.stopPropagation(); selectRecurrenceFromDrawer(opt); };
+                
+                row.appendChild(label); 
+                row.appendChild(radio);
+                itemsContainer.appendChild(row);
             });
         }
 
@@ -1035,7 +1081,7 @@
                 const row = document.createElement('div'); row.className = 'list-item-row'; const label = document.createElement('div'); label.className = 'item-label';
                 label.innerHTML = `<span class="md-icon">folder</span> ${p.nome} ${p.fixed ? '<span class="md-icon" style="font-size:12px;margin-left:4px;color:var(--md-primary)">push_pin</span>' : ''}`;
                 label.onclick = () => selectProjectFromDrawer(p.nome);
-                const actions = document.createElement('div'); actions.innerHTML = `<button class="btn-inline-edit">Editar</button><button class="btn-inline-del"><span class="md-icon">close</span></button>`;
+                const actions = document.createElement('div'); actions.innerHTML = `<button class="btn-inline-edit" style="margin-right:8px;background:none;border:none;color:var(--md-primary);font-weight:700;cursor:pointer;">Editar</button><button class="btn-inline-del" style="background:none;border:none;color:var(--error-color);cursor:pointer;"><span class="md-icon">close</span></button>`;
                 actions.querySelector('.btn-inline-edit').onclick = (e) => { e.stopPropagation(); state.editingProjIndex = state.projetos.indexOf(p); renderProjForm(p.nome, 'Salvar'); };
                 actions.querySelector('.btn-inline-del').onclick = (e) => { e.stopPropagation(); deleteProj(p.nome); };
                 row.appendChild(label); row.appendChild(actions); itemsContainer.appendChild(row);
@@ -1071,7 +1117,7 @@
                 const row = document.createElement('div'); row.className = 'list-item-row'; const label = document.createElement('div'); label.className = 'item-label';
                 label.innerHTML = `<span style="width:10px;height:10px;background:${t.cor};border-radius:50%;display:inline-block;margin-right:2px;"></span><strong>${t.nome}</strong>`;
                 label.onclick = () => selectTagFromDrawer(t.nome);
-                const actions = document.createElement('div'); actions.innerHTML = `<button class="btn-inline-edit">Editar</button><button class="btn-inline-del"><span class="md-icon">close</span></button>`;
+                const actions = document.createElement('div'); actions.innerHTML = `<button class="btn-inline-edit" style="margin-right:8px;background:none;border:none;color:var(--md-primary);font-weight:700;cursor:pointer;">Editar</button><button class="btn-inline-del" style="background:none;border:none;color:var(--error-color);cursor:pointer;"><span class="md-icon">close</span></button>`;
                 actions.querySelector('.btn-inline-edit').onclick = (e) => { e.stopPropagation(); state.editingTagIndex = state.tags.indexOf(t); renderTagForm(t.nome, t.cor, 'Salvar'); };
                 actions.querySelector('.btn-inline-del').onclick = (e) => { e.stopPropagation(); deleteTag(t.nome); };
                 row.appendChild(label); row.appendChild(actions); itemsContainer.appendChild(row);
