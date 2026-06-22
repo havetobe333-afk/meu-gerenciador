@@ -68,6 +68,12 @@
         .progress-container { width: 100%; background: var(--md-surface-variant); height: 3px; border-radius: 1.5px; overflow: hidden; }
         .progress-bar { width: 0%; height: 100%; background: var(--md-primary); transition: width 0.3s; }
         
+        /* Sistema de Abas Primárias */
+        .app-tabs { display: flex; background: #f1f5f9; border-bottom: 1px solid var(--md-surface-variant); }
+        .tab-btn { flex: 1; background: none; border: none; padding: 14px 0; font-size: 14px; font-weight: 700; color: var(--md-on-surface-variant); cursor: pointer; position: relative; text-align: center; text-transform: uppercase; letter-spacing: 0.5px; }
+        .tab-btn.active { color: var(--md-primary); }
+        .tab-btn.active::after { content: ''; position: absolute; bottom: 0; left: 25%; width: 50%; height: 3px; background: var(--md-primary); border-radius: 3px 3px 0 0; }
+
         /* Material Chips para Filtros */
         .date-filters { display: flex; gap: 8px; padding: 12px 16px; background: var(--md-surface); align-items: center; }
         .filter-btn { background: var(--md-surface); border: 1px solid var(--md-outline); width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s; color: var(--md-on-surface-variant); flex-shrink: 0; outline: none; }
@@ -157,11 +163,12 @@
         
         .task-content { flex-grow: 1; display: flex; justify-content: space-between; align-items: center; gap: 12px; overflow: hidden; }
         
-        .task-text-row { display: flex; align-items: center; gap: 6px; flex-grow: 1; overflow: hidden; }
+        .task-text-row { display: flex; align-items: center; gap: 6px; flex-grow: 1; overflow: hidden; flex-wrap: wrap; }
         .task-text { font-size: 14.5px; font-weight: 500; line-height: 1.4; word-break: break-word; cursor: pointer; color: var(--md-on-surface); }
         .task-item.completed .task-text { text-decoration: line-through; color: var(--md-outline) !important; opacity: 0.6; font-weight: 400; cursor: default; }
         
         .inline-tag-badge { font-size: 9px; padding: 1px 5px; border-radius: 4px; font-weight: 700; cursor: pointer; flex-shrink: 0; text-transform: uppercase; }
+        .inline-project-badge { font-size: 9px; padding: 1px 5px; border-radius: 4px; font-weight: 700; cursor: pointer; flex-shrink: 0; text-transform: uppercase; background: #f1f5f9; color: var(--md-primary); border: 1px solid var(--md-outline); }
 
         .right-date-pilling-zone { 
             position: relative; 
@@ -344,8 +351,12 @@
         .calendar-day-cell.selected { background: var(--md-primary) !important; color: var(--md-on-primary) !important; }
         .calendar-day-cell.today-marker::after { content: ''; position: absolute; bottom: 4px; width: 4px; height: 4px; background: currentColor; border-radius: 50%; }
         
-        .calendar-popup-actions { display: flex; justify-content: flex-end; gap: 8px; padding: 8px 12px 12px 12px; }
+        /* Ajuste do rodapé do calendário para acomodar o botão "Sem Data" */
+        .calendar-popup-actions { display: flex; justify-content: space-between; align-items: center; padding: 8px 12px 12px 12px; border-top: 1px solid var(--md-surface-variant); background: #f8fafc; }
+        .calendar-popup-actions-right { display: flex; gap: 8px; }
         .calendar-action-btn { background: none; border: none; padding: 8px 12px; font-size: 13px; font-weight: 700; color: var(--md-primary); cursor: pointer; border-radius: 6px; }
+        .calendar-action-btn.btn-clear-date { color: var(--error-color); }
+        .calendar-action-btn:active { background: var(--md-surface-container-high); }
 
         @media screen and (max-width: 640px) {
             .fab-add-btn { left: auto; right: 24px; }
@@ -353,13 +364,9 @@
         }
         @media screen and (max-width: 480px) {
             .task-text-row {
-                flex-direction: column;
-                align-items: flex-start;
+                align-items: center;
                 gap: 4px;
                 width: 100%;
-            }
-            .inline-tag-badge {
-                align-self: flex-start;
             }
         }
     </style>
@@ -380,6 +387,11 @@
             </div>
             <div class="progress-container"><div class="progress-bar" id="progress-bar"></div></div>
         </header>
+
+        <div class="app-tabs">
+            <button class="tab-btn active" id="tab-tarefas" onclick="switchMainTab('tarefas')">Tarefas</button>
+            <button class="tab-btn" id="tab-projetos" onclick="switchMainTab('projetos')">Projetos</button>
+        </div>
 
         <div class="date-filters">
             <button class="filter-btn active" id="f-btn-hoje" onclick="setFilter('hoje')" title="Hoje">
@@ -479,8 +491,11 @@
                 <div class="calendar-grid-days" id="calendar-days-grid"></div>
             </div>
             <div class="calendar-popup-actions">
-                <button class="calendar-action-btn" onclick="closeCalendarPopup()">Cancelar</button>
-                <button class="calendar-action-btn" onclick="confirmCalendarSelection()">OK</button>
+                <button class="calendar-action-btn btn-clear-date" onclick="clearCalendarSelection()">Sem Data</button>
+                <div class="calendar-popup-actions-right">
+                    <button class="calendar-action-btn" onclick="closeCalendarPopup()">Cancelar</button>
+                    <button class="calendar-action-btn" onclick="confirmCalendarSelection()">OK</button>
+                </div>
             </div>
         </div>
     </div>
@@ -491,16 +506,17 @@
         const $ = id => document.getElementById(id);
 
         let state = {
-            version: "4.11.14",
+            version: "4.14.0",
             changelog: [
-                { v: "4.11.14", date: "21/06/2026", desc: "Correção definitiva do Checkbox Mobile: Adicionado bloqueio preventivo nas funções handleTouchStart e handleTouchMove para ignorar completamente gestos de arrastar iniciados em cima do checkbox nativo." },
-                { v: "4.11.13", date: "21/06/2026", desc: "Tentativa de correção isolada de clique com stopPropagation." },
-                { v: "4.11.12", date: "21/06/2026", desc: "Harmonização de Cards de Projeto integrados conforme foto." }
+                { v: "4.14.0", date: "21/06/2026", desc: "Correção de visibilidade: na aba Tarefas só aparecem itens com data (com menção visual do projeto). Aba projetos agora lista tudo independentemente de data." },
+                { v: "4.13.0", date: "21/06/2026", desc: "Adicionado recurso de remoção de prazo através do botão 'Sem Data' integrado diretamente no pop-up do calendário." },
+                { v: "4.12.0", date: "21/06/2026", desc: "Divisão da tela principal em abas: TAREFAS (listagem limpa e condicional de tarefas datadas de projetos) e PROJETOS (agrupamentos em cartões, fixação e arrasto)." }
             ],
             tasks: [], 
             projetos: [{ nome: "Trabalho", deleted: false, fixed: false }, { nome: "Estudos", deleted: false, fixed: false }],
             tags: [{ nome: "URGENTE", cor: "#ef4444", deleted: false }, { nome: "FOCO", cor: "#3b82f6", deleted: false }],
-            filterType: 'hoje', selectedFilterValue: '', tempDate: '', tempProject: 'No project', tempTag: '', tempRecurrence: 'Não se repete', activeTaskId: null
+            filterType: 'hoje', selectedFilterValue: '', tempDate: '', tempProject: 'No project', tempTag: '', tempRecurrence: 'Não se repete', activeTaskId: null,
+            currentTab: 'tarefas'
         };
 
         let dragSrcEl = null;
@@ -514,7 +530,7 @@
         };
 
         function getFriendlyDateText(dateStr) {
-            if (!dateStr) return 'Sem data';
+            if (!dateStr || dateStr.trim() === '') return 'Sem data';
             const hoje = getISOStringLocal(new Date());
             
             const dOntem = new Date(); dOntem.setDate(dOntem.getDate() - 1);
@@ -552,6 +568,13 @@
                 state.activeTaskId = null;
                 if ($('meta-delete-btn')) $('meta-delete-btn').style.display = 'none';
             }
+        }
+
+        function switchMainTab(tabName) {
+            state.currentTab = tabName;
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            $(`tab-${tabName}`).classList.add('active');
+            render();
         }
 
         function loadLocalStorageFallback() {
@@ -666,7 +689,7 @@
         function pushData() { saveLocalStorageFallback(); apiCall('PUT', { tasks: state.tasks, projetos: state.projetos, tags: state.tags }); }
 
         function updateSelectedDate(val) {
-            if(!val) return; state.tempDate = val;
+            state.tempDate = val || '';
             const el = $('meta-date-text');
             if (el) el.innerText = getFriendlyDateText(val);
         }
@@ -766,7 +789,7 @@
             
             state.activeTaskId = t.id;
             $('new-task-input').value = t.text;
-            state.tempDate = t.date;
+            state.tempDate = t.date || '';
             state.tempProject = t.project || 'No project';
             state.tempTag = t.tag || '';
             state.tempRecurrence = t.recurrence || 'Não se repete';
@@ -791,7 +814,7 @@
                 } else { t.completed = !t.completed; }
                 t.updatedAt = Date.now(); 
             }
-            if (type === 'change-date') { if(val) t.date = val; t.updatedAt = Date.now(); }
+            if (type === 'change-date') { t.date = val; t.updatedAt = Date.now(); }
             if (type === 'delete') { t.deleted = true; t.deletedAt = Date.now(); }
             render(); pushData();
         }
@@ -802,7 +825,7 @@
             calTargetTaskId = taskId;
             
             let baseDateStr = (mode === 'layer') ? state.tempDate : state.tasks.find(x => x.id === taskId).date;
-            if(!baseDateStr) baseDateStr = getISOStringLocal(new Date());
+            if(!baseDateStr || baseDateStr.trim() === '') baseDateStr = getISOStringLocal(new Date());
             
             calSelectedDateStr = baseDateStr;
             calCurrentViewDate = new Date(baseDateStr + 'T00:00:00');
@@ -813,6 +836,15 @@
 
         function closeCalendarPopup() {
             $('calendar-popup-overlay').style.display = 'none';
+        }
+
+        function clearCalendarSelection() {
+            if(calTargetMode === 'layer') {
+                updateSelectedDate('');
+            } else if(calTargetMode === 'inline' && calTargetTaskId) {
+                opTask(calTargetTaskId, 'change-date', '');
+            }
+            closeCalendarPopup();
         }
 
         function navigateCalendarMonth(step) {
@@ -894,7 +926,6 @@
         }
         function handleDragEnd() { document.querySelectorAll('.task-item').forEach(i => { i.classList.remove('dragging'); i.classList.remove('drag-over'); }); }
 
-        let touchTargetEl = null;
         function handleTouchStart(e) {
             if (e.target.closest('.task-checkbox')) { dragSrcEl = null; return; }
             const item = e.target.closest('.task-item');
@@ -923,6 +954,38 @@
             }
         }
 
+        /* AUXILIAR DE RENDERIZAÇÃO DE ITEM DE TAREFA ÚNICO */
+        function createHTMLTaskItem(t, hojeIso, projName, showProjectBadge = false) {
+            const isOverdue = t.date && t.date < hojeIso && !t.completed; 
+            const item = document.createElement('div'); 
+            item.className = `task-item ${t.completed ? 'completed' : ''} ${isOverdue ? 'overdue' : ''}`;
+            item.setAttribute('draggable', 'true'); item.setAttribute('data-id', t.id); item.setAttribute('data-project', projName);
+            
+            item.addEventListener('dragstart', handleDragStart); item.addEventListener('dragover', handleDragOver);
+            item.addEventListener('dragleave', handleDragLeave); item.addEventListener('drop', handleDrop); item.addEventListener('dragend', handleDragEnd);
+            item.addEventListener('touchstart', handleTouchStart, {passive: true}); item.addEventListener('touchmove', handleTouchMove, {passive: false}); item.addEventListener('touchend', handleTouchEnd);
+
+            const tTag = state.tags.find(g => g.nome === t.tag && !g.deleted); const isRecurrent = t.recurrence && t.recurrence !== 'Não se repete' && t.recurrence !== 'Nenhuma';
+            const hasDate = t.date && t.date.trim() !== '';
+
+            item.innerHTML = `
+                <div class="drag-handle"><span class="md-icon" style="font-size:18px;">drag_indicator</span></div>
+                <input type="checkbox" class="task-checkbox" ${t.completed ? 'checked' : ''} onchange="opTask('${t.id}', 'toggle')">
+                <div class="task-content">
+                    <div class="task-text-row">
+                        <span class="task-text" onclick="${t.completed ? '' : `callTaskBackToDraft('${t.id}')`}">${t.text}</span>
+                        ${showProjectBadge && t.project && t.project !== 'No project' ? `<span class="inline-project-badge" onclick="togglePillFilter('projeto', '${t.project}')">${t.project}</span>` : ''}
+                        ${t.tag && tTag ? `<span class="inline-tag-badge" style="background:${tTag.cor}; color:#fff;" onclick="togglePillFilter('tag', '${t.tag}')">${t.tag}</span>` : ''}
+                    </div>
+                    <span class="right-date-pilling-zone" onclick="event.stopPropagation(); openCalendarPopup('inline', '${t.id}')">
+                        <span>${getFriendlyDateText(t.date)}</span>
+                        <span class="right-date-icon"><span class="md-icon">${isRecurrent ? 'repeat' : (hasDate ? 'calendar_today' : 'calendar_today_off')}</span></span>
+                    </span>
+                </div>
+            `;
+            return item;
+        }
+
         /* RENDERIZAÇÃO PRINCIPAL */
         function render() {
             const container = $('task-list-container'); container.innerHTML = '';
@@ -942,74 +1005,86 @@
                 $('progress-bar').style.width = '0%'; return;
             }
 
-            const groups = {};
-            filtered.forEach(t => {
-                const projKey = (t.project && t.project !== 'No project') ? t.project : 'Sem Projeto';
-                if (!groups[projKey]) groups[projKey] = []; groups[projKey].push(t);
-            });
+            // --- ABA 1: TAREFAS ---
+            if (state.currentTab === 'tarefas') {
+                // REGRA ATUALIZADA: SÓ APARECE SE TIVER DATA DEFINIDA
+                let tabTasks = filtered.filter(t => t.date && t.date.trim() !== '');
 
-            const sortedGroupNames = Object.keys(groups).sort((a, b) => {
-                const projA = state.projetos.find(p => p.nome === a && !p.deleted); const projB = state.projetos.find(p => p.nome === b && !p.deleted);
-                const aFixed = projA ? !!projA.fixed : false; const bFixed = projB ? !!projB.fixed : false;
-                if (aFixed && !bFixed) return -1; if (!aFixed && bFixed) return 1; return a.localeCompare(b);
-            });
+                if(!tabTasks.length) {
+                    container.innerHTML = `<div style="text-align:center; color:var(--md-on-surface-variant); padding:30px 0; font-size:13px; font-weight: 500;">Nenhuma tarefa com data por aqui.</div>`;
+                } else {
+                    tabTasks.sort((x, y) => {
+                        const isOverdueX = x.date && x.date < hojeIso && !x.completed ? 1 : 0; const isOverdueY = y.date && y.date < hojeIso && !y.completed ? 1 : 0;
+                        if (isOverdueX !== isOverdueY) return isOverdueY - isOverdueX;
+                        return x.date.localeCompare(y.date);
+                    });
 
-            sortedGroupNames.forEach(projName => {
-                const projTasks = groups[projName]; 
-                projTasks.sort((x, y) => {
-                    const isOverdueX = x.date && x.date < hojeIso && !x.completed ? 1 : 0; const isOverdueY = y.date && y.date < hojeIso && !y.completed ? 1 : 0;
-                    if (isOverdueX !== isOverdueY) return isOverdueY - isOverdueX;
-                    if (x.date !== y.date) return x.date.localeCompare(y.date);
-                    const tagX = x.tag || ''; const tagY = y.tag || '';
-                    if (tagX === '' && tagY !== '') return 1; if (tagX !== '' && tagY === '') return -1; return tagX.localeCompare(tagY);           
+                    const plainListContainer = document.createElement('div');
+                    plainListContainer.style.background = 'var(--md-surface)';
+                    plainListContainer.style.borderRadius = '14px';
+                    plainListContainer.style.border = '1px solid var(--md-surface-variant)';
+                    
+                    tabTasks.forEach(t => {
+                        const projKey = (t.project && t.project !== 'No project') ? t.project : 'Sem Projeto';
+                        // Passa 'true' para ativar a visualização do projeto em formato de Tag
+                        const itemHtml = createHTMLTaskItem(t, hojeIso, projKey, true);
+                        plainListContainer.appendChild(itemHtml);
+                    });
+                    container.appendChild(plainListContainer);
+                }
+            } 
+            // --- ABA 2: PROJETOS ---
+            else if (state.currentTab === 'projects' || state.currentTab === 'projetos') {
+                // REGRA ATUALIZADA: APARECE TUDO COM OU SEM DATA
+                const groups = {};
+                filtered.forEach(t => {
+                    const projKey = (t.project && t.project !== 'No project') ? t.project : 'Sem Projeto';
+                    if (!groups[projKey]) groups[projKey] = []; groups[projKey].push(t);
                 });
 
-                const projObj = state.projetos.find(p => p.nome === projName && !p.deleted); const isFixed = projObj ? !!projObj.fixed : false;
-                
-                const groupCard = document.createElement('div'); 
-                groupCard.className = `project-group-card ${isFixed ? 'is-fixed' : ''}`;
-                
-                groupCard.innerHTML = `
-                    <div class="project-group-header">
-                        <div class="project-group-header-left">
-                            <span class="project-group-title-link" onclick="togglePillFilter('projeto', '${projName === 'Sem Projeto' ? 'No project' : projName}')">${projName}</span>
-                            <span class="project-group-count">${projTasks.length}</span>
-                        </div>
-                        ${projName !== 'Sem Projeto' ? `<button class="btn-project-pin ${isFixed ? 'active' : ''}" onclick="toggleProjectPin('${projName}')"><span class="md-icon">push_pin</span></button>` : ''}
-                    </div>
-                    <div class="project-group-tasks-container"></div>
-                `;
-                container.appendChild(groupCard); const tasksContainer = groupCard.querySelector('.project-group-tasks-container');
+                const sortedGroupNames = Object.keys(groups).sort((a, b) => {
+                    const projA = state.projetos.find(p => p.nome === a && !p.deleted); const projB = state.projetos.find(p => p.nome === b && !p.deleted);
+                    const aFixed = projA ? !!projA.fixed : false; const bFixed = projB ? !!projB.fixed : false;
+                    if (aFixed && !bFixed) return -1; if (!aFixed && bFixed) return 1; return a.localeCompare(b);
+                });
 
-                projTasks.forEach(t => {
-                    const isOverdue = t.date && t.date < hojeIso && !t.completed; 
-                    const item = document.createElement('div'); 
-                    item.className = `task-item ${t.completed ? 'completed' : ''} ${isOverdue ? 'overdue' : ''}`;
-                    item.setAttribute('draggable', 'true'); item.setAttribute('data-id', t.id); item.setAttribute('data-project', projName);
-                    
-                    item.addEventListener('dragstart', handleDragStart); item.addEventListener('dragover', handleDragOver);
-                    item.addEventListener('dragleave', handleDragLeave); item.addEventListener('drop', handleDrop); item.addEventListener('dragend', handleDragEnd);
-                    item.addEventListener('touchstart', handleTouchStart, {passive: true}); item.addEventListener('touchmove', handleTouchMove, {passive: false}); item.addEventListener('touchend', handleTouchEnd);
+                sortedGroupNames.forEach(projName => {
+                    const projTasks = groups[projName]; 
+                    projTasks.sort((x, y) => {
+                        const isOverdueX = x.date && x.date < hojeIso && !x.completed ? 1 : 0; const isOverdueY = y.date && y.date < hojeIso && !y.completed ? 1 : 0;
+                        if (isOverdueX !== isOverdueY) return isOverdueY - isOverdueX;
+                        
+                        if (!x.date && y.date) return 1;
+                        if (x.date && !y.date) return -1;
+                        if (x.date && y.date && x.date !== y.date) return x.date.localeCompare(y.date);
+                        
+                        const tagX = x.tag || ''; const tagY = y.tag || '';
+                        if (tagX === '' && tagY !== '') return 1; if (tagX !== '' && tagY === '') return -1; return tagX.localeCompare(tagY);           
+                    });
 
-                    const tTag = state.tags.find(g => g.nome === t.tag && !g.deleted); const isRecurrent = t.recurrence && t.recurrence !== 'Não se repete' && t.recurrence !== 'Nenhuma';
+                    const projObj = state.projetos.find(p => p.nome === projName && !p.deleted); const isFixed = projObj ? !!projObj.fixed : false;
                     
-                    item.innerHTML = `
-                        <div class="drag-handle"><span class="md-icon" style="font-size:18px;">drag_indicator</span></div>
-                        <input type="checkbox" class="task-checkbox" ${t.completed ? 'checked' : ''} onchange="opTask('${t.id}', 'toggle')">
-                        <div class="task-content">
-                            <div class="task-text-row">
-                                <span class="task-text" onclick="${t.completed ? '' : `callTaskBackToDraft('${t.id}')`}">${t.text}</span>
-                                ${t.tag && tTag ? `<span class="inline-tag-badge" style="background:${tTag.cor}; color:#fff;" onclick="togglePillFilter('tag', '${t.tag}')">${t.tag}</span>` : ''}
+                    const groupCard = document.createElement('div'); 
+                    groupCard.className = `project-group-card ${isFixed ? 'is-fixed' : ''}`;
+                    
+                    groupCard.innerHTML = `
+                        <div class="project-group-header">
+                            <div class="project-group-header-left">
+                                <span class="project-group-title-link" onclick="togglePillFilter('projeto', '${projName === 'Sem Projeto' ? 'No project' : projName}')">${projName}</span>
+                                <span class="project-group-count">${projTasks.length}</span>
                             </div>
-                            <span class="right-date-pilling-zone" onclick="event.stopPropagation(); openCalendarPopup('inline', '${t.id}')">
-                                <span>${getFriendlyDateText(t.date)}</span>
-                                <span class="right-date-icon"><span class="md-icon">${isRecurrent ? 'repeat' : 'calendar_today'}</span></span>
-                            </span>
+                            ${projName !== 'Sem Projeto' ? `<button class="btn-project-pin ${isFixed ? 'active' : ''}" onclick="toggleProjectPin('${projName}')"><span class="md-icon">push_pin</span></button>` : ''}
                         </div>
+                        <div class="project-group-tasks-container"></div>
                     `;
-                    tasksContainer.appendChild(item);
+                    container.appendChild(groupCard); const tasksContainer = groupCard.querySelector('.project-group-tasks-container');
+
+                    projTasks.forEach(t => {
+                        const itemHtml = createHTMLTaskItem(t, hojeIso, projName, false);
+                        tasksContainer.appendChild(itemHtml);
+                    });
                 });
-            });
+            }
             
             const totalActive = activeTasks.length; const totalDone = activeTasks.filter(t => t.completed).length;
             $('progress-bar').style.width = `${totalActive ? (totalDone / totalActive) * 100 : 0}%`;
@@ -1123,7 +1198,7 @@
         function saveTag() {
             const n = $('new-tag-name').value.trim().toUpperCase(), c = $('new-tag-color').value; if(!n) return;
             if(state.editingTagIndex !== null) {
-                const old = state.tags[state.editingTagIndex].nome; state.tags[state.editingTagIndex] = { nome: n, her: c, deleted: false };
+                const old = state.tags[state.editingTagIndex].nome; state.tags[state.editingTagIndex] = { nome: n, cor: c, deleted: false };
                 state.tasks.forEach(x => { if(x.tag === old) x.tag = n; }); state.editingTagIndex = null;
             } else {
                 if(state.tags.some(x => x.nome === n && !x.deleted)) return;
