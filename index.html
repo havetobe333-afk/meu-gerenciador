@@ -153,7 +153,7 @@
         .task-item.overdue .task-text { color: #991b1b; }
         .task-item.overdue .right-date-pilling-zone { color: #ef4444 !important; }
 
-        /* Nova Estilização de Atenção: Bordas grossas tracejadas */
+        /* Estilização de Atenção: Bordas grossas tracejadas */
         .task-item.has-attention {
             border: 3px dashed var(--attention-border-color) !important;
             margin: 4px 6px;
@@ -499,11 +499,11 @@
                     <span class="md-icon">check</span>
                 </button>
             </div>
-            
-            <textarea class="task-input" id="new-task-input" placeholder="O que precisa ser feito?" onkeypress="handleInputKey(event)"></textarea>
-            
-            <div style="font-size: 11px; font-weight: 700; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.5px; margin-top: 4px;">Configurações da Tarefa</div>
 
+            <textarea class="task-input" id="new-task-input" placeholder="O que precisa ser feito?" onkeypress="handleInputKey(event)"></textarea>
+
+            <div style="font-size: 11px; font-weight: 700; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.5px; margin-top: 4px;">Configurações da Tarefa</div>
+            
             <div class="meta-selectors-row">
                 <div class="selector-row-item" style="cursor: default;" onclick="event.stopPropagation()">
                     <div class="selector-btn-icon" style="color: var(--attention-border-color);"><span class="md-icon">priority_high</span></div>
@@ -517,987 +517,1133 @@
                 </div>
 
                 <div class="selector-row-item" onclick="openCalendarPopup('layer')">
-                    <div class="selector-btn-icon"><span class="md-icon">calendar_today</span></div>
-                    <div class="selector-row-label">Data Limite</div>
-                    <div class="datepicker-wrapper">
-                        <span class="datepicker-text" id="meta-date-text">Hoje</span>
-                    </div>
+                    <div class="selector-btn-icon"><span class="md-icon">calendar_month</span></div>
+                    <div class="selector-row-label">Data de Execução</div>
+                    <div id="meta-date-badge" class="meta-badge-text">Sem data</div>
                 </div>
 
-                <div class="selector-row-item" onclick="openContextDrawer('projetos')">
-                    <div class="selector-btn-icon" id="meta-project-btn"><span class="md-icon">folder</span></div>
-                    <div class="selector-row-label">Projeto</div>
-                    <div class="meta-badge-text" id="badge-project-text">Nenhum</div>
+                <div class="selector-row-item" onclick="openDrawer('tags')">
+                    <div class="selector-btn-icon"><span class="md-icon">sell</span></div>
+                    <div class="selector-row-label">Etiqueta (Contexto)</div>
+                    <div id="meta-tag-badge" class="meta-badge-text">Nenhuma</div>
                 </div>
 
-                <div class="selector-row-item" onclick="openContextDrawer('tags')">
-                    <div class="selector-btn-icon" id="meta-tag-btn"><span class="md-icon">label</span></div>
-                    <div class="selector-row-label">Etiqueta / Tag</div>
-                    <div class="meta-badge-text" id="badge-tag-text">Nenhuma</div>
+                <div class="selector-row-item" onclick="openDrawer('projects')">
+                    <div class="selector-btn-icon"><span class="md-icon">folder</span></div>
+                    <div class="selector-row-label">Projeto Unificado</div>
+                    <div id="meta-project-badge" class="meta-badge-text">Nenhum</div>
                 </div>
 
-                <div class="selector-row-item" onclick="openContextDrawer('recorrencia')">
-                    <div class="selector-btn-icon" id="meta-recurrence-btn"><span class="md-icon">repeat</span></div>
-                    <div class="selector-row-label">Repetição</div>
-                    <div class="meta-badge-text" id="badge-recurrence-text">Não se repete</div>
+                <div class="selector-row-item" onclick="openDrawer('recurrence')">
+                    <div class="selector-btn-icon"><span class="md-icon">autorenew</span></div>
+                    <div class="selector-row-label">Recorrência Semanal</div>
+                    <div id="meta-recurrence-badge" class="meta-badge-text" style="color: var(--success-color); background: #f0fdf4; border-color: #bbf7d0;">Não</div>
                 </div>
             </div>
-            
-            <button class="btn-meta-delete" id="meta-delete-btn" onclick="triggerDeleteSelectedTask()">
-                <span class="md-icon">delete</span> Excluir esta Atividade
+
+            <button class="btn-meta-delete" id="btn-task-delete" onclick="triggerDeleteTask()">
+                <span class="md-icon">delete</span> Excluir Atividade
             </button>
         </div>
     </div>
 
     <div class="drawer-overlay" id="drawer-overlay" onclick="closeDrawer()"></div>
-    <div class="drawer" id="context-drawer">
+
+    <div class="drawer" id="drawer-tags">
         <div class="drawer-handle"></div>
-        <div class="drawer-title" id="drawer-title">Contexto</div>
-        <div class="drawer-form-block" id="drawer-form-area"></div>
-        <div class="drawer-list-items items-list-scroll" id="drawer-list-items"></div>
+        <div class="drawer-title">Selecionar Etiqueta</div>
+        <div class="drawer-form-block">
+            <div style="display: flex; gap: 6px;">
+                <input type="text" id="new-tag-name" class="drawer-input" placeholder="Nova etiqueta (ex: TRABALHO, CASA)" style="text-transform: uppercase;">
+                <input type="color" id="new-tag-color" value="#1e3a8a" style="border:1px solid #cbd5e1; border-radius:6px; height:32px; width:40px; cursor:pointer;">
+            </div>
+            <button class="action-submit-btn" onclick="saveTag()">Salvar Etiqueta</button>
+        </div>
+        <div class="items-list-scroll" id="drawer-tags-items"></div>
+    </div>
+
+    <div class="drawer" id="drawer-projects">
+        <div class="drawer-handle"></div>
+        <div class="drawer-title">Selecionar Projeto</div>
+        <div class="drawer-form-block">
+            <input type="text" id="new-project-name" class="drawer-input" placeholder="Nome do novo projeto...">
+            <button class="action-submit-btn" onclick="saveProject()">Criar Projeto</button>
+        </div>
+        <div class="items-list-scroll" id="drawer-projects-items"></div>
+    </div>
+
+    <div class="drawer" id="drawer-recurrence">
+        <div class="drawer-handle"></div>
+        <div class="drawer-title">Recorrência Semanal</div>
+        <div style="background: var(--md-surface); padding: 12px; border-radius: 12px; border: 1px solid #cbd5e1; display: flex; flex-direction: column; gap: 8px;">
+            <div style="font-size: 13px; font-weight: 600; color: var(--md-on-surface-variant);">Selecione os dias em que esta tarefa deve se repetir automaticamente:</div>
+            <div class="weekdays-selector-box">
+                <button class="weekday-pill-btn" data-day="0">Dom</button>
+                <button class="weekday-pill-btn" data-day="1">Seg</button>
+                <button class="weekday-pill-btn" data-day="2">Ter</button>
+                <button class="weekday-pill-btn" data-day="3">Qua</button>
+                <button class="weekday-pill-btn" data-day="4">Qui</button>
+                <button class="weekday-pill-btn" data-day="5">Sex</button>
+                <button class="weekday-pill-btn" data-day="6">Sáb</button>
+            </div>
+            <div style="display: flex; gap: 8px; margin-top: 8px;">
+                <button class="action-submit-btn" style="flex: 1; background: var(--md-surface-container-high); color: var(--md-on-surface-variant);" onclick="clearRecurrenceConfig()">Limpar</button>
+                <button class="action-submit-btn" style="flex: 2;" onclick="saveRecurrenceConfig()">Confirmar Dias</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="drawer" id="drawer-info">
+        <div class="drawer-handle"></div>
+        <div class="drawer-title">Informações do Sistema</div>
+        <div style="background: var(--md-surface); padding: 14px; border-radius: 12px; border: 1px solid #cbd5e1; max-height: 320px; overflow-y: auto;">
+            <div style="font-size: 14px; font-weight: 700; color: var(--md-primary); margin-bottom: 4px;">Portal Corporativo - Intranet</div>
+            <div style="font-size: 12px; color: var(--md-on-surface-variant); margin-bottom: 12px; line-height: 1.4;">
+                Este portal armazena as suas tarefas localmente e sincroniza automaticamente com o servidor seguro remoto. Projetos fixados agrupam tarefas dinamicamente.
+            </div>
+            <div style="font-size: 11px; font-weight: 700; color: var(--md-on-surface); text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 1px solid var(--md-surface-variant); padding-bottom: 4px;">Histórico de Alterações (Changelog)</div>
+            <ul class="changelog-list">
+                <li class="changelog-item">
+                    <span class="changelog-version">v2.4</span> - Ajuste estético na aba Projetos e correção do alinhamento dos Badges nos blocos agrupados.
+                </li>
+                <li class="changelog-item">
+                    <span class="changelog-version">v2.3</span> - Nova estilização de Atenção: Itens destacados recebem um contorno tracejado marcante na cor Amber.
+                </li>
+                <li class="changelog-item">
+                    <span class="changelog-version">v2.2</span> - Sincronização offline-first aprimorada com hash de validação e recarga manual ao tocar no status.
+                </li>
+                <li class="changelog-item">
+                    <span class="changelog-version">v2.1</span> - Inclusão de Projetos Fixados com suporte a arrastar e soltar (Drag and Drop) nativo para reordenação manual.
+                </li>
+            </ul>
+        </div>
     </div>
 
     <div class="calendar-popup-overlay" id="calendar-popup-overlay" onclick="closeCalendarPopup()">
-        <div class="calendar-popup" id="calendar-popup-box" onclick="event.stopPropagation()">
+        <div class="calendar-popup" onclick="event.stopPropagation()">
             <div class="calendar-popup-header">
-                <div class="calendar-popup-year" id="cal-header-year">2026</div>
-                <div class="calendar-popup-full-date" id="cal-header-fulldate">Dom, 21 de Jun</div>
+                <div class="calendar-popup-year" id="cal-pop-year">2026</div>
+                <div class="calendar-popup-full-date" id="cal-pop-fullname">Selecione uma data</div>
             </div>
             <div class="calendar-popup-body">
                 <div class="calendar-nav-row">
-                    <button class="calendar-nav-btn" onclick="navigateCalendarMonth(-1)"><span class="md-icon">chevron_left</span></button>
-                    <div class="calendar-nav-title" id="cal-nav-title">Junho 2026</div>
-                    <button class="calendar-nav-btn" onclick="navigateCalendarMonth(1)"><span class="md-icon">chevron_right</span></button>
+                    <button class="calendar-nav-btn" onclick="changeCalendarMonth(-1)"><span class="md-icon">chevron_left</span></button>
+                    <div class="calendar-nav-title" id="cal-pop-month-title">Janeiro 2026</div>
+                    <button class="calendar-nav-btn" onclick="changeCalendarMonth(1)"><span class="md-icon">chevron_right</span></button>
                 </div>
                 <div class="calendar-grid-weekdays">
                     <div class="calendar-weekday">D</div><div class="calendar-weekday">S</div><div class="calendar-weekday">T</div>
                     <div class="calendar-weekday">Q</div><div class="calendar-weekday">Q</div><div class="calendar-weekday">S</div>
                     <div class="calendar-weekday">S</div>
                 </div>
-                <div class="calendar-grid-days" id="calendar-days-grid"></div>
+                <div class="calendar-grid-days" id="cal-pop-days-grid"></div>
             </div>
             <div class="calendar-popup-actions">
-                <button class="calendar-action-btn btn-clear-date" onclick="clearCalendarSelection()">Sem Data</button>
+                <button class="calendar-action-btn btn-clear-date" onclick="clearSelectedCalendarDate()">Limpar</button>
                 <div class="calendar-popup-actions-right">
                     <button class="calendar-action-btn" onclick="closeCalendarPopup()">Cancelar</button>
-                    <button class="calendar-action-btn" onclick="confirmCalendarSelection()">OK</button>
+                    <button class="calendar-action-btn" onclick="confirmCalendarPopupDate()">OK</button>
                 </div>
             </div>
         </div>
     </div>
 
     <script>
-        const BIN_ID = '6937666aae596e708f8c6683', API_KEY = '$2a$10$V0UFHZ8bHEdDdwGEpXjEYeR1.ZL9oIiMUY//5YbHFHc7yjai/WHpy';
-        const JSONBIN_URL = `https://api.jsonbin.io/v3/b/${BIN_ID}`;
+        const BIN_ID = '6766cf0be41b4d34e469bcfc';
+        const API_URL = `https://api.jsonbin.io/v3/b/${BIN_ID}`;
+        
         const $ = id => document.getElementById(id);
-
+        
         let state = {
-            version: "4.18.1",
-            changelog: [
-                { v: "4.18.1", date: "22/06/2026", desc: "Corrigida a lógica de sincronização (merge de dados) para incluir explicitamente a propriedade de ATENÇÃO entre múltiplos dispositivos." },
-                { v: "4.18.0", date: "22/06/2026", desc: "Adicionada a funcionalidade de 'ATENÇÃO' nas tarefas individuais, aplicando bordas grossas tracejadas e agrupamento estratégico abaixo das atrasadas." },
-                { v: "4.17.0", date: "22/06/2026", desc: "Adicionada a funcionalidade de selecionar dias da semana específicos para a recorrência do tipo 'Toda semana'." }
-            ],
-            tasks: [], 
-            projetos: [{ nome: "Trabalho", deleted: false, fixed: false }, { nome: "Estudos", deleted: false, fixed: false }],
-            tags: [{ nome: "URGENTE", cor: "#ef4444", deleted: false }, { nome: "FOCO", cor: "#3b82f6", deleted: false }],
-            filterType: 'hoje', selectedFilterValue: '', tempDate: '', tempProject: 'No project', tempTag: '', tempRecurrence: 'Não se repete',
-            tempRecurrenceDays: [], 
-            tempAttention: false, 
-            activeTaskId: null,
-            currentTab: 'tarefas'
+            tasks: [],
+            tags: [],
+            projects: [],
+            currentMainTab: 'tarefas', // 'tarefas' ou 'projetos'
+            currentFilter: 'hoje',     // 'hoje', 'amanha', 'todos', 'completas'
+            editingTaskId: null,
+            editingTagIndex: null,
+            editingProjectIndex: null,
+            
+            // Metadados temporários da tarefa em edição/criação
+            tempMeta: {
+                attention: false,
+                date: '',
+                tag: '',
+                project: '',
+                recurrence: [] // dias da semana [0..6]
+            },
+            
+            // Controle interno do mini calendário pop-up
+            calendarContext: 'layer', // 'layer' ou 'inline'
+            calendarInlineTaskId: null,
+            calendarViewDate: new Date(),
+            calendarSelectedDate: null
         };
 
-        let dragSrcEl = null;
-        let touchTargetEl = null;
-        let calCurrentViewDate = new Date();
-        let calSelectedDateStr = '';
-        let calTargetMode = 'layer';
-        let calTargetTaskId = null;
-        let isSyncingCurrently = false;
+        // Inicialização do App
+        window.addEventListener('DOMContentLoaded', () => {
+            loadLocalStorage();
+            setupRecurrencePills();
+            initSync();
+        });
 
-        const getISOStringLocal = (dateObj) => {
-            return `${dateObj.getFullYear()}-${String(dateObj.getMonth() + 1).padStart(2, '0')}-${String(dateObj.getDate()).padStart(2, '0')}`;
-        };
-
-        function getFriendlyDateText(dateStr) {
-            if (!dateStr || dateStr.trim() === '') return 'Sem data';
-            const hoje = getISOStringLocal(new Date());
-            
-            const dOntem = new Date(); dOntem.setDate(dOntem.getDate() - 1);
-            const dAmanha = new Date(); dAmanha.setDate(dAmanha.getDate() + 1);
-            const ontem = getISOStringLocal(dOntem);
-            const amanha = getISOStringLocal(dAmanha);
-            
-            if (dateStr === hoje) return 'Hoje';
-            if (dateStr === ontem) return 'Ontem';
-            if (dateStr === amanha) return 'Amanhã';
-            
-            const meses = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
-            const partes = dateStr.split('-');
-            const mesIndex = parseInt(partes[1], 10) - 1;
-            const dia = parseInt(partes[2], 10);
-            return `${dia} de ${meses[mesIndex]}`;
-        }
-
-        function setSyncStatus(text, color) {
-            const txtEl = $('status-text'); const dotEl = $('status-dot');
-            if (txtEl) txtEl.innerText = text; if (dotEl) dotEl.style.backgroundColor = color;
-        }
-
-        function toggleInputPanel(show) {
-            const panel = $('bottom-input-panel');
-            const fab = $('fab-trigger');
-            if(show) {
-                $('layer-title').innerText = state.activeTaskId ? "Editar Atividade" : "Nova Atividade";
-                panel.classList.add('visible');
-                fab.style.display = 'none';
-                $('new-task-input').focus();
-            } else {
-                panel.classList.remove('visible');
-                fab.style.display = 'flex';
-                state.activeTaskId = null;
-                if ($('meta-delete-btn')) $('meta-delete-btn').style.display = 'none';
-                $('meta-attention-checkbox').checked = false;
-            }
-        }
-
-        function switchMainTab(tabName) {
-            state.currentTab = tabName;
-            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-            $(`tab-${tabName}`).classList.add('active');
-            render();
+        function saveLocalStorage() {
+            localStorage.setItem('portal_corp_state', JSON.stringify({
+                tasks: state.tasks,
+                tags: state.tags,
+                projects: state.projects
+            }));
         }
 
         function loadLocalStorage() {
-            const localTasks = localStorage.getItem('local_fallback_tasks');
-            const localProj = localStorage.getItem('local_fallback_proj');
-            const localTags = localStorage.getItem('local_fallback_tags');
-            if(localTasks) state.tasks = JSON.parse(localTasks);
-            if(localProj) state.projetos = JSON.parse(localProj);
-            if(localTags) state.tags = JSON.parse(localTags);
-            
-            state.projetos = state.projetos.map(p => {
-                if (typeof p === 'string') return { nome: p, deleted: false, fixed: false };
-                if (p.fixed === undefined) p.fixed = false;
-                return p;
-            });
-            state.tags = state.tags.map(t => typeof t === 'string' ? { nome: t, cor: '#4f46e5', deleted: false } : t);
-        }
-
-        function saveLocalStorage() {
-            localStorage.setItem('local_fallback_tasks', JSON.stringify(state.tasks));
-            localStorage.setItem('local_fallback_proj', JSON.stringify(state.projetos));
-            localStorage.setItem('local_fallback_tags', JSON.stringify(state.tags));
-        }
-
-        function initApp() {
-            state.tempDate = getISOStringLocal(new Date());
-            updateSelectedDate(state.tempDate);
-            loadLocalStorage();
-            clearExpiredSoftDeletes();
-            render();
-            
-            syncWithServer();
-
-            window.addEventListener('online', () => {
-                setSyncStatus('Conectado. Sincronizando...', '#eab308');
-                syncWithServer();
-            });
-
-            window.addEventListener('offline', () => {
-                setSyncStatus('Modo Offline', '#ba1a1a');
-            });
-
-            setInterval(() => {
-                if (navigator.onLine && !isSyncingCurrently) {
-                    syncWithServer();
-                }
-            }, 15000);
-        }
-
-        function clearExpiredSoftDeletes() {
-            const limitTime = Date.now() - (7 * 24 * 60 * 60 * 1000);
-            state.tasks = state.tasks.filter(t => !t.deleted || (t.deletedAt && t.deletedAt > limitTime));
-            state.projetos = state.projetos.filter(p => !p.deleted || (p.deletedAt && p.deletedAt > limitTime));
-            state.tags = state.tags.filter(t => !t.deleted || (t.deletedAt && t.deletedAt > limitTime));
-            saveLocalStorage();
-        }
-
-        /* AJUSTE E FIX DO ALINHAMENTO MÚTUO DOS APARELHOS */
-        function mergeIncomingData(serverData) {
-            if (!serverData) return false;
-            let changesMade = false;
-
-            const taskMap = new Map(); state.tasks.forEach(t => taskMap.set(t.id, t));
-            if (Array.isArray(serverData.tasks)) {
-                serverData.tasks.forEach(st => {
-                    if (!taskMap.has(st.id)) { 
-                        taskMap.set(st.id, st); 
-                        changesMade = true;
-                    } else {
-                        const local = taskMap.get(st.id);
-                        if (st.deleted && !local.deleted) { 
-                            local.deleted = true; 
-                            local.deletedAt = st.deletedAt || Date.now(); 
-                            changesMade = true;
-                        } 
-                        else if (!local.deleted) {
-                            if (st.updatedAt > (local.updatedAt || 0)) {
-                                if (st.completed !== local.completed) local.completed = st.completed;
-                                if (st.text !== local.text) local.text = st.text; 
-                                if (st.date !== local.date) local.date = st.date;
-                                if (st.project !== local.project) local.project = st.project;
-                                if (st.tag !== local.tag) local.tag = st.tag;
-                                if (st.recurrence !== local.recurrence) local.recurrence = st.recurrence;
-                                if (st.recurrenceDays !== local.recurrenceDays) local.recurrenceDays = st.recurrenceDays;
-                                
-                                // Correção Crucial: Garante que o estado de atenção do servidor sobrepõe o local desatualizado
-                                if (st.attention !== local.attention) local.attention = !!st.attention;
-                                
-                                local.updatedAt = st.updatedAt;
-                                changesMade = true;
-                            }
-                        }
-                    }
-                });
-            }
-            state.tasks = Array.from(taskMap.values());
-
-            const projMap = new Map(); state.projetos.forEach(p => projMap.set(p.nome, p));
-            if (Array.isArray(serverData.projetos)) {
-                serverData.projetos.forEach(sp => {
-                    const norm = typeof sp === 'string' ? { nome: sp, deleted: false, fixed: false } : sp;
-                    if (norm.fixed === undefined) norm.fixed = false;
+            const raw = localStorage.getItem('portal_corp_state');
+            if(raw) {
+                try {
+                    const parsed = JSON.parse(raw);
+                    state.tasks = parsed.tasks || [];
+                    state.tags = parsed.tags || [];
+                    state.projects = parsed.projects || [];
                     
-                    if (!projMap.has(norm.nome)) { 
-                        projMap.set(norm.nome, norm); 
-                        changesMade = true;
-                    } else {
-                        const local = projMap.get(norm.nome);
-                        if (norm.deleted && !local.deleted) { 
-                            local.deleted = true; 
-                            local.deletedAt = norm.deletedAt || Date.now(); 
-                            changesMade = true; 
-                        }
-                        if (norm.fixed !== undefined && local.fixed !== norm.fixed) {
-                            local.fixed = norm.fixed;
-                            changesMade = true;
-                        }
-                    }
-                });
+                    // Sanity check para garantir retrocompatibilidade de campos novos
+                    state.tasks.forEach(t => {
+                        if(t.attention === undefined) t.attention = false;
+                        if(!t.recurrence) t.recurrence = [];
+                    });
+                } catch(e) { console.error(e); }
             }
-            state.projetos = Array.from(projMap.values());
-
-            const tagMap = new Map(); state.tags.forEach(t => tagMap.set(t.nome, t));
-            if (Array.isArray(serverData.tags)) {
-                serverData.tags.forEach(st => {
-                    const norm = typeof st === 'string' ? { nome: st, cor: '#4f46e5', deleted: false } : st;
-                    if (!tagMap.has(norm.nome)) { 
-                        tagMap.set(norm.nome, norm); 
-                        changesMade = true;
-                    } else {
-                        const local = tagMap.get(norm.nome);
-                        if (norm.deleted && !local.deleted) { 
-                            local.deleted = true; 
-                            local.deletedAt = norm.deletedAt || Date.now(); 
-                            changesMade = true; 
-                        }
-                    }
-                });
-            }
-            state.tags = Array.from(tagMap.values());
-            
-            if (changesMade) saveLocalStorage();
-            return changesMade;
+            renderTagsList();
+            renderProjectsList();
+            render();
         }
 
-        async function syncWithServer() {
-            if (!navigator.onLine) {
-                setSyncStatus('Modo Offline', '#ba1a1a');
-                return;
-            }
-            isSyncingCurrently = true;
-            setSyncStatus('Sincronizando...', '#eab308');
-
-            try {
-                const headers = { 'X-Master-Key': API_KEY };
-                const resGet = await fetch(JSONBIN_URL, { method: 'GET', headers });
-                if (!resGet.ok) throw new Error("Erro ao consultar servidor");
-                const serverResponse = await resGet.json();
-                
-                const dataChanged = mergeIncomingData(serverResponse.record);
-                if (dataChanged) {
-                    render();
-                }
-
-                const resPut = await fetch(JSONBIN_URL, {
-                    method: 'PUT',
-                    headers: { ...headers, 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ tasks: state.tasks, projetos: state.projetos, tags: state.tags })
-                });
-                
-                if (resPut.ok) {
-                    setSyncStatus('Sincronizado', '#15803d');
-                } else {
-                    throw new Error("Falha ao injetar dados no servidor");
-                }
-            } catch(e) {
-                console.error("Falha na sincronização automatizada:", e);
-                setSyncStatus('Modo Offline', '#ba1a1a');
-            } finally {
-                isSyncingCurrently = false;
-            }
+        // Sincronização Automática Baseada em Timestamps (Sem Sobrescrever Cegas)
+        let isSyncing = false;
+        function initSync() {
+            syncWithServer();
+            setInterval(syncWithServer, 25000);
         }
 
         function triggerManualSync() {
+            if(isSyncing) return;
+            updateSyncStatus('Sincronizando...', '#d97706');
             syncWithServer();
         }
 
-        function updateSelectedDate(val) {
-            state.tempDate = val || '';
-            const el = $('meta-date-text');
-            if (el) el.innerText = getFriendlyDateText(val);
-        }
-
-        function togglePillFilter(type, value) {
-            if (state.filterType === type && state.selectedFilterValue === value) {
-                setFilter('hoje');
-            } else {
-                setFilter(type, value);
+        function updateSyncStatus(text, color = 'var(--success-color)', barWidth = '100%') {
+            $('status-text').innerText = text;
+            $('status-dot').style.backgroundColor = color;
+            $('progress-bar').style.width = barWidth;
+            if(barWidth === '100%') {
+                setTimeout(() => { $('progress-bar').style.width = '0%'; }, 800);
             }
         }
 
-        function setFilter(type, value = '') {
-            state.filterType = type; state.selectedFilterValue = value;
-            document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-            if(['hoje', 'amanha', 'todos', 'completas'].includes(type)) $(`f-btn-${type}`).classList.add('active');
+        async function syncWithServer() {
+            if(isSyncing) return;
+            isSyncing = true;
+            $('progress-bar').style.width = '30%';
             
-            let headingContent = '';
-            if (type === 'hoje') headingContent = `<span class="md-icon" style="font-size:22px;">today</span> Hoje`;
-            else if (type === 'amanha') headingContent = `<span class="md-icon" style="font-size:22px;">next_week</span> Amanhã`;
-            else if (type === 'todos') headingContent = `<span class="md-icon" style="font-size:22px;">all_inbox</span> Todos os Itens`;
-            else if (type === 'completas') headingContent = `<span class="md-icon" style="font-size:22px;">done_all</span> Completas`;
-            else if (type === 'projeto') headingContent = `${value}`;
-            else if (type === 'tag') headingContent = `<span class="md-icon" style="font-size:22px;">label</span> ${value}`;
-            
-            $('current-view-title').innerHTML = headingContent;
-            render();
-        }
-
-        function handleInputKey(e) {
-            if(e.key === 'Enter' && !e.shiftKey) { 
-                e.preventDefault();
-                triggerSubmitTask(); 
-            }
-        }
-
-        function updateBarMetaUi() {
-            const pBadge = $('badge-project-text');
-            if(state.tempProject && state.tempProject !== 'No project') pBadge.innerText = state.tempProject;
-            else pBadge.innerText = 'Nenhum';
-            
-            const tBadge = $('badge-tag-text');
-            if(state.tempTag) tBadge.innerText = state.tempTag;
-            else tBadge.innerText = 'Nenhuma';
-            
-            const rBadge = $('badge-recurrence-text');
-            if(state.tempRecurrence && state.tempRecurrence !== 'Não se repete') {
-                if (state.tempRecurrence === 'Toda semana' && state.tempRecurrenceDays && state.tempRecurrenceDays.length > 0) {
-                    const dNames = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
-                    const mapped = state.tempRecurrenceDays.map(d => dNames[d]).join(',');
-                    rBadge.innerText = `Semanal (${mapped})`;
-                } else {
-                    rBadge.innerText = state.tempRecurrence;
-                }
-            }
-            else rBadge.innerText = 'Não se repete';
-            
-            $('meta-attention-checkbox').checked = !!state.tempAttention;
-
-            const dBtn = $('meta-delete-btn');
-            if (dBtn) dBtn.style.display = state.activeTaskId ? 'flex' : 'none';
-        }
-
-        function triggerSubmitTask() {
-            const inputElement = $('new-task-input'); const val = inputElement.value.trim();
-            const attentionVal = $('meta-attention-checkbox').checked;
-
-            if(val) {
-                if (state.activeTaskId) {
-                    const t = state.tasks.find(x => x.id === state.activeTaskId);
-                    if (t) {
-                        t.text = val; t.date = state.tempDate; t.project = state.tempProject;
-                        t.tag = state.tempTag; t.recurrence = state.tempRecurrence || 'Não se repete';
-                        t.recurrenceDays = (state.tempRecurrence === 'Toda semana') ? [...state.tempRecurrenceDays] : [];
-                        t.attention = attentionVal;
-                        t.updatedAt = Date.now();
-                    }
-                } else {
-                    state.tasks.push({ 
-                        id: 'task_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5), 
-                        text: val, completed: false, date: state.tempDate, project: state.tempProject, 
-                        tag: state.tempTag, recurrence: state.tempRecurrence || 'Não se repete',
-                        recurrenceDays: (state.tempRecurrence === 'Toda semana') ? [...state.tempRecurrenceDays] : [],
-                        attention: attentionVal,
-                        deleted: false, updatedAt: Date.now() 
+            try {
+                const res = await fetch(`${API_URL}/latest`, {
+                    headers: { 'X-Bin-Meta': 'false' }
+                });
+                if(!res.ok) throw new Error('Erro na rede');
+                const serverData = await res.json();
+                $('progress-bar').style.width = '60%';
+                
+                let localChanged = false;
+                
+                // 1. Sincronizar Etiquetas
+                if(serverData.tags && Array.isArray(serverData.tags)) {
+                    serverData.tags.forEach(sTag => {
+                        const lTag = state.tags.find(t => t.nome === sTag.nome);
+                        if(!lTag) {
+                            state.tags.push(sTag);
+                            localChanged = true;
+                        } else {
+                            if(sTag.deleted && !lTag.deleted) {
+                                lTag.deleted = true;
+                                lTag.deletedAt = sTag.deletedAt || Date.now();
+                                localChanged = true;
+                            }
+                        }
                     });
                 }
                 
-                inputElement.value = ''; state.tempProject = 'No project'; state.tempTag = ''; state.tempRecurrence = 'Não se repete'; state.tempRecurrenceDays = []; state.tempAttention = false; state.activeTaskId = null;
-                updateBarMetaUi(); toggleInputPanel(false); 
+                // 2. Sincronizar Projetos
+                if(serverData.projects && Array.isArray(serverData.projects)) {
+                    serverData.projects.forEach(sProj => {
+                        const lProj = state.projects.find(p => p.nome === sProj.nome);
+                        if(!lProj) {
+                            state.projects.push(sProj);
+                            localChanged = true;
+                        } else {
+                            if(sProj.fixed !== lProj.fixed) {
+                                lProj.fixed = sProj.fixed;
+                                localChanged = true;
+                            }
+                            if(sProj.order !== undefined && sProj.order !== lProj.order) {
+                                lProj.order = sProj.order;
+                                localChanged = true;
+                            }
+                            if(sProj.deleted && !lProj.deleted) {
+                                lProj.deleted = true;
+                                lProj.deletedAt = sProj.deletedAt || Date.now();
+                                localChanged = true;
+                            }
+                        }
+                    });
+                }
+
+                // 3. Sincronizar Tarefas baseado em updatedAt
+                if(serverData.tasks && Array.isArray(serverData.tasks)) {
+                    serverData.tasks.forEach(sTask => {
+                        const lTask = state.tasks.find(t => t.id === sTask.id);
+                        if(!lTask) {
+                            state.tasks.push(sTask);
+                            localChanged = true;
+                        } else {
+                            const sTime = sTask.updatedAt || 0;
+                            const lTime = lTask.updatedAt || 0;
+                            if(sTime > lTime) {
+                                Object.assign(lTask, sTask);
+                                localChanged = true;
+                            }
+                        }
+                    });
+                }
                 
-                saveLocalStorage();
-                render(); 
-                syncWithServer();
+                // Processar recorrências locais se mudou o dia e a tarefa precisa renascer
+                checkRecurrentTasksBirth();
+
+                if(localChanged) {
+                    saveLocalStorage();
+                    renderTagsList();
+                    renderProjectsList();
+                    render();
+                }
+                
+                // Enviar atualizações locais para o servidor se houver itens mais novos localmente
+                await pushData();
+                updateSyncStatus('Sincronizado');
+            } catch(err) {
+                console.error(err);
+                updateSyncStatus('Modo Offline', '#ef4444', '0%');
+            } finally {
+                isSyncing = false;
             }
         }
 
-        function triggerDeleteSelectedTask() {
-            if (state.activeTaskId) {
-                opTask(state.activeTaskId, 'delete');
-                const inputElement = $('new-task-input'); if (inputElement) inputElement.value = '';
-                state.tempProject = 'No project'; state.tempTag = ''; state.tempRecurrence = 'Não se repete'; state.tempRecurrenceDays = []; state.tempAttention = false; state.activeTaskId = null;
-                updateBarMetaUi(); toggleInputPanel(false);
-            }
-        }
-
-        function calculateNextRecurrentDate(currentDateStr, type, specificDays = []) {
-            if(!currentDateStr) return getISOStringLocal(new Date());
-            const d = new Date(currentDateStr + 'T00:00:00');
+        async function pushData() {
+            // Remove itens deletados há mais de 15 dias para limpar lixo
+            const corte = Date.now() - (15 * 24 * 60 * 60 * 1000);
+            state.tags = state.tags.filter(t => !t.deleted || t.deletedAt > corte);
+            state.projects = state.projects.filter(p => !p.deleted || p.deletedAt > corte);
+            state.tasks = state.tasks.filter(t => !t.deleted || t.deletedAt > corte);
             
-            if(type === 'Todos os dias') {
-                d.setDate(d.getDate() + 1);
-            } else if(type === 'Toda semana') {
-                if (specificDays && specificDays.length > 0) {
-                    const sortedDays = [...specificDays].sort((a,b) => a - b);
-                    let found = false;
-                    
-                    for (let i = 0; i < sortedDays.length; i++) {
-                        if (sortedDays[i] > d.getDay()) {
-                            const diff = sortedDays[i] - d.getDay();
-                            d.setDate(d.getDate() + diff);
-                            found = true;
-                            break;
+            try {
+                await fetch(API_URL, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        tasks: state.tasks,
+                        tags: state.tags,
+                        projects: state.projects
+                    })
+                });
+            } catch(e) { console.error('Erro ao empurrar dados: ', e); }
+        }
+
+        // Sistema de Nascimento de Tarefas Recorrentes
+        function checkRecurrentTasksBirth() {
+            const hojeStr = getTodayString();
+            let mudou = false;
+            
+            state.tasks.forEach(t => {
+                if(!t.deleted && t.recurrence && t.recurrence.length > 0) {
+                    // Se a tarefa está completa e foi concluída antes de hoje, verifica se hoje é dia de renascer
+                    if(t.completed) {
+                        const d = new Date();
+                        const diaSemana = d.getDay();
+                        if(t.recurrence.includes(diaSemana) && t.date !== hojeStr) {
+                            // Renasce desmarcada com a nova data de hoje
+                            t.completed = false;
+                            t.date = hojeStr;
+                            t.updatedAt = Date.now();
+                            delete t.completedAt;
+                            mudou = true;
                         }
                     }
-                    if (!found) {
-                        const diasAteFimSemana = 7 - d.getDay();
-                        const proximoDiaAlvo = sortedDays[0];
-                        d.setDate(d.getDate() + diasAteFimSemana + proximoDiaAlvo);
-                    }
-                } else {
-                    d.setDate(d.getDate() + 7);
                 }
-            } else if(type === 'Todo mês') {
-                d.setMonth(d.getMonth() + 1);
-            } else if(type === 'Todo ano') {
-                d.setFullYear(d.getFullYear() + 1);
-            }
-            return getISOStringLocal(d);
+            });
+            if(mudou) saveLocalStorage();
         }
 
-        function callTaskBackToDraft(id) {
-            const t = state.tasks.find(x => x.id === id); if(!t || t.completed) return;
+        // Funções Úteis de Data
+        function getTodayString() {
+            const d = new Date();
+            return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+        }
+        function getTomorrowString() {
+            const d = new Date(); d.setDate(d.getDate() + 1);
+            return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+        }
+        function formatDisplayDate(dateStr) {
+            if(!dateStr) return '';
+            const parts = dateStr.split('-');
+            if(parts.length !== 3) return dateStr;
+            return `${parts[2]}/${parts[1]}`;
+        }
+
+        // Alternar Visualizações (Abas Principais)
+        function switchMainTab(tab) {
+            state.currentMainTab = tab;
+            $('tab-tarefas').classList.toggle('active', tab === 'tarefas');
+            $('tab-projetos').classList.toggle('active', tab === 'projetos');
             
-            state.activeTaskId = t.id;
-            $('new-task-input').value = t.text;
-            state.tempDate = t.date || '';
-            state.tempProject = t.project || 'No project';
-            state.tempTag = t.tag || '';
-            state.tempRecurrence = t.recurrence || 'Não se repete';
-            state.tempRecurrenceDays = t.recurrenceDays ? [...t.recurrenceDays] : [];
-            state.tempAttention = !!t.attention;
+            // Oculta/Exibe os filtros rápidos dependendo da aba
+            document.querySelector('.date-filters').style.display = tab === 'tarefas' ? 'flex' : 'none';
+            $('fab-trigger').style.display = tab === 'tarefas' ? 'flex' : 'none';
             
-            updateBarMetaUi();
-            updateSelectedDate(t.date);
-            toggleInputPanel(true);
             render();
         }
 
-        function toggleProjectPin(projName) {
-            const p = state.projetos.find(x => x.nome === projName);
-            if (p) { 
-                p.fixed = !p.fixed; 
-                saveLocalStorage();
-                render(); 
-                syncWithServer(); 
+        function setFilter(filter) {
+            state.currentFilter = filter;
+            document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+            if(filter === 'hoje') $('f-btn-hoje').classList.add('active');
+            if(filter === 'amanha') $('f-btn-amanha').classList.add('active');
+            if(filter === 'todos') $('f-btn-todos').classList.add('active');
+            if(filter === 'completas') $('f-btn-completas').classList.add('active');
+            render();
+        }
+
+        // GERAÇÃO DOS COMPONENTES E RENDERS PRINCIPAIS
+        function render() {
+            const container = $('task-list-container');
+            container.innerHTML = '';
+            
+            // Atualiza Título da App Bar baseado na View
+            if(state.currentMainTab === 'projetos') {
+                $('current-view-title').innerHTML = `<span class="md-icon" style="font-size:22px;">folder_shared</span> Projetos Corporativos`;
+                renderProjetosTabView(container);
+                return;
+            }
+            
+            // Caso seja Aba de Tarefas Normal
+            let titleIcon = 'today'; let titleText = 'Hoje';
+            if(state.currentFilter === 'amanha') { titleIcon = 'next_week'; titleText = 'Amanhã'; }
+            if(state.currentFilter === 'todos') { titleIcon = 'all_inbox'; titleText = 'Tudo Pessoal'; }
+            if(state.currentFilter === 'completas') { titleIcon = 'done_all'; titleText = 'Concluídas'; }
+            $('current-view-title').innerHTML = `<span class="md-icon" style="font-size:22px;">${titleIcon}</span> ${titleText}`;
+
+            let filtered = state.tasks.filter(t => !t.deleted);
+            const hoje = getTodayString();
+            const amanha = getTomorrowString();
+
+            if(state.currentFilter === 'hoje') {
+                filtered = filtered.filter(t => !t.completed && (t.date <= hoje || !t.date));
+            } else if(state.currentFilter === 'amanha') {
+                filtered = filtered.filter(t => !t.completed && t.date === amanha);
+            } else if(state.currentFilter === 'completas') {
+                filtered = filtered.filter(t => t.completed);
+            } else if(state.currentFilter === 'todos') {
+                filtered = filtered.filter(t => !t.completed);
+            }
+
+            // Ordenação: 1º Atenção, 2º Data Mais Antiga/Vencida, 3º ID/Ordem de inserção
+            filtered.sort((a, b) => {
+                if (a.attention !== b.attention) return b.attention ? 1 : -1;
+                if (a.date && b.date) return a.date.localeCompare(b.date);
+                if (a.date && !b.date) return -1;
+                if (!a.date && b.date) return 1;
+                return b.id - a.id;
+            });
+
+            if(filtered.length === 0) {
+                container.innerHTML = `<div style="text-align:center; padding:40px 20px; color:var(--md-on-surface-variant); font-size:14px; font-weight:600;">Nenhuma atividade localizada neste bloco.</div>`;
+                return;
+            }
+
+            filtered.forEach(t => {
+                container.appendChild(createTaskItemComponent(t));
+            });
+        }
+
+        // Renderização Exclusiva da Aba de Projetos
+        function renderProjetosTabView(container) {
+            const ativosProjs = state.projects.filter(p => !p.deleted);
+            
+            // Ordena os projetos pela ordem manual definida (para os fixados)
+            ativosProjs.sort((a,b) => (a.order || 0) - (b.order || 0));
+            
+            const fixados = ativosProjs.filter(p => p.fixed);
+            const normais = ativosProjs.filter(p => !p.fixed);
+            
+            // Bloco de Projetos Fixados (Suporta Reordenação Drag & Drop)
+            if(fixados.length > 0) {
+                const titleBlock = document.createElement('div');
+                titleBlock.style = "font-size:11px; font-weight:700; color:var(--md-primary); text-transform:uppercase; letter-spacing:0.5px; padding: 4px 0 2px 0;";
+                titleBlock.innerText = "Projetos Fixados (Mover)";
+                container.appendChild(titleBlock);
+                
+                fixados.forEach(p => {
+                    container.appendChild(createProjectGroupCardComponent(p, true));
+                });
+            }
+            
+            // Bloco de Outros Projetos
+            if(normais.length > 0) {
+                const titleBlock = document.createElement('div');
+                titleBlock.style = "font-size:11px; font-weight:700; color:var(--md-on-surface-variant); text-transform:uppercase; letter-spacing:0.5px; padding: 12px 0 2px 0;";
+                titleBlock.innerText = "Demais Projetos";
+                container.appendChild(titleBlock);
+                
+                normais.forEach(p => {
+                    container.appendChild(createProjectGroupCardComponent(p, false));
+                });
+            }
+            
+            // Tarefas Soltas (Sem Projeto) se houverem
+            const soltas = state.tasks.filter(t => !t.deleted && !t.completed && !t.project);
+            if(soltas.length > 0) {
+                const card = document.createElement('div');
+                card.className = "project-group-card";
+                
+                const header = document.createElement('div');
+                header.className = "project-group-header";
+                header.innerHTML = `<div class="project-group-header-left"><span class="md-icon" style="color:var(--md-on-surface-variant)">layers</span><span>Atividades Sem Projeto</span></div><span class="project-group-count">${soltas.length}</span>`;
+                card.appendChild(header);
+                
+                soltas.forEach(t => { card.appendChild(createTaskItemComponent(t, false)); });
+                container.appendChild(card);
+            }
+            
+            if(ativosProjs.length === 0 && soltas.length === 0) {
+                container.innerHTML = `<div style="text-align:center; padding:40px 20px; color:var(--md-on-surface-variant); font-size:14px; font-weight:600;">Nenhum projeto estruturado. Vá em uma tarefa para criar novos projetos.</div>`;
             }
         }
 
-        function opTask(id, type, val = '') {
-            const t = state.tasks.find(x => x.id === id); if(!t) return;
-            if (type === 'toggle') { 
-                if(!t.completed && t.recurrence && t.recurrence !== 'Não se repete') {
-                    t.date = calculateNextRecurrentDate(t.date, t.recurrence, t.recurrenceDays); t.completed = false;
-                } else { t.completed = !t.completed; }
-                t.updatedAt = Date.now(); 
+        // COMPONENTE: CARD UNIFICADO DO PROJETO (Aba Projetos)
+        function createProjectGroupCardComponent(proj, isFixed) {
+            const card = document.createElement('div');
+            card.className = `project-group-card ${isFixed ? 'is-fixed' : ''}`;
+            card.dataset.projName = proj.nome;
+            
+            if(isFixed) {
+                card.draggable = true;
+                card.addEventListener('dragstart', handleProjectDragStart);
+                card.addEventListener('dragover', handleProjectDragOver);
+                card.addEventListener('dragleave', handleProjectDragLeave);
+                card.addEventListener('drop', handleProjectDrop);
+                card.addEventListener('dragend', handleProjectDragEnd);
             }
-            if (type === 'change-date') { t.date = val; t.updatedAt = Date.now(); }
-            if (type === 'delete') { t.deleted = true; t.deletedAt = Date.now(); }
+            
+            const pTasks = state.tasks.filter(t => !t.deleted && !t.completed && t.project === proj.nome);
+            
+            const header = document.createElement('div');
+            header.className = "project-group-header";
+            
+            const left = document.createElement('div');
+            left.className = "project-group-header-left";
+            if(isFixed) {
+                left.innerHTML = `<span class="md-icon drag-handle" style="cursor:grab; font-size:18px;">drag_indicator</span>`;
+            }
+            
+            const titleLink = document.createElement('div');
+            titleLink.className = "project-group-title-link";
+            titleLink.innerHTML = `<span>${proj.nome}</span>`;
+            titleLink.onclick = () => openEditProjectInlineForm(proj);
+            left.appendChild(titleLink);
+            
+            const right = document.createElement('div');
+            right.style = "display:flex; align-items:center; gap:8px;";
+            right.innerHTML = `<span class="project-group-count">${pTasks.length}</span>`;
+            
+            const pinBtn = document.createElement('button');
+            pinBtn.className = `btn-project-pin ${proj.fixed ? 'active' : ''}`;
+            pinBtn.title = proj.fixed ? 'Desafixar Projeto' : 'Fixar no Topo';
+            pinBtn.innerHTML = `<span class="md-icon">${proj.fixed ? 'keep' : 'keep_off'}</span>`;
+            pinBtn.onclick = (e) => { e.stopPropagation(); toggleProjectPin(proj); };
+            right.appendChild(pinBtn);
+            
+            header.appendChild(left);
+            header.appendChild(right);
+            card.appendChild(header);
+            
+            if(pTasks.length === 0) {
+                const emptyRow = document.createElement('div');
+                emptyRow.style = "padding:12px 14px; font-size:12px; color:var(--md-outline); font-style:italic;";
+                emptyRow.innerText = "Nenhuma atividade pendente neste projeto.";
+                card.appendChild(emptyRow);
+            } else {
+                pTasks.forEach(t => {
+                    card.appendChild(createTaskItemComponent(t, false)); // false esconde a tag de projeto redundante
+                });
+            }
+            
+            return card;
+        }
+
+        // COMPONENTE: ITEM DE TAREFA (Usado na lista principal e dentro dos cards de projeto)
+        function createTaskItemComponent(task, showProjectBadge = true) {
+            const item = document.createElement('div');
+            item.className = 'task-item';
+            if(task.completed) item.classList.add('completed');
+            if(task.attention) item.classList.add('has-attention');
+            
+            // Alerta visual de vencida (Apenas se não concluída)
+            const hojeStr = getTodayString();
+            if(!task.completed && task.date && task.date < hojeStr) {
+                item.classList.add('overdue');
+            }
+            
+            // Checkbox
+            const checkbox = document.createElement('input');
+            checkbox.type = 'checkbox';
+            checkbox.className = 'task-checkbox';
+            checkbox.checked = task.completed;
+            checkbox.onclick = (e) => { e.stopPropagation(); toggleTaskComplete(task.id); };
+            item.appendChild(checkbox);
+            
+            // Conteúdo Interno
+            const content = document.createElement('div');
+            content.className = 'task-content';
+            
+            const textRow = document.createElement('div');
+            textRow.className = 'task-text-row';
+            textRow.onclick = () => openEditTaskPanel(task);
+            
+            const textSpan = document.createElement('span');
+            textSpan.className = 'task-text';
+            textSpan.innerText = task.texto;
+            textRow.appendChild(textSpan);
+            
+            // Badge de Etiqueta (Contexto) se houver
+            if(task.tag) {
+                const tagObj = state.tags.find(x => x.nome === task.tag && !x.deleted);
+                const tagColor = tagObj ? tagObj.cor : 'var(--md-primary)';
+                const tagBadge = document.createElement('span');
+                tagBadge.className = 'inline-tag-badge';
+                tagBadge.style = `background: ${tagColor}15; color: ${tagColor}; border: 1px solid ${tagColor}40;`;
+                tagBadge.innerText = task.tag;
+                tagBadge.onclick = (e) => { e.stopPropagation(); setFilter('todos'); state.tasks.filter(x=>x.tag===task.tag); render(); }; // exemplo simples filtro
+                textRow.appendChild(tagBadge);
+            }
+            
+            // Badge de Projeto Unificado se aplicável
+            if(showProjectBadge && task.project) {
+                const projBadge = document.createElement('span');
+                projBadge.className = 'inline-project-badge';
+                projBadge.innerText = task.project;
+                textRow.appendChild(projBadge);
+            }
+            
+            content.appendChild(textRow);
+            
+            // Zona Direita Clicável: Exibição de Data / Gatilho de Calendário Rápido
+            const rightZone = document.createElement('div');
+            rightZone.className = 'right-date-pilling-zone';
+            
+            // Se possuir recorrência ativa, insere um ícone indicador antes da data
+            if(task.recurrence && task.recurrence.length > 0) {
+                const recIcon = document.createElement('span');
+                recIcon.className = 'right-date-icon';
+                recIcon.style = "color: var(--success-color); opacity:0.9; margin-right:-2px;";
+                recIcon.innerHTML = `<span class="md-icon" style="font-size:13px !important;">autorenew</span>`;
+                rightZone.appendChild(recIcon);
+            }
+            
+            const dateTextSpan = document.createElement('span');
+            if(task.date) {
+                dateTextSpan.innerText = formatDisplayDate(task.date);
+                if(!task.completed && task.date === hojeStr) {
+                    dateTextSpan.style.fontWeight = '700';
+                    dateTextSpan.style.color = 'var(--md-primary)';
+                }
+            } else {
+                dateTextSpan.innerHTML = `<span class="md-icon" style="color:var(--md-outline); font-size:16px;">calendar_today</span>`;
+            }
+            rightZone.appendChild(dateTextSpan);
+            
+            rightZone.onclick = (e) => { e.stopPropagation(); openCalendarPopup('inline', task.id); };
+            content.appendChild(rightZone);
+            
+            item.appendChild(content);
+            return item;
+        }
+
+        // Drag & Drop de Reordenação de Projetos Fixados
+        let dragSrcProjectName = null;
+        function handleProjectDragStart(e) {
+            dragSrcProjectName = this.dataset.projName;
+            this.classList.add('dragging');
+            e.dataTransfer.effectAllowed = 'move';
+        }
+        function handleProjectDragOver(e) {
+            if(e.preventDefault) e.preventDefault();
+            this.classList.add('drag-over');
+            return false;
+        }
+        function handleProjectDragLeave() { this.classList.remove('drag-over'); }
+        function handleProjectDrop(e) {
+            e.stopPropagation();
+            this.classList.remove('drag-over');
+            const targetName = this.dataset.projName;
+            if(dragSrcProjectName === targetName) return;
+            
+            const ativos = state.projects.filter(p => !p.deleted);
+            const srcObj = ativos.find(p => p.nome === dragSrcProjectName);
+            const tgtObj = ativos.find(p => p.nome === targetName);
+            
+            if(srcObj && tgtObj) {
+                // Algoritmo simples de troca/reindexação de ordem
+                const oldSrcOrder = srcObj.order || 0;
+                srcObj.order = tgtObj.order || 0;
+                tgtObj.order = oldSrcOrder;
+                
+                // Força normalização sequencial para segurança
+                ativos.sort((a,b) => (a.order || 0) - (b.order || 0)).forEach((p, idx) => p.order = idx);
+                
+                saveLocalStorage();
+                render();
+                pushData();
+            }
+        }
+        function handleProjectDragEnd() { this.classList.remove('dragging'); }
+
+        // OPERAÇÕES: TAREFAS / ATIVIDADES
+        function toggleTaskComplete(id) {
+            const t = state.tasks.find(x => x.id === id);
+            if(t) {
+                t.completed = !t.completed;
+                t.updatedAt = Date.now();
+                if(t.completed) t.completedAt = Date.now(); else delete t.completedAt;
+                saveLocalStorage();
+                render();
+                pushData();
+            }
+        }
+
+        function toggleInputPanel(visible) {
+            const panel = $('bottom-input-panel');
+            if(visible) {
+                state.editingTaskId = null;
+                $('layer-title').innerText = "Nova Atividade";
+                $('new-task-input').value = '';
+                $('btn-task-delete').style.display = 'none';
+                
+                // Reseta metadados temporários para o padrão (Data de hoje por padrão)
+                state.tempMeta = {
+                    attention: false,
+                    date: getTodayString(),
+                    tag: '',
+                    project: '',
+                    recurrence: []
+                };
+                refreshLayerMetaBadgesDisplay();
+                panel.classList.add('visible');
+                setTimeout(() => $('new-task-input').focus(), 150);
+            } else {
+                panel.classList.remove('visible');
+                $('new-task-input').blur();
+            }
+        }
+
+        function openEditTaskPanel(task) {
+            state.editingTaskId = task.id;
+            $('layer-title').innerText = "Editar Atividade";
+            $('new-task-input').value = task.texto;
+            $('btn-task-delete').style.display = 'flex';
+            
+            state.tempMeta = {
+                attention: task.attention || false,
+                date: task.date || '',
+                tag: task.tag || '',
+                project: task.project || '',
+                recurrence: task.recurrence ? [...task.recurrence] : []
+            };
+            refreshLayerMetaBadgesDisplay();
+            $('bottom-input-panel').classList.add('visible');
+        }
+
+        function refreshLayerMetaBadgesDisplay() {
+            $('meta-attention-checkbox').checked = state.tempMeta.attention;
+            $('meta-date-badge').innerText = state.tempMeta.date ? formatDisplayDate(state.tempMeta.date) : 'Sem data';
+            $('meta-tag-badge').innerText = state.tempMeta.tag || 'Nenhuma';
+            $('meta-project-badge').innerText = state.tempMeta.project || 'Nenhum';
+            
+            const rBadge = $('meta-recurrence-badge');
+            if(state.tempMeta.recurrence && state.tempMeta.recurrence.length > 0) {
+                const dNames = ['D','S','T','Q','Q','S','S'];
+                rBadge.innerText = state.tempMeta.recurrence.map(x => dNames[x]).join(',');
+                rBadge.style.color = 'var(--success-color)';
+                rBadge.style.background = '#f0fdf4';
+            } else {
+                rBadge.innerText = 'Não';
+                rBadge.style.color = 'var(--md-on-surface-variant)';
+                rBadge.style.background = '#f1f5f9';
+            }
+        }
+
+        function handleInputKey(e) {
+            if(e.key === 'Enter') { e.preventDefault(); triggerSubmitTask(); }
+        }
+
+        function triggerSubmitTask() {
+            const txt = $('new-task-input').value.trim();
+            if(!txt) return;
+            
+            // Captura estado do checkbox de atenção diretamente antes de salvar
+            state.tempMeta.attention = $('meta-attention-checkbox').checked;
+
+            if(state.editingTaskId) {
+                // Fluxo de Edição
+                const t = state.tasks.find(x => x.id === state.editingTaskId);
+                if(t) {
+                    t.texto = txt;
+                    t.attention = state.tempMeta.attention;
+                    t.date = state.tempMeta.date;
+                    t.tag = state.tempMeta.tag;
+                    t.project = state.tempMeta.project;
+                    t.recurrence = state.tempMeta.recurrence;
+                    t.updatedAt = Date.now();
+                }
+            } else {
+                // Fluxo de Criação Nova
+                state.tasks.push({
+                    id: Date.now(),
+                    texto: txt,
+                    completed: false,
+                    attention: state.tempMeta.attention,
+                    date: state.tempMeta.date,
+                    tag: state.tempMeta.tag,
+                    project: state.tempMeta.project,
+                    recurrence: state.tempMeta.recurrence,
+                    updatedAt: Date.now()
+                });
+            }
             
             saveLocalStorage();
-            render(); 
-            syncWithServer();
+            toggleInputPanel(false);
+            render();
+            pushData();
         }
 
-        /* CALENDÁRIO CUSTOMIZADO */
-        function openCalendarPopup(mode, taskId = null) {
-            calTargetMode = mode;
-            calTargetTaskId = taskId;
+        function triggerDeleteTask() {
+            if(!state.editingTaskId) return;
+            const t = state.tasks.find(x => x.id === state.editingTaskId);
+            if(t) {
+                t.deleted = true;
+                t.deletedAt = Date.now();
+                saveLocalStorage();
+                toggleInputPanel(false);
+                render();
+                pushData();
+            }
+        }
+
+        // OPERAÇÕES: DRAWERS (BOTTOM SHEETS)
+        function openDrawer(type) {
+            $('drawer-overlay').style.display = 'block';
+            document.querySelectorAll('.drawer').forEach(d => d.classList.remove('open'));
             
-            let baseDateStr = (mode === 'layer') ? state.tempDate : state.tasks.find(x => x.id === taskId).date;
-            if(!baseDateStr || baseDateStr.trim() === '') baseDateStr = getISOStringLocal(new Date());
+            if(type === 'tags') { $('drawer-tags').classList.add('open'); renderTagsList(); }
+            if(type === 'projects') { $('drawer-projects').classList.add('open'); renderProjectsList(); }
+            if(type === 'recurrence') { $('drawer-recurrence').classList.add('open'); syncRecurrencePillsWithTempMeta(); }
+        }
+        function closeDrawer() {
+            $('drawer-overlay').style.display = 'none';
+            document.querySelectorAll('.drawer').forEach(d => d.classList.remove('open'));
+        }
+        function openInfoDrawer() {
+            openDrawer('info');
+            $('drawer-info').classList.add('open');
+        }
+
+        // GERENCIAMENTO INTERNO: ETIQUETAS (TAGS)
+        function renderTagsList() {
+            const container = $('drawer-tags-items');
+            container.innerHTML = '';
             
-            calSelectedDateStr = baseDateStr;
-            calCurrentViewDate = new Date(baseDateStr + 'T00:00:00');
+            // Opção Nenhuma
+            const noneRow = document.createElement('div'); noneRow.className = 'list-item-row';
+            noneRow.innerHTML = `<label class="item-label"><input type="radio" name="drawer-tag-sel" class="drawer-radio-input" ${!state.tempMeta.tag?'checked':''}> <span style="margin-left:8px; font-weight:500; color:var(--md-outline)">Nenhuma Etiqueta</span></label>`;
+            noneRow.onclick = () => { state.tempMeta.tag = ''; refreshLayerMetaBadgesDisplay(); closeDrawer(); };
+            container.appendChild(noneRow);
+
+            state.tags.filter(t => !t.deleted).forEach(t => {
+                const row = document.createElement('div'); row.className = 'list-item-row';
+                
+                const label = document.createElement('label'); label.className = 'item-label';
+                label.innerHTML = `<input type="radio" name="drawer-tag-sel" class="drawer-radio-input" ${state.tempMeta.tag===t.nome?'checked':''}> <span class="md-icon" style="color:${t.cor}; margin-left:6px;">sell</span> <span style="margin-left:4px;">${t.nome}</span>`;
+                label.onclick = () => { state.tempMeta.tag = t.nome; refreshLayerMetaBadgesDisplay(); closeDrawer(); };
+                
+                const actions = document.createElement('div');
+                actions.innerHTML = `<button class="info-btn" style="color:var(--error-color)" title="Excluir Etiqueta"><span class="md-icon">delete_forever</span></button>`;
+                actions.querySelector('button').onclick = (e) => { e.stopPropagation(); deleteTag(t.nome); };
+                
+                row.appendChild(label); row.appendChild(actions); container.appendChild(row);
+            });
+        }
+
+        function saveTag() {
+            const n = $('new-tag-name').value.trim().toUpperCase();
+            const c = $('new-tag-color').value;
+            if(!n) return;
+            
+            if(state.tags.some(x => x.nome === n && !x.deleted)) return;
+            const matchDel = state.tags.find(x => x.nome === n && x.deleted);
+            if(matchDel) {
+                matchDel.deleted = false; matchDel.cor = c; delete matchDel.deletedAt;
+            } else {
+                state.tags.push({ nome: n, cor: c, deleted: false });
+            }
+            $('new-tag-name').value = '';
+            renderTagsList();
+            render();
+            pushData();
+        }
+
+        function deleteTag(name) {
+            const t = state.tags.find(x => x.nome === name);
+            if(t) { t.deleted = true; t.deletedAt = Date.now(); }
+            state.tasks.forEach(x => { if(x.tag === name) { x.tag = ''; x.updatedAt = Date.now(); } });
+            saveLocalStorage();
+            renderTagsList();
+            render();
+            pushData();
+        }
+
+        // GERENCIAMENTO INTERNO: PROJETOS
+        function renderProjectsList() {
+            const container = $('drawer-projects-items');
+            container.innerHTML = '';
+            
+            // Opção Nenhum
+            const noneRow = document.createElement('div'); noneRow.className = 'list-item-row';
+            noneRow.innerHTML = `<label class="item-label"><input type="radio" name="drawer-proj-sel" class="drawer-radio-input" ${!state.tempMeta.project?'checked':''}> <span style="margin-left:8px; font-weight:500; color:var(--md-outline)">Nenhum Projeto</span></label>`;
+            noneRow.onclick = () => { state.tempMeta.project = ''; refreshLayerMetaBadgesDisplay(); closeDrawer(); };
+            container.appendChild(noneRow);
+
+            state.projects.filter(p => !p.deleted).forEach(p => {
+                const row = document.createElement('div'); row.className = 'list-item-row';
+                
+                const label = document.createElement('label'); label.className = 'item-label';
+                label.innerHTML = `<input type="radio" name="drawer-proj-sel" class="drawer-radio-input" ${state.tempMeta.project===p.nome?'checked':''}> <span class="md-icon" style="color:var(--md-primary); margin-left:6px;">folder</span> <span style="margin-left:4px;">${p.nome}</span>`;
+                label.onclick = () => { state.tempMeta.project = p.nome; refreshLayerMetaBadgesDisplay(); closeDrawer(); };
+                
+                const actions = document.createElement('div');
+                actions.innerHTML = `<button class="info-btn" style="color:var(--error-color)" title="Excluir Projeto"><span class="md-icon">delete_forever</span></button>`;
+                actions.querySelector('button').onclick = (e) => { e.stopPropagation(); deleteProject(p.nome); };
+                
+                row.appendChild(label); row.appendChild(actions); container.appendChild(row);
+            });
+        }
+
+        function saveProject() {
+            const n = $('new-project-name').value.trim();
+            if(!n) return;
+            
+            if(state.projects.some(x => x.nome === n && !x.deleted)) return;
+            const matchDel = state.projects.find(x => x.nome === n && x.deleted);
+            
+            const totalAtivos = state.projects.filter(p => !p.deleted).length;
+            
+            if(matchDel) {
+                matchDel.deleted = false;
+                matchDel.order = totalAtivos;
+                delete matchDel.deletedAt;
+            } else {
+                state.projects.push({ nome: n, fixed: false, order: totalAtivos, deleted: false });
+            }
+            $('new-project-name').value = '';
+            renderProjectsList();
+            render();
+            pushData();
+        }
+
+        function deleteProject(name) {
+            const p = state.projects.find(x => x.nome === name);
+            if(p) { p.deleted = true; p.deletedAt = Date.now(); }
+            state.tasks.forEach(x => { if(x.project === name) { x.project = ''; x.updatedAt = Date.now(); } });
+            saveLocalStorage();
+            renderProjectsList();
+            render();
+            pushData();
+        }
+
+        function toggleProjectPin(proj) {
+            proj.fixed = !proj.fixed;
+            proj.updatedAt = Date.now();
+            saveLocalStorage();
+            render();
+            pushData();
+        }
+
+        function openEditProjectInlineForm(proj) {
+            const novoNome = prompt("Editar nome do projeto unificado:", proj.nome);
+            if(novoNome && novoNome.trim() && novoNome.trim() !== proj.nome) {
+                const antigo = proj.nome;
+                const n = novoNome.trim();
+                
+                if(state.projects.some(x => x.nome === n && !x.deleted)) { alert("Já existe um projeto com este nome."); return; }
+                
+                proj.nome = n;
+                proj.updatedAt = Date.now();
+                state.tasks.forEach(x => { if(x.project === antigo) { x.project = n; x.updatedAt = Date.now(); } });
+                
+                saveLocalStorage();
+                render();
+                pushData();
+            }
+        }
+
+        // COMPONENTE: SELETOR DE RECORRÊNCIA SEMANAL
+        function setupRecurrencePills() {
+            document.querySelectorAll('.weekday-pill-btn').forEach(btn => {
+                btn.onclick = () => {
+                    btn.classList.toggle('selected');
+                };
+            });
+        }
+        function syncRecurrencePillsWithTempMeta() {
+            document.querySelectorAll('.weekday-pill-btn').forEach(btn => {
+                const d = parseInt(btn.dataset.day);
+                btn.classList.toggle('selected', state.tempMeta.recurrence.includes(d));
+            });
+        }
+        function clearRecurrenceConfig() {
+            state.tempMeta.recurrence = [];
+            refreshLayerMetaBadgesDisplay();
+            closeDrawer();
+        }
+        function saveRecurrenceConfig() {
+            const arr = [];
+            document.querySelectorAll('.weekday-pill-btn').forEach(btn => {
+                if(btn.classList.contains('selected')) arr.push(parseInt(btn.dataset.day));
+            });
+            state.tempMeta.recurrence = arr.sort();
+            refreshLayerMetaBadgesDisplay();
+            closeDrawer();
+        }
+
+
+        // POP-UP DE CALENDÁRIO MATERIAL CUSTOMIZADO
+        function openCalendarPopup(context, taskId = null) {
+            state.calendarContext = context;
+            state.calendarInlineTaskId = taskId;
+            
+            let initialDate = new Date();
+            if(context === 'layer' && state.tempMeta.date) {
+                initialDate = new Date(state.tempMeta.date + 'T12:00:00');
+            } else if(context === 'inline' && taskId) {
+                const t = state.tasks.find(x => x.id === taskId);
+                if(t && t.date) initialDate = new Date(t.date + 'T12:00:00');
+            }
+            
+            state.calendarViewDate = new Date(initialDate.getFullYear(), initialDate.getMonth(), 1);
+            state.calendarSelectedDate = new Date(initialDate);
             
             $('calendar-popup-overlay').style.display = 'flex';
-            buildCalendarGrid();
+            renderCalendarPopupGrid();
         }
 
         function closeCalendarPopup() {
             $('calendar-popup-overlay').style.display = 'none';
         }
 
-        function clearCalendarSelection() {
-            if(calTargetMode === 'layer') {
-                updateSelectedDate('');
-            } else if(calTargetMode === 'inline' && calTargetTaskId) {
-                opTask(calTargetTaskId, 'change-date', '');
+        function changeCalendarMonth(offset) {
+            state.calendarViewDate.setMonth(state.calendarViewDate.getMonth() + offset);
+            renderCalendarPopupGrid();
+        }
+
+        function renderCalendarPopupGrid() {
+            const viewYear = state.calendarViewDate.getFullYear();
+            const viewMonth = state.calendarViewDate.getMonth();
+            
+            $('cal-pop-year').innerText = viewYear;
+            
+            const mNames = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
+            $('cal-pop-month-title').innerText = `${mNames[viewMonth]} ${viewYear}`;
+            
+            if(state.calendarSelectedDate) {
+                const opt = { weekday: 'short', month: 'short', day: 'numeric' };
+                $('cal-pop-fullname').innerText = state.calendarSelectedDate.toLocaleDateString('pt-BR', opt).toUpperCase();
+            } else {
+                $('cal-pop-fullname').innerText = 'SEM DATA';
+            }
+            
+            const grid = $('cal-pop-days-grid');
+            grid.innerHTML = '';
+            
+            // Descobrir primeiro dia da semana e total de dias do mês
+            const firstDayIndex = new Date(viewYear, viewMonth, 1).getDay();
+            const totalDays = new Date(viewYear, viewMonth + 1, 0).getDate();
+            
+            // Células vazias iniciais
+            for(let i = 0; i < firstDayIndex; i++) {
+                const cell = document.createElement('div'); cell.className = 'calendar-day-cell empty';
+                grid.appendChild(cell);
+            }
+            
+            const hojeStr = getTodayString();
+            
+            // Células com os dias do mês
+            for(let d = 1; d <= totalDays; d++) {
+                const cell = document.createElement('div');
+                cell.className = 'calendar-day-cell';
+                cell.innerText = d;
+                
+                const currentCellDateStr = `${viewYear}-${String(viewMonth+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+                
+                if(currentCellDateStr === hojeStr) cell.classList.add('today-marker');
+                
+                if(state.calendarSelectedDate && 
+                   state.calendarSelectedDate.getFullYear() === viewYear && 
+                   state.calendarSelectedDate.getMonth() === viewMonth && 
+                   state.calendarSelectedDate.getDate() === d) {
+                    cell.classList.add('selected');
+                }
+                
+                cell.onclick = () => {
+                    state.calendarSelectedDate = new Date(viewYear, viewMonth, d);
+                    renderCalendarPopupGrid();
+                };
+                
+                grid.appendChild(cell);
+            }
+        }
+
+        function clearSelectedCalendarDate() {
+            state.calendarSelectedDate = null;
+            renderCalendarPopupGrid();
+        }
+
+        function confirmCalendarPopupDate() {
+            let resStr = '';
+            if(state.calendarSelectedDate) {
+                const y = state.calendarSelectedDate.getFullYear();
+                const m = String(state.calendarSelectedDate.getMonth() + 1).padStart(2,'0');
+                const d = String(state.calendarSelectedDate.getDate()).padStart(2,'0');
+                resStr = `${y}-${m}-${d}`;
+            }
+            
+            if(state.calendarContext === 'layer') {
+                state.tempMeta.date = resStr;
+                refreshLayerMetaBadgesDisplay();
+            } else if(state.calendarContext === 'inline' && state.calendarInlineTaskId) {
+                const t = state.tasks.find(x => x.id === state.calendarInlineTaskId);
+                if(t) {
+                    t.date = resStr;
+                    t.updatedAt = Date.now();
+                    saveLocalStorage();
+                    render();
+                    pushData();
+                }
             }
             closeCalendarPopup();
         }
-
-        function navigateCalendarMonth(step) {
-            calCurrentViewDate.setMonth(calCurrentViewDate.getMonth() + step);
-            buildCalendarGrid();
-        }
-
-        function selectCalendarDay(fullDateStr) {
-            calSelectedDateStr = fullDateStr;
-            buildCalendarGrid();
-        }
-
-        function confirmCalendarSelection() {
-            if(calTargetMode === 'layer') {
-                updateSelectedDate(calSelectedDateStr);
-            } else if(calTargetMode === 'inline' && calTargetTaskId) {
-                opTask(calTargetTaskId, 'change-date', calSelectedDateStr);
-            }
-            closeCalendarPopup();
-        }
-
-        function buildCalendarGrid() {
-            const yr = calCurrentViewDate.getFullYear();
-            const ms = calCurrentViewDate.getMonth();
-            
-            const mesesExtenso = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
-            const diasSemanaExtenso = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
-            
-            $('cal-nav-title').innerText = `${mesesExtenso[ms]} ${yr}`;
-            
-            const activeSelDate = new Date(calSelectedDateStr + 'T00:00:00');
-            $('cal-header-year').innerText = activeSelDate.getFullYear();
-            $('cal-header-fulldate').innerText = `${diasSemanaExtenso[activeSelDate.getDay()]}, ${activeSelDate.getDate()} de ${mesesExtenso[activeSelDate.getMonth()].substr(0,3)}`;
-            
-            const gridContainer = $('calendar-days-grid');
-            gridContainer.innerHTML = '';
-            
-            const primeiroDiaMesaSemana = new Date(yr, ms, 1).getDay();
-            const totalDiasNoMes = new Date(yr, ms + 1, 0).getDate();
-            const hojeIso = getISOStringLocal(new Date());
-            
-            for(let i = 0; i < primeiroDiaMesaSemana; i++) {
-                const emptyCell = document.createElement('div');
-                emptyCell.className = 'calendar-day-cell empty';
-                gridContainer.appendChild(emptyCell);
-            }
-            
-            for(let d = 1; d <= totalDiasNoMes; d++) {
-                const currentStr = `${yr}-${String(ms + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
-                const dayCell = document.createElement('div');
-                dayCell.className = 'calendar-day-cell';
-                dayCell.innerText = d;
-                
-                if(currentStr === calSelectedDateStr) dayCell.classList.add('selected');
-                if(currentStr === hojeIso) dayCell.classList.add('today-marker');
-                
-                dayCell.onclick = () => selectCalendarDay(currentStr);
-                gridContainer.appendChild(dayCell);
-            }
-        }
-
-        /* DRAG & DROP REORDENAÇÃO */
-        function handleDragStart(e) {
-            if (e.target.closest('.task-checkbox')) { e.preventDefault(); return; }
-            dragSrcEl = this; this.classList.add('dragging');
-            e.dataTransfer.effectAllowed = 'move'; e.dataTransfer.setData('text/plain', this.getAttribute('data-id'));
-        }
-        function handleDragOver(e) {
-            if (e.preventDefault) e.preventDefault(); e.dataTransfer.dropEffect = 'move';
-            if (this !== dragSrcEl && this.getAttribute('data-project') === dragSrcEl.getAttribute('data-project')) this.classList.add('drag-over');
-            return false;
-        }
-        function handleDragLeave() { this.classList.remove('drag-over'); }
-        function handleDrop(e) {
-            if (e.stopPropagation) e.stopPropagation(); this.classList.remove('drag-over');
-            const srcId = e.dataTransfer.getData('text/plain') || dragSrcEl.getAttribute('data-id'); const targetId = this.getAttribute('data-id');
-            if (srcId !== targetId && this.getAttribute('data-project') === dragSrcEl.getAttribute('data-project')) reorderTasks(srcId, targetId);
-            return false;
-        }
-        function handleDragEnd() { document.querySelectorAll('.task-item').forEach(i => { i.classList.remove('dragging'); i.classList.remove('drag-over'); }); }
-
-        function handleTouchStart(e) {
-            if (e.target.closest('.task-checkbox')) { dragSrcEl = null; return; }
-            const item = e.target.closest('.task-item');
-            if (e.target.closest('.drag-handle') && item) { dragSrcEl = item; item.classList.add('dragging'); }
-        }
-        function handleTouchMove(e) {
-            if (!dragSrcEl) return;
-            e.preventDefault();
-            const touch = e.touches[0]; const target = document.elementFromPoint(touch.clientX, touch.clientY); if (!target) return;
-            const itemOver = target.closest('.task-item');
-            document.querySelectorAll('.task-item').forEach(i => i.classList.remove('drag-over'));
-            if (itemOver && itemOver !== dragSrcEl && itemOver.getAttribute('data-project') === dragSrcEl.getAttribute('data-project')) {
-                itemOver.classList.add('drag-over'); touchTargetEl = itemOver;
-            } else { touchTargetEl = null; }
-        }
-        function handleTouchEnd(e) {
-            if (!dragSrcEl) return; dragSrcEl.classList.remove('dragging');
-            if (touchTargetEl) { touchTargetEl.classList.remove('drag-over'); reorderTasks(dragSrcEl.getAttribute('data-id'), touchTargetEl.getAttribute('data-id')); }
-            dragSrcEl = null; touchTargetEl = null; document.querySelectorAll('.task-item').forEach(i => i.classList.remove('drag-over'));
-        }
-
-        function reorderTasks(srcId, targetId) {
-            const srcIndex = state.tasks.findIndex(t => t.id === srcId); const targetIndex = state.tasks.findIndex(t => t.id === targetId);
-            if (srcIndex !== -1 && targetIndex !== -1) {
-                const [removed] = state.tasks.splice(srcIndex, 1); state.tasks.splice(targetIndex, 0, removed); 
-                saveLocalStorage();
-                render(); 
-                syncWithServer();
-            }
-        }
-
-        function createHTMLTaskItem(t, hojeIso, projName, showProjectBadge = false) {
-            const isOverdue = t.date && t.date < hojeIso && !t.completed; 
-            const item = document.createElement('div'); 
-            item.className = `task-item ${t.completed ? 'completed' : ''} ${isOverdue ? 'overdue' : ''} ${t.attention ? 'has-attention' : ''}`;
-            item.setAttribute('draggable', 'true'); item.setAttribute('data-id', t.id); item.setAttribute('data-project', projName);
-            
-            item.addEventListener('dragstart', handleDragStart); item.addEventListener('dragover', handleDragOver);
-            item.addEventListener('dragleave', handleDragLeave); item.addEventListener('drop', handleDrop); item.addEventListener('dragend', handleDragEnd);
-            item.addEventListener('touchstart', handleTouchStart, {passive: true}); item.addEventListener('touchmove', handleTouchMove, {passive: false}); item.addEventListener('touchend', handleTouchEnd);
-
-            const tTag = state.tags.find(g => g.nome === t.tag && !g.deleted); const isRecurrent = t.recurrence && t.recurrence !== 'Não se repete' && t.recurrence !== 'Nenhuma';
-
-            item.innerHTML = `
-                <div class="drag-handle"><span class="md-icon" style="font-size:18px;">drag_indicator</span></div>
-                <input type="checkbox" class="task-checkbox" ${t.completed ? 'checked' : ''} onchange="opTask('${t.id}', 'toggle')">
-                <div class="task-content">
-                    <div class="task-text-row">
-                        <span class="task-text" onclick="${t.completed ? '' : `callTaskBackToDraft('${t.id}')`}">${t.text}</span>
-                        ${showProjectBadge && t.project && t.project !== 'No project' ? `<span class="inline-project-badge" onclick="togglePillFilter('projeto', '${t.project}')">${t.project}</span>` : ''}
-                        ${t.tag && tTag ? `<span class="inline-tag-badge" style="background:${tTag.cor}; color:#fff;" onclick="togglePillFilter('tag', '${t.tag}')">${t.tag}</span>` : ''}
-                    </div>
-                    <span class="right-date-pilling-zone" onclick="event.stopPropagation(); openCalendarPopup('inline', '${t.id}')">
-                        <span>${getFriendlyDateText(t.date)}</span>
-                        <span class="right-date-icon"><span class="md-icon">${isRecurrent ? 'repeat' : 'calendar_today'}</span></span>
-                    </span>
-                </div>
-            `;
-            return item;
-        }
-
-        /* LÓGICA DE ORDENAÇÃO DE TAREFAS COM ATENÇÃO ABAIXO DAS ATRASADAS */
-        function sortTasksByPriority(tasksArray, hojeIso) {
-            return tasksArray.sort((x, y) => {
-                const isOverdueX = x.date && x.date < hojeIso && !x.completed ? 1 : 0;
-                const isOverdueY = y.date && y.date < hojeIso && !y.completed ? 1 : 0;
-                if (isOverdueX !== isOverdueY) return isOverdueY - isOverdueX;
-
-                const attentionX = x.attention && !x.completed ? 1 : 0;
-                const attentionY = y.attention && !y.completed ? 1 : 0;
-                if (attentionX !== attentionY) return attentionY - attentionX;
-
-                if (!x.date && y.date) return 1;
-                if (x.date && !y.date) return -1;
-                if (x.date && y.date && x.date !== y.date) return x.date.localeCompare(y.date);
-
-                return 0;
-            });
-        }
-
-        /* RENDERIZAÇÃO PRINCIPAL */
-        function render() {
-            const container = $('task-list-container'); container.innerHTML = '';
-            let activeTasks = state.tasks.filter(t => !t.deleted); const hojeIso = getISOStringLocal(new Date());
-            
-            let filtered = activeTasks.filter(t => {
-                if (state.filterType === 'completas') return t.completed;
-                if (t.completed) return false;
-                return state.filterType === 'hoje' ? t.date === hojeIso :
-                       state.filterType === 'amanha' ? t.date === getISOStringLocal(new Date(Date.now() + 86400000)) :
-                       state.filterType === 'projeto' ? t.project === state.selectedFilterValue :
-                       state.filterType === 'tag' ? t.tag === state.selectedFilterValue : true;
-            });
-
-            if(!filtered.length) {
-                container.innerHTML = `<div style="text-align:center; color:var(--md-on-surface-variant); padding:30px 0; font-size:13px; font-weight: 500;">Nenhuma atividade localizada.</div>`;
-                $('progress-bar').style.width = '0%'; return;
-            }
-
-            if (state.currentTab === 'tarefas') {
-                let tabTasks = filtered.filter(t => t.date && t.date.trim() !== '');
-
-                if(!tabTasks.length) {
-                    container.innerHTML = `<div style="text-align:center; color:var(--md-on-surface-variant); padding:30px 0; font-size:13px; font-weight: 500;">Nenhuma tarefa com data por aqui.</div>`;
-                } else {
-                    tabTasks = sortTasksByPriority(tabTasks, hojeIso);
-
-                    const plainListContainer = document.createElement('div');
-                    plainListContainer.style.background = 'var(--md-surface)';
-                    plainListContainer.style.borderRadius = '14px';
-                    plainListContainer.style.border = '1px solid var(--md-surface-variant)';
-                    
-                    tabTasks.forEach(t => {
-                        const projKey = (t.project && t.project !== 'No project') ? t.project : 'Sem Projeto';
-                        const itemHtml = createHTMLTaskItem(t, hojeIso, projKey, true);
-                        plainListContainer.appendChild(itemHtml);
-                    });
-                    container.appendChild(plainListContainer);
-                }
-            } 
-            else if (state.currentTab === 'projects' || state.currentTab === 'projetos') {
-                const groups = {};
-                let projectTasksOnly = filtered.filter(t => t.project && t.project !== 'No project');
-
-                projectTasksOnly.forEach(t => {
-                    const projKey = t.project;
-                    if (!groups[projKey]) groups[projKey] = []; groups[projKey].push(t);
-                });
-
-                const sortedGroupNames = Object.keys(groups).sort((a, b) => {
-                    const projA = state.projetos.find(p => p.nome === a && !p.deleted); const projB = state.projetos.find(p => p.nome === b && !p.deleted);
-                    const aFixed = projA ? !!projA.fixed : false; const bFixed = projB ? !!projB.fixed : false;
-                    if (aFixed && !bFixed) return -1; if (!aFixed && bFixed) return 1; return a.localeCompare(b);
-                });
-
-                if(!sortedGroupNames.length) {
-                    container.innerHTML = `<div style="text-align:center; color:var(--md-on-surface-variant); padding:30px 0; font-size:13px; font-weight: 500;">Nenhuma tarefa vinculada a projetos estruturados.</div>`;
-                }
-
-                sortedGroupNames.forEach(projName => {
-                    let projTasks = groups[projName]; 
-                    projTasks = sortTasksByPriority(projTasks, hojeIso);
-
-                    const projObj = state.projetos.find(p => p.nome === projName && !p.deleted); const isFixed = projObj ? !!projObj.fixed : false;
-                    
-                    const groupCard = document.createElement('div'); 
-                    groupCard.className = `project-group-card ${isFixed ? 'is-fixed' : ''}`;
-                    
-                    groupCard.innerHTML = `
-                        <div class="project-group-header">
-                            <div class="project-group-header-left">
-                                <span class="project-group-title-link" onclick="togglePillFilter('projeto', '${projName}')">${projName}</span>
-                                <span class="project-group-count">${projTasks.length}</span>
-                            </div>
-                            <button class="btn-project-pin ${isFixed ? 'active' : ''}" onclick="toggleProjectPin('${projName}')"><span class="md-icon">push_pin</span></button>
-                        </div>
-                        <div class="project-group-tasks-container"></div>
-                    `;
-                    container.appendChild(groupCard); const tasksContainer = groupCard.querySelector('.project-group-tasks-container');
-
-                    projTasks.forEach(t => {
-                        const itemHtml = createHTMLTaskItem(t, hojeIso, projName, false);
-                        tasksContainer.appendChild(itemHtml);
-                    });
-                });
-            }
-            
-            const totalActive = activeTasks.length; const totalDone = activeTasks.filter(t => t.completed).length;
-            $('progress-bar').style.width = `${totalActive ? (totalDone / totalActive) * 100 : 0}%`;
-        }
-
-        function openDrawerCommon(title, formAreaHtml, listRenderFn) {
-            $('drawer-overlay').style.display = 'block'; $('context-drawer').classList.add('open');
-            $('drawer-title').innerText = title; $('drawer-form-area').innerHTML = formAreaHtml; listRenderFn();
-        }
-        const closeDrawer = () => { $('context-drawer').classList.remove('open'); $('drawer-overlay').style.display = 'none'; };
-
-        function openInfoDrawer() {
-            openDrawerCommon(`Informações (v${state.version})`, `<div style="font-size: 12px; color: var(--md-on-surface-variant); font-weight:600;">Histórico de modificações:</div>`, () => {
-                $('drawer-list-items').innerHTML = `<ul class="changelog-list">` + state.changelog.map(x => `<li class="changelog-item"><span class="changelog-version">Versão ${x.v}</span> (${x.date})<br>${x.desc}</li>`).join('') + `</ul>`;
-            });
-        }
-
-        function openContextDrawer(mode) {
-            state.editingTagIndex = null; state.editingProjIndex = null;
-            if(mode === 'projetos') openDrawerCommon("Gerenciar Projetos", '', () => { renderProjForm(); renderProjectsList(); }); 
-            else if(mode === 'tags') openDrawerCommon("Gerenciar Tags", '', () => { renderTagForm(); renderTagsList(); }); 
-            else if(mode === 'recorrencia') openDrawerCommon("Repetir", '', renderRecurrenceList);
-        }
-
-        function selectProjectFromDrawer(name) { state.tempProject = name; updateBarMetaUi(); closeDrawer(); }
-        function selectTagFromDrawer(name) { state.tempTag = name; updateBarMetaUi(); closeDrawer(); }
-        
-        function selectRecurrenceFromDrawer(type) { 
-            state.tempRecurrence = type; 
-            if (type !== 'Toda semana') {
-                state.tempRecurrenceDays = [];
-            }
-            updateBarMetaUi(); 
-            renderRecurrenceList();
-        }
-
-        function toggleRecurrenceDay(dayIndex) {
-            const idx = state.tempRecurrenceDays.indexOf(dayIndex);
-            if (idx > -1) {
-                state.tempRecurrenceDays.splice(idx, 1);
-            } else {
-                state.tempRecurrenceDays.push(dayIndex);
-            }
-            updateBarMetaUi();
-            renderRecurrenceList();
-        }
-
-        function renderRecurrenceList() {
-            const options = ['Não se repete', 'Todos os dias', 'Toda semana', 'Todo mês', 'Todo ano']; 
-            const itemsContainer = $('drawer-list-items'); 
-            itemsContainer.innerHTML = '';
-            
-            options.forEach(opt => {
-                const blockWrapper = document.createElement('div');
-                blockWrapper.style.display = 'flex';
-                blockWrapper.style.flexDirection = 'column';
-                blockWrapper.style.marginBottom = '6px';
-                
-                const row = document.createElement('div'); 
-                row.className = 'list-item-row'; 
-                row.style.cursor = 'pointer'; 
-                row.onclick = () => selectRecurrenceFromDrawer(opt);
-                
-                const label = document.createElement('div'); 
-                label.className = 'item-label'; 
-                label.innerText = opt;
-                
-                const radio = document.createElement('input');
-                radio.type = 'radio';
-                radio.className = 'drawer-radio-input';
-                radio.name = 'recurrence-selection';
-                radio.checked = (state.tempRecurrence === opt);
-                radio.onclick = (e) => { e.stopPropagation(); selectRecurrenceFromDrawer(opt); };
-                
-                row.appendChild(label); 
-                row.appendChild(radio);
-                blockWrapper.appendChild(row);
-
-                if (opt === 'Toda semana' && state.tempRecurrence === 'Toda semana') {
-                    const daysBox = document.createElement('div');
-                    daysBox.className = 'weekdays-selector-box';
-                    
-                    const dNames = ['D', 'S', 'T', 'Q', 'Q', 'S', 'S'];
-                    dNames.forEach((dName, dIdx) => {
-                        const dayBtn = document.createElement('button');
-                        dayBtn.className = `weekday-pill-btn ${state.tempRecurrenceDays.includes(dIdx) ? 'selected' : ''}`;
-                        dayBtn.innerText = dName;
-                        dayBtn.onclick = (e) => {
-                            e.stopPropagation();
-                            toggleRecurrenceDay(dIdx);
-                        };
-                        daysBox.appendChild(dayBtn);
-                    });
-                    blockWrapper.appendChild(daysBox);
-                }
-                
-                itemsContainer.appendChild(blockWrapper);
-            });
-
-            if (state.tempRecurrence === 'Toda semana') {
-                const footerBtnRow = document.createElement('div');
-                footerBtnRow.style.padding = '8px 0';
-                footerBtnRow.innerHTML = `<button class="action-submit-btn" style="width:100%; height:36px; font-size:13px;" onclick="closeDrawer()">Confirmar Repetição</button>`;
-                itemsContainer.appendChild(footerBtnRow);
-            }
-        }
-
-        function renderProjForm(n='', l='Adicionar Projeto') {
-            $('drawer-form-area').innerHTML = `<input type="text" class="drawer-input" id="new-proj-name" placeholder="Nome do Projeto..." value="${n}"><button class="action-submit-btn" onclick="saveProj()">${l}</button>`;
-        }
-
-        function renderProjectsList() {
-            const activeProj = state.projetos.filter(p => !p.deleted); const itemsContainer = $('drawer-list-items'); itemsContainer.innerHTML = '';
-            activeProj.forEach(p => {
-                const row = document.createElement('div'); row.className = 'list-item-row'; const label = document.createElement('div'); label.className = 'item-label';
-                label.innerHTML = `<span class="md-icon">folder</span> ${p.nome} ${p.fixed ? '<span class="md-icon" style="font-size:12px;margin-left:4px;color:var(--md-primary)">push_pin</span>' : ''}`;
-                label.onclick = () => selectProjectFromDrawer(p.nome);
-                const actions = document.createElement('div'); actions.innerHTML = `<button class="btn-inline-edit" style="margin-right:8px;background:none;border:none;color:var(--md-primary);font-weight:700;cursor:pointer;">Editar</button><button class="btn-inline-del" style="background:none;border:none;color:var(--error-color);cursor:pointer;"><span class="md-icon">close</span></button>`;
-                actions.querySelector('.btn-inline-edit').onclick = (e) => { e.stopPropagation(); state.editingProjIndex = state.projetos.indexOf(p); renderProjForm(p.nome, 'Salvar'); };
-                actions.querySelector('.btn-inline-del').onclick = (e) => { e.stopPropagation(); deleteProj(p.nome); };
-                row.appendChild(label); row.appendChild(actions); itemsContainer.appendChild(row);
-            });
-        }
-
-        function saveProj() {
-            const v = $('new-proj-name').value.trim(); if(!v) return;
-            if(state.editingProjIndex !== null) {
-                const old = state.projetos[state.editingProjIndex].nome; state.projetos[state.editingProjIndex].nome = v;
-                state.tasks.forEach(x => { if(x.project === old) x.project = v; }); state.editingProjIndex = null;
-            } else {
-                if(state.projetos.some(p => p.nome === v && !p.deleted)) return;
-                const matchDel = state.projetos.find(p => p.nome === v && p.deleted);
-                if(matchDel) { matchDel.deleted = false; matchDel.fixed = false; delete matchDel.deletedAt; } else { state.projetos.push({ nome: v, deleted: false, fixed: false }); }
-            }
-            saveLocalStorage();
-            renderProjForm(); renderProjectsList(); render(); syncWithServer();
-        }
-
-        function deleteProj(name) {
-            const p = state.projetos.find(x => x.nome === name); if(p) { p.deleted = true; p.deletedAt = Date.now(); }
-            state.tasks.forEach(x => { if(x.project === name) { x.project = 'No project'; x.updatedAt = Date.now(); } });
-            saveLocalStorage();
-            renderProjectsList(); render(); syncWithServer();
-        }
-
-        function renderTagForm(n='', c='#1e3a8a', l='Adicionar Tag') {
-            $('drawer-form-area').innerHTML = `<input type="text" class="drawer-input" id="new-tag-name" placeholder="Nome da Tag..." value="${n}"><div style="display:flex; align-items:center; gap:6px; font-size:12px; margin-top:2px; font-weight:600;"><span>Cor:</span><input type="color" id="new-tag-color" value="${c}" style="border:none;background:none;width:30px;height:24px;cursor:pointer;"></div><button class="action-submit-btn" onclick="saveTag()">${l}</button>`;
-        }
-
-        function renderTagsList() {
-            const activeTags = state.tags.filter(t => !t.deleted); const itemsContainer = $('drawer-list-items'); itemsContainer.innerHTML = '';
-            activeTags.forEach(t => {
-                const row = document.createElement('div'); row.className = 'list-item-row'; const label = document.createElement('div'); label.className = 'item-label';
-                label.innerHTML = `<span style="width:10px;height:10px;background:${t.cor};border-radius:50%;display:inline-block;margin-right:2px;"></span><strong>${t.nome}</strong>`;
-                label.onclick = () => selectTagFromDrawer(t.nome);
-                const actions = document.createElement('div'); actions.innerHTML = `<button class="btn-inline-edit" style="margin-right:8px;background:none;border:none;color:var(--md-primary);font-weight:700;cursor:pointer;">Editar</button><button class="btn-inline-del" style="background:none;border:none;color:var(--error-color);cursor:pointer;"><span class="md-icon">close</span></button>`;
-                actions.querySelector('.btn-inline-edit').onclick = (e) => { e.stopPropagation(); state.editingTagIndex = state.tags.indexOf(t); renderTagForm(t.nome, t.cor, 'Salvar'); };
-                actions.querySelector('.btn-inline-del').onclick = (e) => { e.stopPropagation(); deleteTag(t.nome); };
-                row.appendChild(label); row.appendChild(actions); itemsContainer.appendChild(row);
-            });
-        }
-
-        function saveTag() {
-            const n = $('new-tag-name').value.trim().toUpperCase(), c = $('new-tag-color').value; if(!n) return;
-            if(state.editingTagIndex !== null) {
-                const old = state.tags[state.editingTagIndex].nome; state.tags[state.editingTagIndex] = { nome: n, cor: c, deleted: false };
-                state.tasks.forEach(x => { if(x.tag === old) x.tag = n; }); state.editingTagIndex = null;
-            } else {
-                if(state.tags.some(x => x.nome === n && !x.deleted)) return;
-                const matchDel = state.tags.find(x => x.nome === n && x.deleted);
-                if(matchDel) { matchDel.deleted = false; matchDel.cor = c; delete matchDel.deletedAt; } else { state.tags.push({ nome: n, cor: c, deleted: false }); }
-            }
-            saveLocalStorage();
-            renderTagForm(); renderTagsList(); render(); syncWithServer();
-        }
-
-        function deleteTag(name) {
-            const t = state.tags.find(x => x.nome === name); if(t) { t.deleted = true; t.deletedAt = Date.now(); }
-            state.tasks.forEach(x => { if(x.tag === name) { x.tag = ''; x.updatedAt = Date.now(); } }); 
-            saveLocalStorage();
-            renderTagsList(); render(); syncWithServer();
-        }
-
-        window.addEventListener('DOMContentLoaded', initApp);
     </script>
 </body>
 </html>
