@@ -85,11 +85,11 @@
         /* Listas e Cards Baseados na Nova Imagem Enviada */
         .task-list { padding: 4px 16px; display: flex; flex-direction: column; gap: 14px; }
         
-        /* Container Unificado do Projeto (Igual ao Bloco Sólido da Foto) */
+        /* Container Unificado do Projeto */
         .project-group-card { 
             background: var(--md-surface-container); 
             border-radius: 14px; 
-            padding: 4px 0 0 0; /* Padding interno controlado para as linhas encostarem nas laterais */
+            padding: 4px 0 0 0; 
             display: flex; 
             flex-direction: column; 
             box-shadow: var(--shadow-1); 
@@ -98,7 +98,6 @@
             transition: background-color 0.2s, border-color 0.2s; 
         }
         
-        /* Estado Fixado: Mantém a estrutura limpa trocando apenas o tom da borda ou sutil destaque */
         .project-group-card.is-fixed { border-color: var(--md-primary); border-width: 1.5px; }
         
         .project-group-header { 
@@ -119,15 +118,14 @@
         
         .project-group-count { font-weight: 700; color: var(--md-on-surface-variant); font-size: 11px; background: var(--md-surface-container-high); padding: 1px 6px; border-radius: 8px; }
         
-        /* Botão Pin Fixar */
         .btn-project-pin { background: none; border: none; color: var(--md-outline); cursor: pointer; padding: 4px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
         .btn-project-pin.active { color: var(--md-primary); }
         .btn-project-pin .md-icon { font-size: 16px; }
 
-        /* Itens de Tarefa Modificados (Sem fundo individual, com bordas internas divisórias) */
+        /* Itens de Tarefa Modificados */
         .task-item { 
-            background: transparent; /* Transparente para herdar o fundo cinza do bloco */
-            border: none; /* Remove borda externa individual */
+            background: transparent; 
+            border: none; 
             border-radius: 0; 
             padding: 12px 14px; 
             display: flex; 
@@ -137,7 +135,6 @@
             position: relative; 
         }
         
-        /* Linha divisória interna entre tarefas (Diretriz de bordas internas da imagem) */
         .task-item:not(:last-child) {
             border-bottom: 1px solid #e2e8f0; 
         }
@@ -145,7 +142,6 @@
         .task-item.dragging { opacity: 0.4; background: var(--md-surface-container-high); }
         .task-item.drag-over { border-top: 2px solid var(--md-primary); }
         
-        /* Estado Atrasado dentro do container integrado */
         .task-item.overdue { background: #fff5f5; }
         .task-item.overdue .task-text { color: #991b1b; }
         .task-item.overdue .right-date-pilling-zone { color: #ef4444 !important; }
@@ -155,21 +151,18 @@
         .drag-handle:active { cursor: grabbing; color: var(--md-primary); }
         
         /* Checkbox Material */
-        .task-checkbox { appearance: none; -webkit-appearance: none; width: 18px; height: 18px; border: 2px solid #cbd5e1; border-radius: 5px; cursor: pointer; flex-shrink: 0; display: inline-flex; align-items: center; justify-content: center; transition: all 0.1s; background: #ffffff; }
+        .task-checkbox { appearance: none; -webkit-appearance: none; width: 18px; height: 18px; border: 2px solid #cbd5e1; border-radius: 5px; cursor: pointer; flex-shrink: 0; display: inline-flex; align-items: center; justify-content: center; transition: all 0.1s; background: #ffffff; pointer-events: auto !important; z-index: 10; }
         .task-checkbox:checked { background: var(--md-primary); border-color: var(--md-primary); }
         .task-checkbox:checked::after { content: "✓"; color: var(--md-on-primary); font-size: 11px; font-weight: bold; }
         
         .task-content { flex-grow: 1; display: flex; justify-content: space-between; align-items: center; gap: 12px; overflow: hidden; }
         
-        /* Ajuste do Bloco de Texto e Tag */
         .task-text-row { display: flex; align-items: center; gap: 6px; flex-grow: 1; overflow: hidden; }
         .task-text { font-size: 14.5px; font-weight: 500; line-height: 1.4; word-break: break-word; cursor: pointer; color: var(--md-on-surface); }
         .task-item.completed .task-text { text-decoration: line-through; color: var(--md-outline) !important; opacity: 0.6; font-weight: 400; cursor: default; }
         
-        /* Tags Inline ao lado do texto */
         .inline-tag-badge { font-size: 9px; padding: 1px 5px; border-radius: 4px; font-weight: 700; cursor: pointer; flex-shrink: 0; text-transform: uppercase; }
 
-        /* Estrutura de Data Clean na Direita */
         .right-date-pilling-zone { 
             position: relative; 
             display: inline-flex; 
@@ -498,10 +491,11 @@
         const $ = id => document.getElementById(id);
 
         let state = {
-            version: "4.11.12",
+            version: "4.11.14",
             changelog: [
-                { v: "4.11.12", date: "21/06/2026", desc: "Harmonização de Cards de Projeto: Removidos fundos e bordas individuais das tarefas. Agora elas flutuam integradas sobre o bloco sólido cinza claro do projeto, divididas apenas por finas linhas internas horizontais, combinando perfeitamente com a foto de referência." },
-                { v: "4.11.11", date: "21/06/2026", desc: "Ajuste na Seleção de Recorrência: Atualizado o layout de repetição com base nos modelos reais enviados, implementando lista vertical de toque limpo com Radio Buttons estilizados à direita." }
+                { v: "4.11.14", date: "21/06/2026", desc: "Correção definitiva do Checkbox Mobile: Adicionado bloqueio preventivo nas funções handleTouchStart e handleTouchMove para ignorar completamente gestos de arrastar iniciados em cima do checkbox nativo." },
+                { v: "4.11.13", date: "21/06/2026", desc: "Tentativa de correção isolada de clique com stopPropagation." },
+                { v: "4.11.12", date: "21/06/2026", desc: "Harmonização de Cards de Projeto integrados conforme foto." }
             ],
             tasks: [], 
             projetos: [{ nome: "Trabalho", deleted: false, fixed: false }, { nome: "Estudos", deleted: false, fixed: false }],
@@ -882,6 +876,7 @@
 
         /* DRAG & DROP REORDENAÇÃO */
         function handleDragStart(e) {
+            if (e.target.closest('.task-checkbox')) { e.preventDefault(); return; }
             dragSrcEl = this; this.classList.add('dragging');
             e.dataTransfer.effectAllowed = 'move'; e.dataTransfer.setData('text/plain', this.getAttribute('data-id'));
         }
@@ -901,11 +896,13 @@
 
         let touchTargetEl = null;
         function handleTouchStart(e) {
+            if (e.target.closest('.task-checkbox')) { dragSrcEl = null; return; }
             const item = e.target.closest('.task-item');
             if (e.target.closest('.drag-handle') && item) { dragSrcEl = item; item.classList.add('dragging'); }
         }
         function handleTouchMove(e) {
-            if (!dragSrcEl) return; e.preventDefault();
+            if (!dragSrcEl) return;
+            e.preventDefault();
             const touch = e.touches[0]; const target = document.elementFromPoint(touch.clientX, touch.clientY); if (!target) return;
             const itemOver = target.closest('.task-item');
             document.querySelectorAll('.task-item').forEach(i => i.classList.remove('drag-over'));
@@ -913,7 +910,7 @@
                 itemOver.classList.add('drag-over'); touchTargetEl = itemOver;
             } else { touchTargetEl = null; }
         }
-        function handleTouchEnd() {
+        function handleTouchEnd(e) {
             if (!dragSrcEl) return; dragSrcEl.classList.remove('dragging');
             if (touchTargetEl) { touchTargetEl.classList.remove('drag-over'); reorderTasks(dragSrcEl.getAttribute('data-id'), touchTargetEl.getAttribute('data-id')); }
             dragSrcEl = null; touchTargetEl = null; document.querySelectorAll('.task-item').forEach(i => i.classList.remove('drag-over'));
@@ -926,7 +923,7 @@
             }
         }
 
-        /* EQUIVALENTE DE RENDERIZAÇÃO HARMONIZADA COM A IMAGEM */
+        /* RENDERIZAÇÃO PRINCIPAL */
         function render() {
             const container = $('task-list-container'); container.innerHTML = '';
             let activeTasks = state.tasks.filter(t => !t.deleted); const hojeIso = getISOStringLocal(new Date());
@@ -969,7 +966,6 @@
 
                 const projObj = state.projetos.find(p => p.nome === projName && !p.deleted); const isFixed = projObj ? !!projObj.fixed : false;
                 
-                // Card do projeto como bloco sólido único conforme a diretriz da foto
                 const groupCard = document.createElement('div'); 
                 groupCard.className = `project-group-card ${isFixed ? 'is-fixed' : ''}`;
                 
@@ -1127,7 +1123,7 @@
         function saveTag() {
             const n = $('new-tag-name').value.trim().toUpperCase(), c = $('new-tag-color').value; if(!n) return;
             if(state.editingTagIndex !== null) {
-                const old = state.tags[state.editingTagIndex].nome; state.tags[state.editingTagIndex] = { nome: n, cor: c, deleted: false };
+                const old = state.tags[state.editingTagIndex].nome; state.tags[state.editingTagIndex] = { nome: n, her: c, deleted: false };
                 state.tasks.forEach(x => { if(x.tag === old) x.tag = n; }); state.editingTagIndex = null;
             } else {
                 if(state.tags.some(x => x.nome === n && !x.deleted)) return;
