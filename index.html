@@ -388,6 +388,7 @@
             <div class="progress-container"><div class="progress-bar" id="progress-bar"></div></div>
         </header>
 
+        <!-- Navegação de Abas do Aplicativo -->
         <div class="app-tabs">
             <button class="tab-btn active" id="tab-tarefas" onclick="switchMainTab('tarefas')">Tarefas</button>
             <button class="tab-btn" id="tab-projetos" onclick="switchMainTab('projetos')">Projetos</button>
@@ -506,11 +507,10 @@
         const $ = id => document.getElementById(id);
 
         let state = {
-            version: "4.14.0",
+            version: "4.14.1",
             changelog: [
-                { v: "4.14.0", date: "21/06/2026", desc: "Correção de visibilidade: na aba Tarefas só aparecem itens com data (com menção visual do projeto). Aba projetos agora lista tudo independentemente de data." },
-                { v: "4.13.0", date: "21/06/2026", desc: "Adicionado recurso de remoção de prazo através do botão 'Sem Data' integrado diretamente no pop-up do calendário." },
-                { v: "4.12.0", date: "21/06/2026", desc: "Divisão da tela principal em abas: TAREFAS (listagem limpa e condicional de tarefas datadas de projetos) e PROJETOS (agrupamentos em cartões, fixação e arrasto)." }
+                { v: "4.14.1", date: "21/06/2026", desc: "Corrigida falha visual '_OFF' trocando o fallback de ícone inexistente pelo Material Icon padrão 'calendar_today'." },
+                { v: "4.14.0", date: "21/06/2026", desc: "Correção de visibilidade: na aba Tarefas só aparecem itens com data (com menção visual do projeto). Aba projetos agora lista tudo independentemente de data." }
             ],
             tasks: [], 
             projetos: [{ nome: "Trabalho", deleted: false, fixed: false }, { nome: "Estudos", deleted: false, fixed: false }],
@@ -979,7 +979,7 @@
                     </div>
                     <span class="right-date-pilling-zone" onclick="event.stopPropagation(); openCalendarPopup('inline', '${t.id}')">
                         <span>${getFriendlyDateText(t.date)}</span>
-                        <span class="right-date-icon"><span class="md-icon">${isRecurrent ? 'repeat' : (hasDate ? 'calendar_today' : 'calendar_today_off')}</span></span>
+                        <span class="right-date-icon"><span class="md-icon">${isRecurrent ? 'repeat' : 'calendar_today'}</span></span>
                     </span>
                 </div>
             `;
