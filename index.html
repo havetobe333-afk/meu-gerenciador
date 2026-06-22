@@ -54,9 +54,6 @@
         .header-top, .header-left, .sync-status { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
         .header-left { justify-content: flex-start; }
         .app-title { font-size: 20px; font-weight: 600; color: var(--md-on-surface); display: flex; align-items: center; gap: 8px; }
-        .info-btn { background: none; border: none; cursor: pointer; color: var(--md-on-surface-variant); padding: 4px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
-        .info-btn .md-icon { font-size: 20px; }
-        .info-btn:active { background: var(--md-surface-variant); }
         
         .sync-status { font-size: 11px; color: var(--md-on-surface-variant); font-weight: 600; cursor: pointer; user-select: none; padding: 4px 6px; border-radius: 6px; transition: background-color 0.15s; }
         .sync-status:active { background: var(--md-surface-variant); opacity: 0.8; }
@@ -78,7 +75,6 @@
             color: var(--md-on-primary) !important; 
             border: 1px solid var(--md-primary) !important; 
             outline: none !important;
-            box-shadow: none !important;
         }
         
         .task-list { padding: 4px 16px; display: flex; flex-direction: column; gap: 14px; }
@@ -92,7 +88,7 @@
             box-shadow: var(--shadow-1); 
             border: 1px solid var(--md-surface-variant); 
             overflow: hidden;
-            transition: background-color 0.2s, border-color 0.2s; 
+            margin-bottom: 12px;
         }
         
         .project-group-card.is-fixed { border-color: var(--md-primary); border-width: 1.5px; }
@@ -109,34 +105,25 @@
             padding: 10px 14px 6px 14px;
         }
         
-        .project-group-header-left { display: flex; align-items: center; gap: 6px; }
-        .project-group-title-link { display: inline-flex; align-items: center; gap: 4px; cursor: pointer; padding: 2px 4px; border-radius: 4px; }
-        .project-group-title-link:active { background: var(--md-surface-container-high); }
-        
         .project-group-count { font-weight: 700; color: var(--md-on-surface-variant); font-size: 11px; background: var(--md-surface-container-high); padding: 1px 6px; border-radius: 8px; }
         
         .btn-project-pin { background: none; border: none; color: var(--md-outline); cursor: pointer; padding: 4px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
         .btn-project-pin.active { color: var(--md-primary); }
-        .btn-project-pin .md-icon { font-size: 16px; }
 
         .task-item { 
             background: transparent; 
             border: none; 
-            border-radius: 0; 
             padding: 12px 14px; 
             display: flex; 
             align-items: center; 
             gap: 12px; 
-            transition: background-color 0.2s, opacity 0.2s, border-color 0.2s; 
+            transition: background-color 0.2s, opacity 0.2s; 
             position: relative; 
         }
         
         .task-item:not(:last-child) { border-bottom: 1px solid #e2e8f0; }
-        .task-item.dragging { opacity: 0.4; background: var(--md-surface-container-high); }
-        .task-item.drag-over { border-top: 2px solid var(--md-primary); }
         .task-item.overdue { background: #fff5f5; }
         .task-item.overdue .task-text { color: #991b1b; }
-        .task-item.overdue .right-date-pilling-zone { color: #ef4444 !important; }
 
         .task-item.has-attention {
             border: 3px dashed var(--attention-border-color) !important;
@@ -149,93 +136,43 @@
             background: transparent;
         }
 
-        .drag-handle { color: var(--md-outline); cursor: grab; display: flex; align-items: center; justify-content: center; padding: 4px 0; user-select: none; touch-action: none; }
-        .drag-handle:active { cursor: grabbing; color: var(--md-primary); }
+        .drag-handle { color: var(--md-outline); display: flex; align-items: center; justify-content: center; padding: 4px 0; user-select: none; }
         
-        .task-checkbox { appearance: none; -webkit-appearance: none; width: 18px; height: 18px; border: 2px solid #cbd5e1; border-radius: 5px; cursor: pointer; flex-shrink: 0; display: inline-flex; align-items: center; justify-content: center; transition: all 0.1s; background: #ffffff; pointer-events: auto !important; z-index: 10; }
+        .task-checkbox { appearance: none; -webkit-appearance: none; width: 18px; height: 18px; border: 2px solid #cbd5e1; border-radius: 5px; cursor: pointer; flex-shrink: 0; display: inline-flex; align-items: center; justify-content: center; background: #ffffff; }
         .task-checkbox:checked { background: var(--md-primary); border-color: var(--md-primary); }
         .task-checkbox:checked::after { content: "✓"; color: var(--md-on-primary); font-size: 11px; font-weight: bold; }
         
         .task-content { flex-grow: 1; display: flex; justify-content: space-between; align-items: center; gap: 12px; overflow: hidden; }
         .task-text-row { display: flex; align-items: center; gap: 6px; flex-grow: 1; overflow: hidden; flex-wrap: wrap; }
         .task-text { font-size: 14.5px; font-weight: 500; line-height: 1.4; word-break: break-word; cursor: pointer; color: var(--md-on-surface); }
-        .task-item.completed .task-text { text-decoration: line-through; color: var(--md-outline) !important; opacity: 0.6; font-weight: 400; cursor: default; }
+        .task-item.completed .task-text { text-decoration: line-through; color: var(--md-outline) !important; opacity: 0.6; font-weight: 400; }
         
-        .inline-tag-badge { font-size: 9px; padding: 1px 5px; border-radius: 4px; font-weight: 700; cursor: pointer; flex-shrink: 0; text-transform: uppercase; }
-        .inline-project-badge { font-size: 9px; padding: 1px 5px; border-radius: 4px; font-weight: 700; cursor: pointer; flex-shrink: 0; text-transform: uppercase; background: #f1f5f9; color: var(--md-primary); border: 1px solid var(--md-outline); }
+        .inline-tag-badge { font-size: 9px; padding: 1px 5px; border-radius: 4px; font-weight: 700; text-transform: uppercase; color: white; }
+        .inline-project-badge { font-size: 9px; padding: 1px 5px; border-radius: 4px; font-weight: 700; text-transform: uppercase; background: #f1f5f9; color: var(--md-primary); border: 1px solid var(--md-outline); }
 
-        .right-date-pilling-zone { 
-            position: relative; 
-            display: inline-flex; 
-            align-items: center; 
-            gap: 4px; 
-            color: var(--md-on-surface-variant); 
-            font-size: 13px; 
-            font-weight: 500; 
-            white-space: nowrap; 
-            flex-shrink: 0;
-            cursor: pointer;
-            user-select: none;
-        }
-        .task-item.completed .right-date-pilling-zone { opacity: 0.5; }
-        .right-date-icon { display: inline-flex; align-items: center; justify-content: center; opacity: 0.7; }
-        .right-date-icon .md-icon { font-size: 15px !important; }
+        .right-date-pilling-zone { display: inline-flex; align-items: center; gap: 4px; color: var(--md-on-surface-variant); font-size: 13px; font-weight: 500; white-space: nowrap; flex-shrink: 0; cursor: pointer; }
 
         .fab-add-btn {
-            position: fixed;
-            bottom: 24px;
-            left: calc(50% + 300px - 80px);
-            width: 56px;
-            height: 56px;
-            background: var(--md-primary-container);
-            color: var(--md-on-primary-container);
-            border: none;
-            border-radius: 16px;
-            box-shadow: var(--shadow-2);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            z-index: 400;
-            transition: transform 0.2s, background-color 0.2s;
+            position: fixed; bottom: 24px; left: calc(50% + 300px - 80px); width: 56px; height: 56px;
+            background: var(--md-primary-container); color: var(--md-on-primary-container); border: none; border-radius: 16px;
+            box-shadow: var(--shadow-2); display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 400;
         }
         .fab-add-btn .md-icon { font-size: 24px; font-weight: bold; }
-        .fab-add-btn:active { transform: scale(0.95); background: var(--md-primary); }
         
         .input-container { 
-            position: fixed; 
-            top: 0; 
-            left: 50%; 
-            width: 100%;
-            max-width: 600px;
-            height: 100vh;
-            background: var(--md-surface); 
-            padding: 20px; 
-            display: flex; 
-            flex-direction: column; 
-            gap: 12px; 
-            z-index: 2000;
-            transform: translate(-50%, 100%);
-            transition: transform 0.28s cubic-bezier(0.2, 0.8, 0.3, 1);
-            border-left: 1px solid var(--md-surface-variant);
-            border-right: 1px solid var(--md-surface-variant);
-            overflow-y: auto;
+            position: fixed; top: 0; left: 50%; width: 100%; max-width: 600px; height: 100vh;
+            background: var(--md-surface); padding: 20px; display: flex; flex-direction: column; gap: 12px; z-index: 2000;
+            transform: translate(-50%, 100%); transition: transform 0.28s cubic-bezier(0.2, 0.8, 0.3, 1);
+            border-left: 1px solid var(--md-surface-variant); border-right: 1px solid var(--md-surface-variant); overflow-y: auto;
         }
         .input-container.visible { transform: translate(-50%, 0); }
         
         .meta-selectors-row { display: flex; flex-direction: column; gap: 8px; width: 100%; }
         
         .selector-row-item {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            background: #f1f5f9;
-            padding: 10px 14px;
-            border-radius: 12px;
-            border: 1px solid var(--md-surface-variant);
-            cursor: pointer;
+            display: flex; align-items: center; gap: 12px; background: #f1f5f9; padding: 10px 14px;
+            border-radius: 12px; border: 1px solid var(--md-surface-variant); cursor: pointer;
         }
-        .selector-row-item:active { background: var(--md-surface-container-high); }
 
         .selector-btn-icon { width: 32px; height: 32px; display: inline-flex; align-items: center; justify-content: center; color: var(--md-on-surface-variant); }
         .selector-btn-icon .md-icon { font-size: 20px; }
@@ -243,7 +180,6 @@
 
         .meta-badge-text { font-size: 12px; font-weight: 700; color: var(--md-primary); background: #eff6ff; padding: 4px 10px; border-radius: 8px; border: 1px solid #bfdbfe; max-width: 150px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         
-        .attention-toggle-wrapper { display: flex; align-items: center; gap: 8px; }
         .switch-container { position: relative; display: inline-block; width: 44px; height: 24px; }
         .switch-container input { opacity: 0; width: 0; height: 0; }
         .slider-switch { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #cbd5e1; transition: .2s; border-radius: 24px; }
@@ -252,15 +188,13 @@
         input:checked + .slider-switch:before { transform: translateX(20px); }
 
         .btn-meta-delete { border: 1px solid var(--error-color); background: #fef2f2; width: 100%; height: 44px; border-radius: 12px; display: none; align-items: center; justify-content: center; gap: 8px; font-size: 14px; font-weight: 700; color: var(--error-color); cursor: pointer; margin-top: 4px; }
-        .btn-meta-delete .md-icon { font-size: 18px; }
 
         .task-input { width: 100%; height: 90px; border: 1px solid var(--md-surface-variant); background: #f1f5f9; padding: 14px; border-radius: 12px; font-size: 15px; color: var(--md-on-surface); outline: none; resize: none; font-weight: 500; }
         
         .datepicker-wrapper { position: relative; display: inline-flex; align-items: center; }
         .datepicker-text { font-size: 12px; color: var(--md-primary); font-weight: 700; background: #eff6ff; padding: 4px 10px; border-radius: 8px; border: 1px solid #bfdbfe; }
 
-        .blue-add-action-btn { background: var(--md-primary); color: var(--md-on-primary); border: none; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: var(--shadow-1); flex-shrink: 0; }
-        .blue-add-action-btn .md-icon { font-size: 20px; font-weight: bold; }
+        .blue-add-action-btn { background: var(--md-primary); color: var(--md-on-primary); border: none; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0; }
         
         .drawer-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); z-index: 3000; display: none; }
         .drawer { position: fixed; bottom: 0; left: 50%; width: 100%; max-width: 600px; background: #f1f5f9; border-radius: 16px 16px 0 0; padding: 12px 14px; z-index: 3001; transform: translate(-50%, 100%); transition: transform 0.25s cubic-bezier(0.2, 0.8, 0.4, 1); box-shadow: var(--shadow-2); border-top: 1px solid #cbd5e1; }
@@ -268,49 +202,31 @@
         .drawer-handle { width: 28px; height: 4px; background: #94a3b8; opacity: 0.5; border-radius: 2px; margin: 0 auto 10px auto; }
         .drawer-title { font-size: 13px; font-weight: 700; margin-bottom: 8px; text-align: center; color: var(--md-on-surface); text-transform: uppercase; letter-spacing: 0.3px; }
         
-        .drawer-form-block { background: var(--md-surface); padding: 5px 8px; border-radius: 8px; border: 1px solid #cbd5e1; margin-bottom: 8px; display: flex; flex-direction: column; gap: 6px; }
-        .drawer-input { width: 100%; padding: 6px 8px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 13px; background: var(--md-surface); color: var(--md-on-surface); outline: none; }
-        .action-submit-btn { background: var(--md-primary); color: var(--md-on-primary); border: none; padding: 6px; border-radius: 6px; font-weight: 700; font-size: 11px; cursor: pointer; }
-        
         .items-list-scroll { max-height: 280px; overflow-y: auto; display: flex; flex-direction: column; gap: 4px; }
         .list-item-row { display: flex; justify-content: space-between; align-items: center; padding: 12px 14px; border: 1px solid var(--md-surface-variant); border-radius: 12px; background: var(--md-surface); font-size: 14px; }
-        .item-label { display: flex; align-items: center; gap: 8px; cursor: pointer; flex-grow: 1; color: var(--md-on-surface); padding: 2px 0; font-weight: 600; }
-        .item-label .md-icon { font-size: 16px; }
+        .item-label { display: flex; align-items: center; gap: 8px; cursor: pointer; flex-grow: 1; color: var(--md-on-surface); font-weight: 600; }
 
         .drawer-radio-input { appearance: none; -webkit-appearance: none; width: 20px; height: 20px; border: 2px solid #cbd5e1; border-radius: 50%; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; }
         .drawer-radio-input:checked { border-color: var(--md-primary); }
         .drawer-radio-input:checked::after { content: ''; width: 10px; height: 10px; background-color: var(--md-primary); border-radius: 50%; display: block; }
 
-        .weekdays-selector-box { display: flex; justify-content: space-between; gap: 4px; margin-top: 6px; padding: 4px 0; }
-        .weekday-pill-btn { flex: 1; height: 32px; border-radius: 8px; border: 1px solid var(--md-outline); background: var(--md-surface); font-size: 11px; font-weight: 700; color: var(--md-on-surface-variant); cursor: pointer; display: flex; align-items: center; justify-content: center; user-select: none; }
-        .weekday-pill-btn.selected { background: var(--md-primary); color: var(--md-on-primary); border-color: var(--md-primary); }
-        
-        .changelog-list { list-style: none; display: flex; flex-direction: column; gap: 10px; margin-top: 8px; font-size: 12px; }
-        .changelog-item { padding-bottom: 8px; border-bottom: 1px dashed #cbd5e1; line-height: 1.4; color: var(--md-on-surface-variant); }
-        .changelog-version { font-weight: 700; color: var(--md-primary); }
-
         .calendar-popup-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0, 0, 0, 0.5); z-index: 5000; display: none; align-items: center; justify-content: center; padding: 20px; }
         .calendar-popup { background: var(--md-surface); border-radius: 16px; width: 100%; max-width: 320px; box-shadow: var(--shadow-2); overflow: hidden; display: flex; flex-direction: column; }
         .calendar-popup-header { background: var(--md-primary); color: var(--md-on-primary); padding: 16px; }
-        .calendar-popup-year { font-size: 12px; font-weight: 500; opacity: 0.8; margin-bottom: 2px; letter-spacing: 0.5px; }
         .calendar-popup-full-date { font-size: 20px; font-weight: 700; }
         .calendar-popup-body { padding: 12px; display: flex; flex-direction: column; gap: 8px; }
         .calendar-nav-row { display: flex; align-items: center; justify-content: space-between; padding: 0 4px; }
         .calendar-nav-title { font-size: 14px; font-weight: 700; color: var(--md-on-surface); }
-        .calendar-nav-btn { background: none; border: none; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: var(--md-on-surface-variant); }
+        .calendar-nav-btn { background: none; border: none; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
         
         .calendar-grid-weekdays, .calendar-grid-days { display: grid; grid-template-columns: repeat(7, 1fr); text-align: center; }
         .calendar-weekday { font-size: 11px; font-weight: 700; color: #94a3b8; padding: 6px 0; }
         .calendar-day-cell { font-size: 13px; font-weight: 600; height: 36px; display: flex; align-items: center; justify-content: center; cursor: pointer; border-radius: 50%; color: var(--md-on-surface); position: relative; margin: 1px; user-select: none; }
-        .calendar-day-cell.empty { cursor: default; }
         .calendar-day-cell.selected { background: var(--md-primary) !important; color: var(--md-on-primary) !important; }
-        .calendar-day-cell.today-marker::after { content: ''; position: absolute; bottom: 4px; width: 4px; height: 4px; background: currentColor; border-radius: 50%; }
         
         .calendar-popup-actions { display: flex; justify-content: space-between; align-items: center; padding: 8px 12px 12px 12px; border-top: 1px solid var(--md-surface-variant); background: #f8fafc; }
-        .calendar-popup-actions-right { display: flex; gap: 8px; }
         .calendar-action-btn { background: none; border: none; padding: 8px 12px; font-size: 13px; font-weight: 700; color: var(--md-primary); cursor: pointer; border-radius: 6px; }
         .calendar-action-btn.btn-clear-date { color: var(--error-color); }
-        .calendar-action-btn:active { background: var(--md-surface-container-high); }
 
         @media screen and (max-width: 640px) {
             .fab-add-btn { left: auto; right: 24px; }
@@ -325,9 +241,8 @@
             <div class="header-top">
                 <div class="header-left">
                     <div class="app-title" id="current-view-title"><span class="md-icon" style="font-size:22px;">today</span> Hoje</div>
-                    <button class="info-btn" onclick="openInfoDrawer()"><span class="md-icon">info</span></button>
                 </div>
-                <div class="sync-status" onclick="triggerManualSync();" title="Sincronizar imediato">
+                <div class="sync-status" onclick="triggerManualSync();">
                     <div class="status-dot" id="status-dot"></div>
                     <span id="status-text">Carregando...</span>
                 </div>
@@ -391,12 +306,6 @@
                     <div class="selector-row-label">Etiqueta / Tag</div>
                     <div class="meta-badge-text" id="badge-tag-text">Nenhuma</div>
                 </div>
-
-                <div class="selector-row-item" onclick="openContextDrawer('recorrencia')">
-                    <div class="selector-btn-icon" id="meta-recurrence-btn"><span class="md-icon">repeat</span></div>
-                    <div class="selector-row-label">Repetição</div>
-                    <div class="meta-badge-text" id="badge-recurrence-text">Não se repete</div>
-                </div>
             </div>
             
             <button class="btn-meta-delete" id="meta-delete-btn" onclick="triggerDeleteSelectedTask()"><span class="md-icon">delete</span> Excluir esta Atividade</button>
@@ -407,21 +316,17 @@
     <div class="drawer" id="context-drawer">
         <div class="drawer-handle"></div>
         <div class="drawer-title" id="drawer-title">Contexto</div>
-        <div class="drawer-form-block" id="drawer-form-area"></div>
         <div class="drawer-list-items items-list-scroll" id="drawer-list-items"></div>
     </div>
 
     <div class="calendar-popup-overlay" id="calendar-popup-overlay" onclick="closeCalendarPopup()">
         <div class="calendar-popup" id="calendar-popup-box" onclick="event.stopPropagation()">
             <div class="calendar-popup-header">
-                <div class="calendar-popup-year" id="cal-header-year">2026</div>
-                <div class="calendar-popup-full-date" id="cal-header-fulldate">Dom, 21 de Jun</div>
+                <div class="calendar-popup-full-date" id="cal-header-fulldate">Data</div>
             </div>
             <div class="calendar-popup-body">
                 <div class="calendar-nav-row">
-                    <button class="calendar-nav-btn" onclick="navigateCalendarMonth(-1)"><span class="md-icon">chevron_left</span></button>
-                    <div class="calendar-nav-title" id="cal-nav-title">Junho 2026</div>
-                    <button class="calendar-nav-btn" onclick="navigateCalendarMonth(1)"><span class="md-icon">chevron_right</span></button>
+                    <div class="calendar-nav-title" id="cal-nav-title">Mês Atual</div>
                 </div>
                 <div class="calendar-grid-weekdays">
                     <div class="calendar-weekday">D</div><div class="calendar-weekday">S</div><div class="calendar-weekday">T</div>
@@ -432,21 +337,15 @@
             </div>
             <div class="calendar-popup-actions">
                 <button class="calendar-action-btn btn-clear-date" onclick="clearCalendarSelection()">Sem Data</button>
-                <div class="calendar-popup-actions-right">
-                    <button class="calendar-action-btn" onclick="closeCalendarPopup()">Cancelar</button>
-                    <button class="calendar-action-btn" onclick="confirmCalendarSelection()">OK</button>
-                </div>
+                <button class="calendar-action-btn" onclick="closeCalendarPopup()">Cancelar</button>
             </div>
         </div>
     </div>
 
     <script>
-        // Registro Automático do Ficheiro Offline (Service Worker)
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
-                navigator.serviceWorker.register('./sw.js')
-                    .then(reg => console.log('Ficheiro offline ativo com sucesso!', reg.scope))
-                    .catch(err => console.log('Falha ao ativar modo offline nativo:', err));
+                navigator.serviceWorker.register('./sw.js').catch(err => console.log(err));
             });
         }
 
@@ -455,30 +354,30 @@
         const $ = id => document.getElementById(id);
 
         let state = {
-            version: "4.19.0",
-            changelog: [
-                { v: "4.19.0", date: "22/06/2026", desc: "Estruturada a arquitetura Offline-First real. Desacoplamento do core de dados e inclusão do Service Worker para rodar offline em aparelhos móveis." },
-                { v: "4.18.1", date: "22/06/2026", desc: "Corrigida lógica de merge de dados da propriedade ATENÇÃO." }
+            tasks: [], 
+            projetos: [
+                { nome: "Trabalho", deleted: false, fixed: false },
+                { nome: "Pessoal", deleted: false, fixed: false },
+                { nome: "Estudos", deleted: false, fixed: false }
+            ], 
+            tags: [
+                { nome: "Urgente", cor: "#b91c1c", deleted: false },
+                { nome: "Fácil", cor: "#16a34a", deleted: false },
+                { nome: "Aguardando", cor: "#ea580c", deleted: false }
             ],
-            tasks: [], projetos: [], tags: [],
-            filterType: 'hoje', selectedFilterValue: '', tempDate: '', tempProject: 'No project', tempTag: '', tempRecurrence: 'Não se repete', tempRecurrenceDays: [], tempAttention: false, activeTaskId: null, currentTab: 'tarefas'
+            filterType: 'hoje', selectedFilterValue: '', tempDate: '', tempProject: 'No project', tempTag: '', tempAttention: false, activeTaskId: null, currentTab: 'tarefas'
         };
 
-        let dragSrcEl = null, touchTargetEl = null, calCurrentViewDate = new Date(), calSelectedDateStr = '', calTargetMode = 'layer', calTargetTaskId = null, isSyncingCurrently = false;
+        let calCurrentViewDate = new Date(), calSelectedDateStr = '', calTargetMode = 'layer', calTargetTaskId = null, isSyncingCurrently = false;
 
         const getISOStringLocal = (d) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
 
         function getFriendlyDateText(dateStr) {
             if (!dateStr || dateStr.trim() === '') return 'Sem data';
             const hoje = getISOStringLocal(new Date());
-            const dOntem = new Date(); dOntem.setDate(dOntem.getDate() - 1);
-            const dAmanha = new Date(); dAmanha.setDate(dAmanha.getDate() + 1);
             if (dateStr === hoje) return 'Hoje';
-            if (dateStr === getISOStringLocal(dOntem)) return 'Ontem';
-            if (dateStr === getISOStringLocal(dAmanha)) return 'Amanhã';
-            const meses = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
             const partes = dateStr.split('-');
-            return `${parseInt(partes[2], 10)} de ${meses[parseInt(partes[1], 10) - 1]}`;
+            return `${partes[2]}/${partes[1]}`;
         }
 
         function setSyncStatus(text, color) {
@@ -493,8 +392,8 @@
                 panel.classList.add('visible'); fab.style.display = 'none'; $('new-task-input').focus();
             } else {
                 panel.classList.remove('visible'); fab.style.display = 'flex'; state.activeTaskId = null;
-                if ($('meta-delete-btn')) $('meta-delete-btn').style.display = 'none';
-                $('meta-attention-checkbox').checked = false;
+                state.tempProject = 'No project'; state.tempTag = ''; state.tempAttention = false;
+                updateBarMetaUi();
             }
         }
 
@@ -507,9 +406,9 @@
 
         function loadLocalStorage() {
             const t = localStorage.getItem('local_fallback_tasks'), p = localStorage.getItem('local_fallback_proj'), g = localStorage.getItem('local_fallback_tags');
-            if(t) state.tasks = JSON.parse(t); if(p) state.projetos = JSON.parse(p); if(g) state.tags = JSON.parse(g);
-            state.projetos = state.projetos.map(x => typeof x === 'string' ? { nome: x, deleted: false, fixed: false } : x);
-            state.tags = state.tags.map(x => typeof x === 'string' ? { nome: x, cor: '#4f46e5', deleted: false } : x);
+            if(t) state.tasks = JSON.parse(t);
+            if(p) state.projetos = JSON.parse(p);
+            if(g) state.tags = JSON.parse(g);
         }
 
         function saveLocalStorage() {
@@ -538,27 +437,13 @@
                         const local = tMap.get(st.id);
                         if (st.deleted && !local.deleted) { local.deleted = true; local.deletedAt = st.deletedAt || Date.now(); changed = true; }
                         else if (!local.deleted && st.updatedAt > (local.updatedAt || 0)) {
-                            Object.assign(local, { text: st.text, completed: st.completed, date: st.date, project: st.project, tag: st.tag, recurrence: st.recurrence, recurrenceDays: st.recurrenceDays, attention: !!st.attention, updatedAt: st.updatedAt });
+                            Object.assign(local, { text: st.text, completed: st.completed, date: st.date, project: st.project, tag: st.tag, attention: !!st.attention, updatedAt: st.updatedAt });
                             changed = true;
                         }
                     }
                 });
             }
             state.tasks = Array.from(tMap.values());
-
-            const pMap = new Map(); state.projetos.forEach(p => pMap.set(p.nome, p));
-            if (Array.isArray(serverData.projetos)) {
-                serverData.projetos.forEach(sp => {
-                    const n = typeof sp === 'string' ? { nome: sp, deleted: false, fixed: false } : sp;
-                    if (!pMap.has(n.nome)) { pMap.set(n.nome, n); changed = true; }
-                    else {
-                        const loc = pMap.get(n.nome);
-                        if (n.deleted && !loc.deleted) { loc.deleted = true; loc.deletedAt = n.deletedAt || Date.now(); changed = true; }
-                        if (n.fixed !== undefined && loc.fixed !== n.fixed) { loc.fixed = n.fixed; changed = true; }
-                    }
-                });
-            }
-            state.projetos = Array.from(pMap.values());
             if (changed) saveLocalStorage();
             return changed;
         }
@@ -598,13 +483,10 @@
 
         function updateSelectedDate(val) { state.tempDate = val || ''; if ($('meta-date-text')) $('meta-date-text').innerText = getFriendlyDateText(val); }
 
-        function togglePillFilter(type, value) { if (state.filterType === type && state.selectedFilterValue === value) setFilter('hoje'); else setFilter(type, value); }
-
         function setFilter(type, value = '') {
             state.filterType = type; state.selectedFilterValue = value;
             document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
             if(['hoje', 'amanha', 'todos', 'completas'].includes(type)) $(`f-btn-${type}`).classList.add('active');
-            $('current-view-title').innerHTML = type === 'hoje' ? `<span class="md-icon" style="font-size:22px;">today</span> Hoje` : type === 'amanha' ? `<span class="md-icon" style="font-size:22px;">next_week</span> Amanhã` : type === 'todos' ? `<span class="md-icon" style="font-size:22px;">all_inbox</span> Todos` : value;
             render();
         }
 
@@ -613,7 +495,6 @@
         function updateBarMetaUi() {
             $('badge-project-text').innerText = state.tempProject !== 'No project' ? state.tempProject : 'Nenhum';
             $('badge-tag-text').innerText = state.tempTag || 'Nenhuma';
-            $('badge-recurrence-text').innerText = state.tempRecurrence !== 'Não se repete' ? state.tempRecurrence : 'Não se repete';
             $('meta-attention-checkbox').checked = !!state.tempAttention;
             $('meta-delete-btn').style.display = state.activeTaskId ? 'flex' : 'none';
         }
@@ -623,11 +504,11 @@
             if(val) {
                 if (state.activeTaskId) {
                     const t = state.tasks.find(x => x.id === state.activeTaskId);
-                    if (t) Object.assign(t, { text: val, date: state.tempDate, project: state.tempProject, tag: state.tempTag, recurrence: state.tempRecurrence, recurrenceDays: [...state.tempRecurrenceDays], attention: att, updatedAt: Date.now() });
+                    if (t) Object.assign(t, { text: val, date: state.tempDate, project: state.tempProject, tag: state.tempTag, attention: att, updatedAt: Date.now() });
                 } else {
-                    state.tasks.push({ id: 't_' + Date.now(), text: val, completed: false, date: state.tempDate, project: state.tempProject, tag: state.tempTag, recurrence: state.tempRecurrence, recurrenceDays: [...state.tempRecurrenceDays], attention: att, deleted: false, updatedAt: Date.now() });
+                    state.tasks.push({ id: 't_' + Date.now(), text: val, completed: false, date: state.tempDate, project: state.tempProject, tag: state.tempTag, attention: att, deleted: false, updatedAt: Date.now() });
                 }
-                input.value = ''; state.tempProject = 'No project'; state.tempTag = ''; state.tempRecurrence = 'Não se repete'; state.tempRecurrenceDays = []; state.tempAttention = false; state.activeTaskId = null;
+                input.value = ''; state.tempProject = 'No project'; state.tempTag = ''; state.tempAttention = false; state.activeTaskId = null;
                 updateBarMetaUi(); toggleInputPanel(false); saveLocalStorage(); render(); syncWithServer();
             }
         }
@@ -636,7 +517,7 @@
 
         function callTaskBackToDraft(id) {
             const t = state.tasks.find(x => x.id === id); if(!t || t.completed) return;
-            state.activeTaskId = t.id; $('new-task-input').value = t.text; state.tempDate = t.date || ''; state.tempProject = t.project || 'No project'; state.tempTag = t.tag || ''; state.tempRecurrence = t.recurrence || 'Não se repete'; state.tempRecurrenceDays = t.recurrenceDays ? [...t.recurrenceDays] : []; state.tempAttention = !!t.attention;
+            state.activeTaskId = t.id; $('new-task-input').value = t.text; state.tempDate = t.date || ''; state.tempProject = t.project || 'No project'; state.tempTag = t.tag || ''; state.tempAttention = !!t.attention;
             updateBarMetaUi(); updateSelectedDate(t.date); toggleInputPanel(true);
         }
 
@@ -648,29 +529,25 @@
             saveLocalStorage(); render(); syncWithServer();
         }
 
-        function sortTasksByPriority(arr, hojeIso) {
-            return arr.sort((x, y) => {
-                const ox = x.date && x.date < hojeIso && !x.completed ? 1 : 0, oy = y.date && y.date < hojeIso && !y.completed ? 1 : 0;
-                if (ox !== oy) return oy - ox;
-                const ax = x.attention && !x.completed ? 1 : 0, ay = y.attention && !y.completed ? 1 : 0;
-                if (ax !== ay) return ay - ax;
-                return (x.date || '9999').localeCompare(y.date || '9999');
-            });
-        }
-
-        function createHTMLTaskItem(t, hojeIso, projName, showBadge) {
-            const item = document.createElement('div'), isRec = t.recurrence && t.recurrence !== 'Não se repete';
+        function createHTMLTaskItem(t, hojeIso) {
+            const item = document.createElement('div');
             item.className = `task-item ${t.completed ? 'completed' : ''} ${t.date && t.date < hojeIso && !t.completed ? 'overdue' : ''} ${t.attention ? 'has-attention' : ''}`;
+            
+            // Procura a cor da Tag correspondente
+            const tagObj = state.tags.find(g => g.nome === t.tag && !g.deleted);
+            const tagColor = tagObj ? tagObj.cor : '#4f46e5';
+
             item.innerHTML = `
                 <div class="drag-handle"><span class="md-icon" style="font-size:18px;">drag_indicator</span></div>
                 <input type="checkbox" class="task-checkbox" ${t.completed ? 'checked' : ''} onchange="opTask('${t.id}', 'toggle')">
                 <div class="task-content">
                     <div class="task-text-row">
                         <span class="task-text" onclick="${t.completed ? '' : `callTaskBackToDraft('${t.id}')`}">${t.text}</span>
-                        ${showBadge && t.project && t.project !== 'No project' ? `<span class="inline-project-badge">${t.project}</span>` : ''}
+                        ${t.project && t.project !== 'No project' ? `<span class="inline-project-badge">${t.project}</span>` : ''}
+                        ${t.tag ? `<span class="inline-tag-badge" style="background: ${tagColor}">${t.tag}</span>` : ''}
                     </div>
                     <span class="right-date-pilling-zone" onclick="event.stopPropagation(); openCalendarPopup('inline', '${t.id}')">
-                        <span>${getFriendlyDateText(t.date)}</span><span class="right-date-icon"><span class="md-icon">${isRec ? 'repeat' : 'calendar_today'}</span></span>
+                        <span>${getFriendlyDateText(t.date)}</span><span class="right-date-icon"><span class="md-icon">calendar_today</span></span>
                     </span>
                 </div>
             `;
@@ -678,6 +555,11 @@
         }
 
         function render() {
+            if (state.currentTab === 'projetos') {
+                renderProjetsTab();
+                return;
+            }
+
             const container = $('task-list-container'); container.innerHTML = '';
             let active = state.tasks.filter(t => !t.deleted), hojeIso = getISOStringLocal(new Date());
             
@@ -686,37 +568,127 @@
                 return state.filterType === 'hoje' ? t.date === hojeIso : state.filterType === 'amanha' ? t.date === getISOStringLocal(new Date(Date.now() + 86400000)) : true;
             });
 
-            if(!filtered.length) { container.innerHTML = `<div style="text-align:center;color:#94a3b8;padding:30px 0;font-size:13px;">Lista vazia.</div>`; return; }
+            if(!filtered.length) { container.innerHTML = `<div style="text-align:center;color:#94a3b8;padding:30px 0;font-size:13px;">Nenhuma atividade pendente.</div>`; return; }
 
-            filtered = sortTasksByPriority(filtered, hojeIso);
             const box = document.createElement('div'); box.style.background = '#fff'; box.style.borderRadius = '14px'; box.style.border = '1px solid #e2e8f0';
-            filtered.forEach(t => box.appendChild(createHTMLTaskItem(t, hojeIso, t.project, true)));
+            filtered.forEach(t => box.appendChild(createHTMLTaskItem(t, hojeIso)));
             container.appendChild(box);
             
             const tot = active.length, don = active.filter(t => t.completed).length;
             $('progress-bar').style.width = `${tot ? (don / tot) * 100 : 0}%`;
         }
 
-        function openDrawerCommon(title, form, listFn) { $('drawer-overlay').style.display = 'block'; $('context-drawer').classList.add('open'); $('drawer-title').innerText = title; $('drawer-form-area').innerHTML = form; listFn(); }
-        const closeDrawer = () => { $('context-drawer').classList.remove('open'); $('drawer-overlay').style.display = 'none'; };
+        function renderProjetsTab() {
+            const container = $('task-list-container'); container.innerHTML = '';
+            state.projetos.filter(p => !p.deleted).forEach(p => {
+                const count = state.tasks.filter(t => t.project === p.nome && !t.completed && !t.deleted).length;
+                const card = document.createElement('div');
+                card.className = 'project-group-card';
+                card.innerHTML = `
+                    <div class="project-group-header">
+                        <span class="project-group-title-link">${p.nome} <span class="project-group-count">${count}</span></span>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function openDrawerCommon(title, listFn) { 
+            $('drawer-overlay').style.display = 'block'; 
+            $('context-drawer').classList.add('open'); 
+            $('drawer-title').innerText = title; 
+            listFn(); 
+        }
+        
+        const closeDrawer = () => { 
+            $('context-drawer').classList.remove('open'); 
+            $('drawer-overlay').style.display = 'none'; 
+        };
 
         function openContextDrawer(mode) {
-            if(mode === 'projetos') openDrawerCommon("Projetos", '', () => {});
-            if(mode === 'recorrencia') openDrawerCommon("Repetição", '', () => {});
+            if(mode === 'projetos') {
+                openDrawerCommon("Selecionar Projeto", () => {
+                    const listCont = $('drawer-list-items'); listCont.innerHTML = '';
+                    
+                    // Opção Padrão (Sem Projeto)
+                    const rowNone = document.createElement('div'); rowNone.className = 'list-item-row';
+                    rowNone.innerHTML = `
+                        <label class="item-label" onclick="selectProjectFromDrawer('No project')">
+                            <span class="md-icon">folder_off</span> Nenhum Projeto
+                        </label>
+                        <input type="radio" class="drawer-radio-input" name="proj-r" ${state.tempProject === 'No project' ? 'checked' : ''}>
+                    `;
+                    listCont.appendChild(rowNone);
+
+                    // Lista de Projetos Ativos
+                    state.projetos.filter(p => !p.deleted).forEach(p => {
+                        const row = document.createElement('div'); row.className = 'list-item-row';
+                        row.innerHTML = `
+                            <label class="item-label" onclick="selectProjectFromDrawer('${p.nome}')">
+                                <span class="md-icon">folder</span> ${p.nome}
+                            </label>
+                            <input type="radio" class="drawer-radio-input" name="proj-r" ${state.tempProject === p.nome ? 'checked' : ''}>
+                        `;
+                        listCont.appendChild(row);
+                    });
+                });
+            }
+            if(mode === 'tags') {
+                openDrawerCommon("Selecionar Etiqueta / Tag", () => {
+                    const listCont = $('drawer-list-items'); listCont.innerHTML = '';
+                    
+                    // Opção Padrão (Sem Tag)
+                    const rowNone = document.createElement('div'); rowNone.className = 'list-item-row';
+                    rowNone.innerHTML = `
+                        <label class="item-label" onclick="selectTagFromDrawer('')">
+                            <span class="md-icon">label_off</span> Nenhuma Tag
+                        </label>
+                        <input type="radio" class="drawer-radio-input" name="tag-r" ${state.tempTag === '' ? 'checked' : ''}>
+                    `;
+                    listCont.appendChild(rowNone);
+
+                    // Lista de Tags Ativas
+                    state.tags.filter(g => !g.deleted).forEach(g => {
+                        const row = document.createElement('div'); row.className = 'list-item-row';
+                        row.innerHTML = `
+                            <label class="item-label" onclick="selectTagFromDrawer('${g.nome}')">
+                                <span class="md-icon" style="color: ${g.cor}">label</span> ${g.nome}
+                            </label>
+                            <input type="radio" class="drawer-radio-input" name="tag-r" ${state.tempTag === g.nome ? 'checked' : ''}>
+                        `;
+                        listCont.appendChild(row);
+                    });
+                });
+            }
         }
+
+        function selectProjectFromDrawer(name) { state.tempProject = name; updateBarMetaUi(); closeDrawer(); }
+        function selectTagFromDrawer(name) { state.tempTag = name; updateBarMetaUi(); closeDrawer(); }
 
         function openCalendarPopup(mode, id = null) { calTargetMode = mode; calTargetTaskId = id; $('calendar-popup-overlay').style.display = 'flex'; buildCalendarGrid(); }
         function closeCalendarPopup() { $('calendar-popup-overlay').style.display = 'none'; }
-        function confirmCalendarSelection() { if(calTargetMode === 'layer') updateSelectedDate(calSelectedDateStr); else opTask(calTargetTaskId, 'change-date', calSelectedDateStr); closeCalendarPopup(); }
+        
+        function clearCalendarSelection() { 
+            if(calTargetMode === 'layer') updateSelectedDate(''); 
+            else opTask(calTargetTaskId, 'change-date', ''); 
+            closeCalendarPopup(); 
+        }
 
         function buildCalendarGrid() {
             const yr = calCurrentViewDate.getFullYear(), ms = calCurrentViewDate.getMonth();
             $('cal-nav-title').innerText = `${ms+1}/${yr}`; const grid = $('calendar-days-grid'); grid.innerHTML = '';
-            for(let d=1; d<=30; d++) {
+            
+            // Renderização simplificada de dias para navegação rápida
+            for(let d=1; d<=31; d++) {
                 const cell = document.createElement('div'); cell.className = 'calendar-day-cell'; cell.innerText = d;
                 const cStr = `${yr}-${String(ms+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
-                if(cStr === getISOStringLocal(new Date())) cell.classList.add('today-marker');
-                cell.onclick = () => { calSelectedDateStr = cStr; confirmCalendarSelection(); };
+                if(cStr === getISOStringLocal(new Date())) cell.style.border = "1px solid var(--md-primary)";
+                
+                cell.onclick = () => { 
+                    if(calTargetMode === 'layer') updateSelectedDate(cStr); 
+                    else opTask(calTargetTaskId, 'change-date', cStr); 
+                    closeCalendarPopup(); 
+                };
                 grid.appendChild(cell);
             }
         }
