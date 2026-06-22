@@ -25,6 +25,7 @@
             --error-color: #991b1b;
             --error-container: #fee2e2;
             --on-error-container: #7f1d1d;
+            --attention-border-color: #d97706; /* Laranja Amber para Atenção */
             --shadow-1: 0px 1px 3px rgba(0, 0, 0, 0.05);
             --shadow-2: 0px 4px 12px rgba(0, 0, 0, 0.12);
         }
@@ -137,7 +138,7 @@
             display: flex; 
             align-items: center; 
             gap: 12px; 
-            transition: background-color 0.2s, opacity 0.2s; 
+            transition: background-color 0.2s, opacity 0.2s, border-color 0.2s; 
             position: relative; 
         }
         
@@ -151,6 +152,18 @@
         .task-item.overdue { background: #fff5f5; }
         .task-item.overdue .task-text { color: #991b1b; }
         .task-item.overdue .right-date-pilling-zone { color: #ef4444 !important; }
+
+        /* Nova Estilização de Atenção: Bordas grossas tracejadas */
+        .task-item.has-attention {
+            border: 3px dashed var(--attention-border-color) !important;
+            margin: 4px 6px;
+            border-radius: 8px;
+            background: #fffbeb;
+        }
+        .task-item.has-attention.completed {
+            border: 2px dashed var(--md-outline) !important;
+            background: transparent;
+        }
 
         /* Alça de Arraste (Drag Handle) */
         .drag-handle { color: var(--md-outline); cursor: grab; display: flex; align-items: center; justify-content: center; padding: 4px 0; user-select: none; touch-action: none; }
@@ -221,25 +234,26 @@
             padding: 20px; 
             display: flex; 
             flex-direction: column; 
-            gap: 16px; 
+            gap: 12px; 
             z-index: 2000;
             transform: translate(-50%, 100%);
             transition: transform 0.28s cubic-bezier(0.2, 0.8, 0.3, 1);
             border-left: 1px solid var(--md-surface-variant);
             border-right: 1px solid var(--md-surface-variant);
+            overflow-y: auto;
         }
         .input-container.visible {
             transform: translate(-50%, 0);
         }
         
-        .meta-selectors-row { display: flex; flex-direction: column; gap: 10px; width: 100%; }
+        .meta-selectors-row { display: flex; flex-direction: column; gap: 8px; width: 100%; }
         
         .selector-row-item {
             display: flex;
             align-items: center;
             gap: 12px;
             background: #f1f5f9;
-            padding: 12px 14px;
+            padding: 10px 14px;
             border-radius: 12px;
             border: 1px solid var(--md-surface-variant);
             cursor: pointer;
@@ -252,12 +266,45 @@
 
         .meta-badge-text { font-size: 12px; font-weight: 700; color: var(--md-primary); background: #eff6ff; padding: 4px 10px; border-radius: 8px; border: 1px solid #bfdbfe; max-width: 150px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         
-        .btn-meta-delete { border: 1px solid var(--error-color); background: #fef2f2; width: 100%; height: 48px; border-radius: 12px; display: none; align-items: center; justify-content: center; gap: 8px; font-size: 14px; font-weight: 700; color: var(--error-color); cursor: pointer; margin-top: auto; }
+        /* Toggle Switch de Atenção */
+        .attention-toggle-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .switch-container {
+            position: relative;
+            display: inline-block;
+            width: 44px;
+            height: 24px;
+        }
+        .switch-container input { opacity: 0; width: 0; height: 0; }
+        .slider-switch {
+            position: absolute;
+            cursor: pointer;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-color: #cbd5e1;
+            transition: .2s;
+            border-radius: 24px;
+        }
+        .slider-switch:before {
+            position: absolute;
+            content: "";
+            height: 18px; width: 18px;
+            left: 3px; bottom: 3px;
+            background-color: white;
+            transition: .2s;
+            border-radius: 50%;
+        }
+        input:checked + .slider-switch { background-color: var(--attention-border-color); }
+        input:checked + .slider-switch:before { transform: translateX(20px); }
+
+        .btn-meta-delete { border: 1px solid var(--error-color); background: #fef2f2; width: 100%; height: 44px; border-radius: 12px; display: none; align-items: center; justify-content: center; gap: 8px; font-size: 14px; font-weight: 700; color: var(--error-color); cursor: pointer; margin-top: 4px; }
         .btn-meta-delete .md-icon { font-size: 18px; }
 
         .task-input { 
             width: 100%; 
-            height: 110px;
+            height: 90px;
             border: 1px solid var(--md-surface-variant); 
             background: #f1f5f9; 
             padding: 14px; 
@@ -458,6 +505,18 @@
             <div style="font-size: 11px; font-weight: 700; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.5px; margin-top: 4px;">Configurações da Tarefa</div>
 
             <div class="meta-selectors-row">
+                <!-- Seletor de Atenção inserido diretamente no Layer de Adição/Edição -->
+                <div class="selector-row-item" style="cursor: default;" onclick="event.stopPropagation()">
+                    <div class="selector-btn-icon" style="color: var(--attention-border-color);"><span class="md-icon">priority_high</span></div>
+                    <div class="selector-row-label" style="font-weight: 700;">ATENÇÃO (Destacar Item)</div>
+                    <div class="attention-toggle-wrapper">
+                        <label class="switch-container">
+                            <input type="checkbox" id="meta-attention-checkbox">
+                            <span class="slider-switch"></span>
+                        </label>
+                    </div>
+                </div>
+
                 <div class="selector-row-item" onclick="openCalendarPopup('layer')">
                     <div class="selector-btn-icon"><span class="md-icon">calendar_today</span></div>
                     <div class="selector-row-label">Data Limite</div>
@@ -534,8 +593,9 @@
         const $ = id => document.getElementById(id);
 
         let state = {
-            version: "4.17.0",
+            version: "4.18.0",
             changelog: [
+                { v: "4.18.0", date: "22/06/2026", desc: "Adicionada a funcionalidade de 'ATENÇÃO' nas tarefas individuais, aplicando bordas grossas tracejadas e agrupamento estratégico abaixo das atrasadas." },
                 { v: "4.17.0", date: "22/06/2026", desc: "Adicionada a funcionalidade de selecionar dias da semana específicos para a recorrência do tipo 'Toda semana'." },
                 { v: "4.16.0", date: "22/06/2026", desc: "Removido o agrupamento 'Sem Projeto' da aba de Projetos. Tarefas sem projeto ficam visíveis apenas cronologicamente na aba 'Tarefas'." }
             ],
@@ -543,12 +603,14 @@
             projetos: [{ nome: "Trabalho", deleted: false, fixed: false }, { nome: "Estudos", deleted: false, fixed: false }],
             tags: [{ nome: "URGENTE", cor: "#ef4444", deleted: false }, { nome: "FOCO", cor: "#3b82f6", deleted: false }],
             filterType: 'hoje', selectedFilterValue: '', tempDate: '', tempProject: 'No project', tempTag: '', tempRecurrence: 'Não se repete',
-            tempRecurrenceDays: [], // Armazena dias específicos selecionados para a repetição semanal (0=Dom, 1=Seg, etc.)
+            tempRecurrenceDays: [], 
+            tempAttention: false, // Controla o estado de Atenção temporário no painel
             activeTaskId: null,
             currentTab: 'tarefas'
         };
 
         let dragSrcEl = null;
+        let touchTargetEl = null;
         let calCurrentViewDate = new Date();
         let calSelectedDateStr = '';
         let calTargetMode = 'layer';
@@ -586,7 +648,7 @@
 
         function toggleInputPanel(show) {
             const panel = $('bottom-input-panel');
-            const fab = $('fab-trigger');
+            const fab = grandfather = $('fab-trigger');
             if(show) {
                 $('layer-title').innerText = state.activeTaskId ? "Editar Atividade" : "Nova Atividade";
                 panel.classList.add('visible');
@@ -597,6 +659,8 @@
                 fab.style.display = 'flex';
                 state.activeTaskId = null;
                 if ($('meta-delete-btn')) $('meta-delete-btn').style.display = 'none';
+                // Reseta o estado do switch
+                $('meta-attention-checkbox').checked = false;
             }
         }
 
@@ -688,6 +752,7 @@
                                 if (st.tag !== local.tag) local.tag = st.tag;
                                 if (st.recurrence !== local.recurrence) local.recurrence = st.recurrence;
                                 if (st.recurrenceDays !== local.recurrenceDays) local.recurrenceDays = st.recurrenceDays;
+                                if (st.attention !== local.attention) local.attention = st.attention;
                                 local.updatedAt = st.updatedAt;
                                 changesMade = true;
                             }
@@ -846,12 +911,16 @@
             }
             else rBadge.innerText = 'Não se repete';
             
+            $('meta-attention-checkbox').checked = !!state.tempAttention;
+
             const dBtn = $('meta-delete-btn');
             if (dBtn) dBtn.style.display = state.activeTaskId ? 'flex' : 'none';
         }
 
         function triggerSubmitTask() {
             const inputElement = $('new-task-input'); const val = inputElement.value.trim();
+            const attentionVal = $('meta-attention-checkbox').checked;
+
             if(val) {
                 if (state.activeTaskId) {
                     const t = state.tasks.find(x => x.id === state.activeTaskId);
@@ -859,6 +928,7 @@
                         t.text = val; t.date = state.tempDate; t.project = state.tempProject;
                         t.tag = state.tempTag; t.recurrence = state.tempRecurrence || 'Não se repete';
                         t.recurrenceDays = (state.tempRecurrence === 'Toda semana') ? [...state.tempRecurrenceDays] : [];
+                        t.attention = attentionVal;
                         t.updatedAt = Date.now();
                     }
                 } else {
@@ -867,11 +937,12 @@
                         text: val, completed: false, date: state.tempDate, project: state.tempProject, 
                         tag: state.tempTag, recurrence: state.tempRecurrence || 'Não se repete',
                         recurrenceDays: (state.tempRecurrence === 'Toda semana') ? [...state.tempRecurrenceDays] : [],
+                        attention: attentionVal,
                         deleted: false, updatedAt: Date.now() 
                     });
                 }
                 
-                inputElement.value = ''; state.tempProject = 'No project'; state.tempTag = ''; state.tempRecurrence = 'Não se repete'; state.tempRecurrenceDays = []; state.activeTaskId = null;
+                inputElement.value = ''; state.tempProject = 'No project'; state.tempTag = ''; state.tempRecurrence = 'Não se repete'; state.tempRecurrenceDays = []; state.tempAttention = false; state.activeTaskId = null;
                 updateBarMetaUi(); toggleInputPanel(false); 
                 
                 saveLocalStorage();
@@ -884,7 +955,7 @@
             if (state.activeTaskId) {
                 opTask(state.activeTaskId, 'delete');
                 const inputElement = $('new-task-input'); if (inputElement) inputElement.value = '';
-                state.tempProject = 'No project'; state.tempTag = ''; state.tempRecurrence = 'Não se repete'; state.tempRecurrenceDays = []; state.activeTaskId = null;
+                state.tempProject = 'No project'; state.tempTag = ''; state.tempRecurrence = 'Não se repete'; state.tempRecurrenceDays = []; state.tempAttention = false; state.activeTaskId = null;
                 updateBarMetaUi(); toggleInputPanel(false);
             }
         }
@@ -897,11 +968,9 @@
                 d.setDate(d.getDate() + 1);
             } else if(type === 'Toda semana') {
                 if (specificDays && specificDays.length > 0) {
-                    // Ordena os dias da semana selecionados numericamente
                     const sortedDays = [...specificDays].sort((a,b) => a - b);
                     let found = false;
                     
-                    // Procura se há algum dia selecionado mais à frente na mesma semana
                     for (let i = 0; i < sortedDays.length; i++) {
                         if (sortedDays[i] > d.getDay()) {
                             const diff = sortedDays[i] - d.getDay();
@@ -910,7 +979,6 @@
                             break;
                         }
                     }
-                    // Se não houver, pula para o primeiro dia selecionado da próxima semana
                     if (!found) {
                         const diasAteFimSemana = 7 - d.getDay();
                         const proximoDiaAlvo = sortedDays[0];
@@ -937,6 +1005,7 @@
             state.tempTag = t.tag || '';
             state.tempRecurrence = t.recurrence || 'Não se repete';
             state.tempRecurrenceDays = t.recurrenceDays ? [...t.recurrenceDays] : [];
+            state.tempAttention = !!t.attention;
             
             updateBarMetaUi();
             updateSelectedDate(t.date);
@@ -1111,7 +1180,8 @@
         function createHTMLTaskItem(t, hojeIso, projName, showProjectBadge = false) {
             const isOverdue = t.date && t.date < hojeIso && !t.completed; 
             const item = document.createElement('div'); 
-            item.className = `task-item ${t.completed ? 'completed' : ''} ${isOverdue ? 'overdue' : ''}`;
+            // Adiciona condicionalmente a classe 'has-attention' se a tarefa requerer atenção especial
+            item.className = `task-item ${t.completed ? 'completed' : ''} ${isOverdue ? 'overdue' : ''} ${t.attention ? 'has-attention' : ''}`;
             item.setAttribute('draggable', 'true'); item.setAttribute('data-id', t.id); item.setAttribute('data-project', projName);
             
             item.addEventListener('dragstart', handleDragStart); item.addEventListener('dragover', handleDragOver);
@@ -1138,6 +1208,28 @@
             return item;
         }
 
+        /* LÓGICA DE ORDENAÇÃO DE TAREFAS COM ATENÇÃO ABAIXO DAS ATRASADAS */
+        function sortTasksByPriority(tasksArray, hojeIso) {
+            return tasksArray.sort((x, y) => {
+                // 1. Prioridade Máxima: Atrasadas e não completas
+                const isOverdueX = x.date && x.date < hojeIso && !x.completed ? 1 : 0;
+                const isOverdueY = y.date && y.date < hojeIso && !y.completed ? 1 : 0;
+                if (isOverdueX !== isOverdueY) return isOverdueY - isOverdueX;
+
+                // 2. Segunda Prioridade: Itens com ATENÇÃO ativos
+                const attentionX = x.attention && !x.completed ? 1 : 0;
+                const attentionY = y.attention && !y.completed ? 1 : 0;
+                if (attentionX !== attentionY) return attentionY - attentionX;
+
+                // 3. Critério de desempate por data cronológica
+                if (!x.date && y.date) return 1;
+                if (x.date && !y.date) return -1;
+                if (x.date && y.date && x.date !== y.date) return x.date.localeCompare(y.date);
+
+                return 0;
+            });
+        }
+
         /* RENDERIZAÇÃO PRINCIPAL */
         function render() {
             const container = $('task-list-container'); container.innerHTML = '';
@@ -1157,18 +1249,15 @@
                 $('progress-bar').style.width = '0%'; return;
             }
 
-            // --- ABA 1: TAREFAS ---
+            // --- ABA 1: TAREFAS (ORDENAÇÃO ATUALIZADA) ---
             if (state.currentTab === 'tarefas') {
                 let tabTasks = filtered.filter(t => t.date && t.date.trim() !== '');
 
                 if(!tabTasks.length) {
                     container.innerHTML = `<div style="text-align:center; color:var(--md-on-surface-variant); padding:30px 0; font-size:13px; font-weight: 500;">Nenhuma tarefa com data por aqui.</div>`;
                 } else {
-                    tabTasks.sort((x, y) => {
-                        const isOverdueX = x.date && x.date < hojeIso && !x.completed ? 1 : 0; const isOverdueY = y.date && y.date < hojeIso && !y.completed ? 1 : 0;
-                        if (isOverdueX !== isOverdueY) return isOverdueY - isOverdueX;
-                        return x.date.localeCompare(y.date);
-                    });
+                    // Aplica a nova regra de ordenação mútua
+                    tabTasks = sortTasksByPriority(tabTasks, hojeIso);
 
                     const plainListContainer = document.createElement('div');
                     plainListContainer.style.background = 'var(--md-surface)';
@@ -1183,7 +1272,7 @@
                     container.appendChild(plainListContainer);
                 }
             } 
-            // --- ABA 2: PROJETOS ---
+            // --- ABA 2: PROJETOS (ORDENAÇÃO ATUALIZADA POR PROJETO) ---
             else if (state.currentTab === 'projects' || state.currentTab === 'projetos') {
                 const groups = {};
                 
@@ -1205,18 +1294,10 @@
                 }
 
                 sortedGroupNames.forEach(projName => {
-                    const projTasks = groups[projName]; 
-                    projTasks.sort((x, y) => {
-                        const isOverdueX = x.date && x.date < hojeIso && !x.completed ? 1 : 0; const isOverdueY = y.date && y.date < hojeIso && !y.completed ? 1 : 0;
-                        if (isOverdueX !== isOverdueY) return isOverdueY - isOverdueX;
-                        
-                        if (!x.date && y.date) return 1;
-                        if (x.date && !y.date) return -1;
-                        if (x.date && y.date && x.date !== y.date) return x.date.localeCompare(y.date);
-                        
-                        const tagX = x.tag || ''; const tagY = y.tag || '';
-                        if (tagX === '' && tagY !== '') return 1; if (tagX !== '' && tagY === '') return -1; return tagX.localeCompare(tagY);           
-                    });
+                    let projTasks = groups[projName]; 
+                    
+                    // Ordena respeitando as regras: Atrasadas > Atenção > Cronológica por projeto
+                    projTasks = sortTasksByPriority(projTasks, hojeIso);
 
                     const projObj = state.projetos.find(p => p.nome === projName && !p.deleted); const isFixed = projObj ? !!projObj.fixed : false;
                     
@@ -1274,7 +1355,7 @@
                 state.tempRecurrenceDays = [];
             }
             updateBarMetaUi(); 
-            renderRecurrenceList(); // Re-renderiza para exibir/ocultar os dias da semana dinamicamente
+            renderRecurrenceList();
         }
 
         function toggleRecurrenceDay(dayIndex) {
@@ -1319,7 +1400,6 @@
                 row.appendChild(radio);
                 blockWrapper.appendChild(row);
 
-                // Se a opção selecionada for 'Toda semana', injeta os botões múltiplos de dias da semana abaixo
                 if (opt === 'Toda semana' && state.tempRecurrence === 'Toda semana') {
                     const daysBox = document.createElement('div');
                     daysBox.className = 'weekdays-selector-box';
@@ -1341,7 +1421,6 @@
                 itemsContainer.appendChild(blockWrapper);
             });
 
-            // Adiciona um botão de confirmar para fechar o Drawer se estiver configurando dias
             if (state.tempRecurrence === 'Toda semana') {
                 const footerBtnRow = document.createElement('div');
                 footerBtnRow.style.padding = '8px 0';
