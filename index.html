@@ -505,7 +505,6 @@
             <div style="font-size: 11px; font-weight: 700; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.5px; margin-top: 4px;">Configurações da Tarefa</div>
 
             <div class="meta-selectors-row">
-                <!-- Seletor de Atenção inserido diretamente no Layer de Adição/Edição -->
                 <div class="selector-row-item" style="cursor: default;" onclick="event.stopPropagation()">
                     <div class="selector-btn-icon" style="color: var(--attention-border-color);"><span class="md-icon">priority_high</span></div>
                     <div class="selector-row-label" style="font-weight: 700;">ATENÇÃO (Destacar Item)</div>
@@ -593,18 +592,18 @@
         const $ = id => document.getElementById(id);
 
         let state = {
-            version: "4.18.0",
+            version: "4.18.1",
             changelog: [
+                { v: "4.18.1", date: "22/06/2026", desc: "Corrigida a lógica de sincronização (merge de dados) para incluir explicitamente a propriedade de ATENÇÃO entre múltiplos dispositivos." },
                 { v: "4.18.0", date: "22/06/2026", desc: "Adicionada a funcionalidade de 'ATENÇÃO' nas tarefas individuais, aplicando bordas grossas tracejadas e agrupamento estratégico abaixo das atrasadas." },
-                { v: "4.17.0", date: "22/06/2026", desc: "Adicionada a funcionalidade de selecionar dias da semana específicos para a recorrência do tipo 'Toda semana'." },
-                { v: "4.16.0", date: "22/06/2026", desc: "Removido o agrupamento 'Sem Projeto' da aba de Projetos. Tarefas sem projeto ficam visíveis apenas cronologicamente na aba 'Tarefas'." }
+                { v: "4.17.0", date: "22/06/2026", desc: "Adicionada a funcionalidade de selecionar dias da semana específicos para a recorrência do tipo 'Toda semana'." }
             ],
             tasks: [], 
             projetos: [{ nome: "Trabalho", deleted: false, fixed: false }, { nome: "Estudos", deleted: false, fixed: false }],
             tags: [{ nome: "URGENTE", cor: "#ef4444", deleted: false }, { nome: "FOCO", cor: "#3b82f6", deleted: false }],
             filterType: 'hoje', selectedFilterValue: '', tempDate: '', tempProject: 'No project', tempTag: '', tempRecurrence: 'Não se repete',
             tempRecurrenceDays: [], 
-            tempAttention: false, // Controla o estado de Atenção temporário no painel
+            tempAttention: false, 
             activeTaskId: null,
             currentTab: 'tarefas'
         };
@@ -648,7 +647,7 @@
 
         function toggleInputPanel(show) {
             const panel = $('bottom-input-panel');
-            const fab = grandfather = $('fab-trigger');
+            const fab = $('fab-trigger');
             if(show) {
                 $('layer-title').innerText = state.activeTaskId ? "Editar Atividade" : "Nova Atividade";
                 panel.classList.add('visible');
@@ -659,7 +658,6 @@
                 fab.style.display = 'flex';
                 state.activeTaskId = null;
                 if ($('meta-delete-btn')) $('meta-delete-btn').style.display = 'none';
-                // Reseta o estado do switch
                 $('meta-attention-checkbox').checked = false;
             }
         }
@@ -726,6 +724,7 @@
             saveLocalStorage();
         }
 
+        /* AJUSTE E FIX DO ALINHAMENTO MÚTUO DOS APARELHOS */
         function mergeIncomingData(serverData) {
             if (!serverData) return false;
             let changesMade = false;
@@ -752,7 +751,10 @@
                                 if (st.tag !== local.tag) local.tag = st.tag;
                                 if (st.recurrence !== local.recurrence) local.recurrence = st.recurrence;
                                 if (st.recurrenceDays !== local.recurrenceDays) local.recurrenceDays = st.recurrenceDays;
-                                if (st.attention !== local.attention) local.attention = st.attention;
+                                
+                                // Correção Crucial: Garante que o estado de atenção do servidor sobrepõe o local desatualizado
+                                if (st.attention !== local.attention) local.attention = !!st.attention;
+                                
                                 local.updatedAt = st.updatedAt;
                                 changesMade = true;
                             }
@@ -1180,7 +1182,6 @@
         function createHTMLTaskItem(t, hojeIso, projName, showProjectBadge = false) {
             const isOverdue = t.date && t.date < hojeIso && !t.completed; 
             const item = document.createElement('div'); 
-            // Adiciona condicionalmente a classe 'has-attention' se a tarefa requerer atenção especial
             item.className = `task-item ${t.completed ? 'completed' : ''} ${isOverdue ? 'overdue' : ''} ${t.attention ? 'has-attention' : ''}`;
             item.setAttribute('draggable', 'true'); item.setAttribute('data-id', t.id); item.setAttribute('data-project', projName);
             
@@ -1211,17 +1212,14 @@
         /* LÓGICA DE ORDENAÇÃO DE TAREFAS COM ATENÇÃO ABAIXO DAS ATRASADAS */
         function sortTasksByPriority(tasksArray, hojeIso) {
             return tasksArray.sort((x, y) => {
-                // 1. Prioridade Máxima: Atrasadas e não completas
                 const isOverdueX = x.date && x.date < hojeIso && !x.completed ? 1 : 0;
                 const isOverdueY = y.date && y.date < hojeIso && !y.completed ? 1 : 0;
                 if (isOverdueX !== isOverdueY) return isOverdueY - isOverdueX;
 
-                // 2. Segunda Prioridade: Itens com ATENÇÃO ativos
                 const attentionX = x.attention && !x.completed ? 1 : 0;
                 const attentionY = y.attention && !y.completed ? 1 : 0;
                 if (attentionX !== attentionY) return attentionY - attentionX;
 
-                // 3. Critério de desempate por data cronológica
                 if (!x.date && y.date) return 1;
                 if (x.date && !y.date) return -1;
                 if (x.date && y.date && x.date !== y.date) return x.date.localeCompare(y.date);
@@ -1249,14 +1247,12 @@
                 $('progress-bar').style.width = '0%'; return;
             }
 
-            // --- ABA 1: TAREFAS (ORDENAÇÃO ATUALIZADA) ---
             if (state.currentTab === 'tarefas') {
                 let tabTasks = filtered.filter(t => t.date && t.date.trim() !== '');
 
                 if(!tabTasks.length) {
                     container.innerHTML = `<div style="text-align:center; color:var(--md-on-surface-variant); padding:30px 0; font-size:13px; font-weight: 500;">Nenhuma tarefa com data por aqui.</div>`;
                 } else {
-                    // Aplica a nova regra de ordenação mútua
                     tabTasks = sortTasksByPriority(tabTasks, hojeIso);
 
                     const plainListContainer = document.createElement('div');
@@ -1272,10 +1268,8 @@
                     container.appendChild(plainListContainer);
                 }
             } 
-            // --- ABA 2: PROJETOS (ORDENAÇÃO ATUALIZADA POR PROJETO) ---
             else if (state.currentTab === 'projects' || state.currentTab === 'projetos') {
                 const groups = {};
-                
                 let projectTasksOnly = filtered.filter(t => t.project && t.project !== 'No project');
 
                 projectTasksOnly.forEach(t => {
@@ -1295,8 +1289,6 @@
 
                 sortedGroupNames.forEach(projName => {
                     let projTasks = groups[projName]; 
-                    
-                    // Ordena respeitando as regras: Atrasadas > Atenção > Cronológica por projeto
                     projTasks = sortTasksByPriority(projTasks, hojeIso);
 
                     const projObj = state.projetos.find(p => p.nome === projName && !p.deleted); const isFixed = projObj ? !!projObj.fixed : false;
